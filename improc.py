@@ -10,15 +10,17 @@ from pypyueye import Camera,utils
 import time # delay within program
 from math import *
 
+DEG_INCR = 30
+
 # UTILITIES ##########################################################
 # UTILITIES ##########################################################
 # UTILITIES ##########################################################
 
 def load_templates():
     templates = [[],[]]
-    for i in np.arange(0,360,15):
+    for i in np.arange(0,360,DEG_INCR):
         templates[0].append(cv2.imread('Templates/template'+str(i)+'.jpg')[:,:,0])  
-    for i in np.arange(0,180,15):
+    for i in np.arange(0,180,DEG_INCR):
         templates[1].append(cv2.imread('Templates/body'+str(i)+'.jpg')[:,:,0])
     return templates
 
@@ -45,7 +47,7 @@ def init_instruments(pixelclock=90):
     cam.set_aoi(200,0,2160,1920) # Full range is wxh = (2560,1920)
     cam.set_pixelclock(pixelclock) # Needs USB 3
     cam.set_fps(20) # It goes to max allowed
-    cam.set_exposure(20) # Arbitrary
+    cam.set_exposure(10) # Arbitrary, but 20 is probably too high
 
     return cam, task
 
@@ -247,7 +249,7 @@ def find_angs(img,loc,ref_pt,templates,buffer=30,th_ind=-80):
     for i,template in enumerate(templates):
             
         res = cv2.matchTemplate(img,template,cv2.TM_SQDIFF)
-        deg = i*15
+        deg = i*DEG_INCR
       
         min_ind = np.unravel_index(res.argmin(), res.shape)
         best_matches[0,2] = res[min_ind]
@@ -275,7 +277,7 @@ def find_body(worm,bodies):
         return [np.cos(deg),np.sin(deg)]
 
     res = [min(cv2.matchTemplate(worm['img'],body,cv2.TM_SQDIFF).flatten()) for body in bodies]
-    deg = np.argmin(res) * 15 *pi/180 # to radians
+    deg = np.argmin(res) * DEG_INCR *pi/180 # to radians
     end_ang = np.arctan2(-(worm['endpts'][1,0] - worm['endpts'][1,1]), worm['endpts'][0,0] - worm['endpts'][0,1])
                             # y1 - y0, x1 - x0
     end_vec = get_vec(end_ang)
@@ -289,7 +291,7 @@ def find_body(worm,bodies):
 def find_worms(im, templates, bodies, ref_pts=None,num_worms=1,brightness=2000):
     # Returns worms, list of dictionaries with worm traits.
     # threshold is 20 for lowmag, 30 for highmag.
-    # templates is a list in ascending order of all worm templates (assuming increments 15 deg)
+    # templates is a list in ascending order of all worm templates (assuming increments DEG_INCR deg)
     # ref_pts is a list of reference points for the probable head of the worm
 
   # Finds all worms in one image and returns a worms list of dictionaries.
@@ -329,6 +331,8 @@ def find_worms(im, templates, bodies, ref_pts=None,num_worms=1,brightness=2000):
     return worms
 
 def find_ht(cam,bg,templates,bodies,runtime=30):
+    # SINCE THIS IS THE ONLY POINT WHERE THE SCRIPT CAN FAIL (I THINK) IT'S REMOVED IN TD SCRIPT
+
     # Finds the probable head/tail coordinates of worm based on average direction of movement over time.
     # Assumes that center of worm moves more in direction of head than tail.
     # Works by adding up 
@@ -443,7 +447,7 @@ def if_stmt_angle(direction,cam,task,bgs,templates,bodies,total_time=600,track_r
     
     # Find initial head endpoint
     print('Finding orientation')
-    head,old_loc = find_ht(cam,bg,templates,bodies,runtime=10)
+    head,old_loc = find_ht(cam,bg,templates,bodies,runtime=3)
 
     # Initialize all timers
     elapsed = Timer(total_time)
@@ -494,7 +498,7 @@ def if_stmt_angle(direction,cam,task,bgs,templates,bodies,total_time=600,track_r
                 head,SWITCH = ht_quick(worm,old_loc)
                 old_loc = worm['loc']
                 if SWITCH:
-                    print('\t\tSwitched')
+                    #print('\t\tSwitched')
             START = False
             
         # Update all timers
