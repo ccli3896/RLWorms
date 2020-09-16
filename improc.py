@@ -309,7 +309,7 @@ def find_worms(im, templates, bodies, ref_pts=None,num_worms=1,brightness=2000):
     # Get probable centers and worm images, not thresholded
     centers,boxes,box_centers = find_worm_boxes(im,brightness=brightness)
     if len(boxes) == 0:
-        print('No worms found')
+        #print('No worms found')
         return None
     
     worms = [{} for i in range(num_worms)]
@@ -497,7 +497,8 @@ def if_stmt_angle(direction,cam,task,bgs,templates,bodies,total_time=600,track_r
             if not START:
                 head,SWITCH = ht_quick(worm,old_loc)
                 old_loc = worm['loc']
-                if SWITCH:
+                
+                #if SWITCH:
                     #print('\t\tSwitched')
             START = False
             
