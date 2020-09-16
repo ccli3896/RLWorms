@@ -3,15 +3,17 @@ from gym import spaces
 from improc import *
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 class ProcessedWorm(gym.Env):
     """Custom Environment that follows gym interface"""
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, target):
+    def __init__(self, target, ep_len=900):
         
         """
         Initializes the camera, light, worm starting point.
+        ep_len is in seconds; each episode will terminate afterward. 
         """
         super(ProcessedWorm, self).__init__()
 
@@ -31,9 +33,12 @@ class ProcessedWorm(gym.Env):
         self.head, self.old_loc = [0,0],[1,1]
         self.last_loc = self.old_loc
 
+        self.timer = Timer(ep_len)
+
 
     def step(self, action):
         """Chooses action and returns a (step_type, reward, discount, observation)"""
+
         img = grab_im(self.cam, self.bg)
         worms = find_worms(img, self.templates, self.bodies, ref_pts=[self.head], num_worms=1)
         
@@ -56,7 +61,14 @@ class ProcessedWorm(gym.Env):
         
         self.last_loc = self.worm['loc']
         # return obs, reward, done (boolean), info (dict)
-        return np.array([body_dir, head_body]), reward, False, {}
+
+        self.timer.update()
+        if self.timer.check():
+            finished = True
+        else:
+            finished = False
+
+        return np.array([body_dir, head_body]), reward, finished, {}
 
         
     def reset(self):
@@ -65,6 +77,8 @@ class ProcessedWorm(gym.Env):
         self.bg = self.bgs[0]
         self.head, self.old_loc = [0,0],[1,1]
         self.last_loc = self.old_loc
+
+        self.timer.reset()
         
         # Takes one step and returns the observation
         return self.step(0)[0]
