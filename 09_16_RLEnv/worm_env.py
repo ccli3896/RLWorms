@@ -20,8 +20,10 @@ class ProcessedWorm(gym.Env):
         # Define action and observation space
         # They must be gym.spaces objects
         N_DISCRETE_STATES = 12 # 12 for 30 degree increments
+        N_DISCRETE_ACTIONS = 2 # on or off
+
         self.action_space = spaces.Discrete(N_DISCRETE_ACTIONS)
-        self.observation_space = spaces.Box(low=-180, high=180, shape=2, dtype=np.uint8)
+        self.observation_space = spaces.Box(low=np.array([-180,-180]), high=np.array([180,180]), dtype=np.uint8)
         
         self.target = target
         self.templates, self.bodies = load_templates()
@@ -36,8 +38,10 @@ class ProcessedWorm(gym.Env):
         self.timer = Timer(ep_len)
 
 
-    def step(self, action):
+    def step(self, action, sleep_time=.1):
         """Chooses action and returns a (step_type, reward, discount, observation)"""
+        self.task.write(action)
+        time.sleep(sleep_time)
 
         img = grab_im(self.cam, self.bg)
         worms = find_worms(img, self.templates, self.bodies, ref_pts=[self.head], num_worms=1)
@@ -46,8 +50,8 @@ class ProcessedWorm(gym.Env):
             # Returns nans if no worm is found or something went wrong
             self.task.write(0)
             self.bg = self.bgs[0]
-            print('No worm')
-            return dm_env.transition(reward=0., observation=(np.nan, np.nan))
+            print(f'No worm \t\t\r',end='')
+            return np.array([np.nan,np.nan]), 0, False, {}
         
         # Find state
         self.worm = worms[0]
@@ -65,14 +69,17 @@ class ProcessedWorm(gym.Env):
         self.timer.update()
         if self.timer.check():
             finished = True
+            self.task.write(0)
         else:
             finished = False
 
         return np.array([body_dir, head_body]), reward, finished, {}
 
         
-    def reset(self):
+    def reset(self,target=None):
         """Returns the first `TimeStep` of a new episode."""
+        if target is not None:
+            self.target = target
         self.bgs = self.make_bgs()
         self.bg = self.bgs[0]
         self.head, self.old_loc = [0,0],[1,1]
@@ -87,13 +94,20 @@ class ProcessedWorm(gym.Env):
         # Render the environment to the screen
         img = grab_im(self.cam, self.bg)
         worms = find_worms(img, self.templates, self.bodies, ref_pts=[self.head], num_worms=1)
-        print(worms)
-        plt.imshow(worms['img'])
+        if worms is None:
+            # Returns nans if no worm is found or something went wrong
+            self.task.write(0)
+            self.bg = self.bgs[0]
+            print('No worm')
+            return
+        worm = worms[0]
+        print(worm)
+        plt.imshow(worm['img'])
 
     """ BELOW: UTILITY FUNCTIONS """
     def make_bgs(self, light_vec=[0,1], total_time=20):
         """Makes background images and stores in self"""
-        self.bgs = make_vec_bg(self.cam,self.task,light_vec,total_time=total_time)
+        return make_vec_bg(self.cam,self.task,light_vec,total_time=total_time)
         
     def test_cam(self,bg=None):
         """To check camera is working, with or without background subtraction"""
@@ -107,3 +121,7 @@ class ProcessedWorm(gym.Env):
         self.head, SWITCH = ht_quick(self.worm, self.old_loc)
         self.old_loc = self.worm['loc']
         return SWITCH
+
+    def close(self):
+        self.cam.exit()
+        self.task.write(0)
