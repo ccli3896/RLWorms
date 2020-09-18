@@ -101,7 +101,7 @@ def make_vec_bg(cam,task,light_vec,total_time=60,res=1,mask_it=True):
 
     def make_mask(bg):
         center = tuple(map(int,np.flip(np.array(bg.shape)[:2])/2)) # Makes the center of the circle the center of the img
-        radius = int(np.mean(center))-100
+        radius = int(np.mean(center))-25
         img = np.zeros(bg.shape, dtype="uint8")
         img = cv2.bitwise_not(cv2.circle(img, center, radius, (255,255,255), thickness=-1))
         return img
