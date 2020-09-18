@@ -40,6 +40,9 @@ class ProcessedWorm(gym.Env):
 
     def step(self, action, sleep_time=.1):
         """Chooses action and returns a (step_type, reward, discount, observation)"""
+        # In info, returns worm info for that step 
+        # {'img':_, 'loc':(x,y), 't':_}
+
         self.task.write(action)
         time.sleep(sleep_time)
 
@@ -51,7 +54,10 @@ class ProcessedWorm(gym.Env):
             self.task.write(0)
             self.bg = self.bgs[0]
             print(f'No worm \t\t\r',end='')
-            return np.array([np.nan,np.nan]), 0, False, {}
+            return np.array([np.nan,np.nan]), 0, False, {
+                'img':None,
+                'loc':np.array([np.nan,np.nan]),
+                't':self.timer.t}
         
         # Find state
         self.worm = worms[0]
@@ -73,7 +79,11 @@ class ProcessedWorm(gym.Env):
         else:
             finished = False
 
-        return np.array([body_dir, head_body]), reward, finished, {}
+        return np.array([body_dir, head_body]), reward, finished, {
+            'img': self.worm['img'],
+            'loc': self.worm['loc'],
+            't': self.timer.t 
+        }
 
         
     def reset(self,target=None):
