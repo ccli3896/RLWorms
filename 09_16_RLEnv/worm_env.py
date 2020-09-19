@@ -21,13 +21,15 @@ class ProcessedWorm(gym.Env):
     """Custom Environment that follows gym interface"""
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, target, ep_len=900):
+    def __init__(self, target, ep_len=900, ht_time=3):
         
         """
         Initializes the camera, light, worm starting point.
         ep_len is in seconds; each episode will terminate afterward. 
         """
         super(ProcessedWorm, self).__init__()
+        # For clarity: last_loc 
+
 
         # Define action and observation space
         # They must be gym.spaces objects
@@ -42,6 +44,7 @@ class ProcessedWorm(gym.Env):
         self.cam, self.task = init_instruments()
 
         self.timer = Timer(ep_len)
+        self.ht_timer= Timer(ht_time)
 
 
     def step(self, action, sleep_time=.1):
@@ -52,9 +55,10 @@ class ProcessedWorm(gym.Env):
         self.task.write(action)
         time.sleep(sleep_time)
 
+        # Get data
         img = grab_im(self.cam, self.bg)
         worms = find_worms(img, self.templates, self.bodies, ref_pts=[self.head], num_worms=1)
-        
+
         if worms is None:
             # Returns nans if no worm is found or something went wrong
             self.task.write(0)
@@ -67,30 +71,35 @@ class ProcessedWorm(gym.Env):
                 'endpts': np.zeros((2,2))+np.nan,
                 'obs': np.array([np.nan,np.nan]),
                 'reward': 0,
-                'target': self.target
+                'target': self.target,
+                'action': action
                 }
         
-        # Find state
+        # Find state and update last loc variable
         self.worm = worms[0]
         body_dir = relative_angle(self.worm['body'], self.target)
         head_body = relative_angle(self.worm['angs'][0], self.worm['body'])
+        self.last_loc = self.worm['loc']
+        obs = np.array([body_dir, head_body])
         
         # Find reward
         reward = proj(self.worm['loc']-self.last_loc, [np.cos(self.target*pi/180),-np.sin(self.target*pi/180)])
         if np.isnan(reward) or np.abs(reward)>10:
             reward = 0
-        
-        self.last_loc = self.worm['loc']
-        obs = np.array([body_dir, head_body])
-        # return obs, reward, done (boolean), info (dict)
 
+        # Timer checks: episode end and HT
         self.timer.update()
         if self.timer.check():
             finished = True
             self.task.write(0)
         else:
             finished = False
+        self.ht_timer.update()
+        if self.ht_timer.check():
+            SWITCHED = self.ht_check()
 
+        
+        # return obs, reward, done (boolean), info (dict)
         return obs, reward, finished, {
             'img': self.worm['img'],
             'loc': self.worm['loc'],
@@ -98,7 +107,8 @@ class ProcessedWorm(gym.Env):
             'endpts': self.worm['endpts'],
             'obs': obs,
             'reward': reward,
-            'target': self.target
+            'target': self.target,
+            'action': action
         }
 
         
@@ -112,6 +122,7 @@ class ProcessedWorm(gym.Env):
         self.last_loc = self.old_loc
 
         self.timer.reset()
+        self.ht_timer.reset()
         
         # Takes one step and returns the observation
         return self.step(0)[0]
