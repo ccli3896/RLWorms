@@ -5,6 +5,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
+def add_to_traj(trajectory,info):
+    # appends each key in info to the corresponding key in trajectory.
+    # If trajectory is empty, returns trajectory as copy of info but with each element as list
+    # so it can be appended to in the future.
+
+    if trajectory:
+        for k in info.keys():
+            trajectory[k].append(info[k])
+    else:
+        for k in info.keys():
+            trajectory[k] = [info[k]]
+
 class ProcessedWorm(gym.Env):
     """Custom Environment that follows gym interface"""
     metadata = {'render.modes': ['human']}
@@ -19,7 +31,7 @@ class ProcessedWorm(gym.Env):
 
         # Define action and observation space
         # They must be gym.spaces objects
-        N_DISCRETE_STATES = 12 # 12 for 30 degree increments
+        # N_DISCRETE_STATES = 12 # 12 for 30 degree increments
         N_DISCRETE_ACTIONS = 2 # on or off
 
         self.action_space = spaces.Discrete(N_DISCRETE_ACTIONS)
@@ -28,12 +40,6 @@ class ProcessedWorm(gym.Env):
         self.target = target
         self.templates, self.bodies = load_templates()
         self.cam, self.task = init_instruments()
-        self.bgs = self.make_bgs()
-        self.bg = self.bgs[0] # Set the active background to the no-light one
-        
-        # Arbitrary initial point initialization
-        self.head, self.old_loc = [0,0],[1,1]
-        self.last_loc = self.old_loc
 
         self.timer = Timer(ep_len)
 
@@ -55,9 +61,14 @@ class ProcessedWorm(gym.Env):
             self.bg = self.bgs[0]
             print(f'No worm \t\t\r',end='')
             return np.array([np.nan,np.nan]), 0, False, {
-                'img':None,
-                'loc':np.array([np.nan,np.nan]),
-                't':self.timer.t}
+                'img': None,
+                'loc': np.array([np.nan,np.nan]),
+                't': self.timer.t,
+                'endpts': np.zeros((2,2))+np.nan,
+                'obs': np.array([np.nan,np.nan]),
+                'reward': 0,
+                'target': self.target
+                }
         
         # Find state
         self.worm = worms[0]
@@ -70,6 +81,7 @@ class ProcessedWorm(gym.Env):
             reward = 0
         
         self.last_loc = self.worm['loc']
+        obs = np.array([body_dir, head_body])
         # return obs, reward, done (boolean), info (dict)
 
         self.timer.update()
@@ -79,10 +91,14 @@ class ProcessedWorm(gym.Env):
         else:
             finished = False
 
-        return np.array([body_dir, head_body]), reward, finished, {
+        return obs, reward, finished, {
             'img': self.worm['img'],
             'loc': self.worm['loc'],
-            't': self.timer.t 
+            't': self.timer.t,
+            'endpts': self.worm['endpts'],
+            'obs': obs,
+            'reward': reward,
+            'target': self.target
         }
 
         
