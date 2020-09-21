@@ -75,15 +75,15 @@ class ProcessedWorm(gym.Env):
                 'action': action
                 }
         
-        # Find state and update last loc variable
+        # Find state 
         self.worm = worms[0]
         body_dir = relative_angle(self.worm['body'], self.target)
         head_body = relative_angle(self.worm['angs'][0], self.worm['body'])
-        self.last_loc = self.worm['loc']
         obs = np.array([body_dir, head_body])
         
-        # Find reward
+        # Find reward and then update last_loc variable
         reward = proj(self.worm['loc']-self.last_loc, [np.cos(self.target*pi/180),-np.sin(self.target*pi/180)])
+        self.last_loc = self.worm['loc']
         if np.isnan(reward) or np.abs(reward)>10:
             reward = 0
 
@@ -96,7 +96,7 @@ class ProcessedWorm(gym.Env):
             finished = False
         self.ht_timer.update()
         if self.ht_timer.check():
-            SWITCHED = self.ht_check()
+            SWITCHED = self.check_ht()
 
         
         # return obs, reward, done (boolean), info (dict)
