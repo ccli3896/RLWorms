@@ -32,11 +32,11 @@ class ProcessedWorm(gym.Env):
 
         # Define action and observation space
         # They must be gym.spaces objects
-        # N_DISCRETE_STATES = 12 # 12 for 30 degree increments
+        N_DISCRETE_STATES = 3 # either -1, 1, or 0. Product of body_dir and head_body.
         N_DISCRETE_ACTIONS = 2 # on or off
 
         self.action_space = spaces.Discrete(N_DISCRETE_ACTIONS)
-        self.observation_space = spaces.Box(low=np.array([-180,-180]), high=np.array([180,180]), dtype=np.uint8)
+        self.observation_space = spaces.Discrete(N_DISCRETE_STATES)
         
         self.target = target
         self.templates, self.bodies = load_templates()
