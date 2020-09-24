@@ -28,7 +28,6 @@ class ProcessedWorm(gym.Env):
         ep_len is in seconds; each episode will terminate afterward. 
         """
         super(ProcessedWorm, self).__init__()
-        # For clarity: last_loc is for reward calc. old_loc is for HT checks.
 
 
         # Define action and observation space
@@ -64,7 +63,7 @@ class ProcessedWorm(gym.Env):
             self.task.write(0)
             self.bg = self.bgs[0]
             print(f'No worm \t\t\r',end='')
-            return np.array([np.nan,np.nan]), 0, False, {
+            return np.nan, 0, False, {
                 'img': None,
                 'loc': np.array([np.nan,np.nan]),
                 't': self.timer.t,
@@ -100,7 +99,7 @@ class ProcessedWorm(gym.Env):
 
         
         # return obs, reward, done (boolean), info (dict)
-        return obs, reward, finished, {
+        return np.sign(body_dir*head_body), reward, finished, {
             'img': self.worm['img'],
             'loc': self.worm['loc'],
             't': self.timer.t,
