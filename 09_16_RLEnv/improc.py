@@ -36,16 +36,6 @@ def proj(x,y):
     else:
         return np.dot(x,y)/np.linalg.norm(y)
 
-def relative_angle(alpha,beta):
-    # Returns angle of alpha relative to beta (positive means alpha is CCW)
-    # Range is [-180,180)
-    theta = alpha - beta
-    if theta >= 180:
-        theta -= 360
-    elif theta < -180:
-        theta += 360
-    return theta
-
 def init_instruments(pixelclock=90):
     # Initializes all instruments
     task = nidaqmx.Task()
@@ -124,6 +114,16 @@ def make_vec_bg(cam,task,light_vec,total_time=60,res=1,mask_it=True):
         mask = make_mask(bgs[0])
         bgs = [cv2.add(mask,bg) for bg in bgs]
     return bgs
+
+def relative_angle(alpha,beta):
+    # Returns angle of alpha relative to beta (positive means alpha is CCW)
+    # Range is [-180,180)
+    theta = alpha - beta
+    if theta >= 180:
+        theta -= 360
+    elif theta < -180:
+        theta += 360
+    return theta
 
 class Timer:
     # Is a timer that independently keeps track of times and can check whether it's above some fixed interval.
