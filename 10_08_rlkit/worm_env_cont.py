@@ -71,15 +71,15 @@ class ProcessedWorm(gym.Env):
             SWITCHED = self.check_ht()
 
         if worms is None:
-            # Returns nans if no worm is found or something went wrong
+            # Returns zeros if worm isn't found or something went wrong.
             self.task.write(0)
             print(f'No worm \t\t\r',end='')
-            return np.array([np.nan,np.nan]), 0, self.finished, {
+            return np.zeros(2), 0, self.finished, {
                 #'img': None,
-                'loc': np.array([np.nan,np.nan]),
+                'loc': np.zeros(2),
                 't': self.timer.t,
-                'endpts': np.zeros((2,2))+np.nan,
-                'obs': np.array([np.nan,np.nan]),
+                'endpts': np.zeros((2,2))-1,
+                'obs': np.zeros(2),
                 'reward': 0,
                 'target': self.target,
                 'action': action

@@ -85,7 +85,7 @@ if __name__ == "__main__":
     variant = dict(
         algorithm="SAC",
         version="normal",
-        layer_size=64,
+        layer_size=16,
         replay_buffer_size=int(1E4),
         algorithm_kwargs=dict(
             num_epochs=10,
