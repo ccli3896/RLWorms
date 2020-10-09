@@ -120,6 +120,8 @@ class ProcessedWorm(gym.Env):
         self.head, self.old_loc = [0,0],[1,1]
         self.last_loc = self.old_loc
 
+        self.bg = self.make_bgs()[0]
+
         self.timer.reset()
         self.ht_timer.reset()
         self.finished = False
