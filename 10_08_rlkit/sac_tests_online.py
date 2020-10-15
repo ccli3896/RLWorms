@@ -1,18 +1,20 @@
 import rlkit.torch.pytorch_util as ptu
-from rlkit.data_management.env_replay_buffer import EnvReplayBuffer
-from rlkit.envs.wrappers import NormalizedBoxEnv
-from rlkit.launchers.launcher_util import setup_logger
-from rlkit.samplers.data_collector import MdpPathCollector
-from rlkit.samplers.data_collector.step_collector import MdpStepCollector
 from rlkit.torch.sac.policies import TanhGaussianPolicy, MakeDeterministic
 from rlkit.torch.sac.sac import SACTrainer
 from rlkit.torch.networks import ConcatMlp
 from rlkit.torch.torch_rl_algorithm import TorchOnlineRLAlgorithm
 
+from rlkit.data_management.env_replay_buffer import EnvReplayBuffer
+from rlkit.envs.wrappers import NormalizedBoxEnv
+from rlkit.launchers.launcher_util import setup_logger
+from rlkit.samplers.data_collector import MdpPathCollector
+from rlkit.samplers.data_collector.step_collector import MdpStepCollector
+
+
 from worm_env_cont import *
 
 def experiment(variant):
-    expl_env = NormalizedBoxEnv(ProcessedWorm(0),obs_mean=0,obs_std=1)
+    expl_env = NormalizedBoxEnv(ProcessedWorm(0),obs_mean=0,obs_std=180)
     eval_env = expl_env
     obs_dim = expl_env.observation_space.low.size
     action_dim = eval_env.action_space.low.size
@@ -85,15 +87,15 @@ if __name__ == "__main__":
     variant = dict(
         algorithm="SAC",
         version="normal",
-        layer_size=16,
+        layer_size=64,
         replay_buffer_size=int(1E4),
         algorithm_kwargs=dict(
-            num_epochs=10,
-            num_eval_steps_per_epoch=200,
-            num_trains_per_train_loop=800,
-            num_expl_steps_per_train_loop=400,
-            min_num_steps_before_training=200,
-            max_path_length=200,
+            num_epochs=5,
+            num_eval_steps_per_epoch=500,
+            num_trains_per_train_loop=2000,
+            num_expl_steps_per_train_loop=1000,
+            min_num_steps_before_training=500,
+            max_path_length=500,
             batch_size=128,
         ),
         trainer_kwargs=dict(
