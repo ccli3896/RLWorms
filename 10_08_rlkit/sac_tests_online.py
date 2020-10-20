@@ -10,41 +10,55 @@ from rlkit.launchers.launcher_util import setup_logger
 from rlkit.samplers.data_collector import MdpPathCollector
 from rlkit.samplers.data_collector.step_collector import MdpStepCollector
 
-
+from torch import load as load_net
 from worm_env_cont import *
 
 def experiment(variant):
-    expl_env = NormalizedBoxEnv(ProcessedWorm(0),obs_mean=0,obs_std=180)
-    eval_env = expl_env
-    obs_dim = expl_env.observation_space.low.size
-    action_dim = eval_env.action_space.low.size
+    # Sets up experiment with an option to start from a previous run. 
+    # Checkpoint in variant is defined before main.
 
-    M = variant['layer_size']
-    qf1 = ConcatMlp(
-        input_size=obs_dim + action_dim,
-        output_size=1,
-        hidden_sizes=[M, M],
-    )
-    qf2 = ConcatMlp(
-        input_size=obs_dim + action_dim,
-        output_size=1,
-        hidden_sizes=[M, M],
-    )
-    target_qf1 = ConcatMlp(
-        input_size=obs_dim + action_dim,
-        output_size=1,
-        hidden_sizes=[M, M],
-    )
-    target_qf2 = ConcatMlp(
-        input_size=obs_dim + action_dim,
-        output_size=1,
-        hidden_sizes=[M, M],
-    )
-    policy = TanhGaussianPolicy(
-        obs_dim=obs_dim,
-        action_dim=action_dim,
-        hidden_sizes=[M, M],
-    )
+    expl_env = NormalizedBoxEnv(ProcessedWorm(0),obs_mean=0,obs_std=180)
+        # Makes observations the networks see range from -1 to 1
+    eval_env = expl_env
+
+    if variant['checkpt'] is None:
+        obs_dim = expl_env.observation_space.low.size
+        action_dim = eval_env.action_space.low.size
+        M = variant['layer_size']
+
+        qf1 = ConcatMlp(
+            input_size=obs_dim + action_dim,
+            output_size=1,
+            hidden_sizes=[M, M],
+        )
+        qf2 = ConcatMlp(
+            input_size=obs_dim + action_dim,
+            output_size=1,
+            hidden_sizes=[M, M],
+        )
+        target_qf1 = ConcatMlp(
+            input_size=obs_dim + action_dim,
+            output_size=1,
+            hidden_sizes=[M, M],
+        )
+        target_qf2 = ConcatMlp(
+            input_size=obs_dim + action_dim,
+            output_size=1,
+            hidden_sizes=[M, M],
+        )
+        policy = TanhGaussianPolicy(
+            obs_dim=obs_dim,
+            action_dim=action_dim,
+            hidden_sizes=[M, M],
+        )
+    else:
+        net = load_net(variant['checkpt'])
+        qf1 = net['trainer/qf1']
+        qf2 = net['trainer/qf2']
+        target_qf1 = net['trainer/target_qf1']
+        target_qf2 = net['trainer/target_qf2']
+        policy = net['trainer/policy']
+
     eval_policy = MakeDeterministic(policy)
     eval_path_collector = MdpPathCollector(
         eval_env,
@@ -80,7 +94,7 @@ def experiment(variant):
     algorithm.train()
 
 
-
+chkpt = './data/test/test/_2020_10_20_11_07_51_0000--s-0/itr_4.pkl'
 
 if __name__ == "__main__":
     # noinspection PyTypeChecker
@@ -107,7 +121,9 @@ if __name__ == "__main__":
             reward_scale=1,
             use_automatic_entropy_tuning=True,
         ),
+        checkpt=chkpt,
     )
+    
     setup_logger('.\\test\\',variant=variant,snapshot_mode='all')
     #ptu.set_gpu_mode(True)  # optionally set the GPU (default=False)
     experiment(variant)
