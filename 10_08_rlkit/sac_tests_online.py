@@ -87,7 +87,7 @@ if __name__ == "__main__":
     variant = dict(
         algorithm="SAC",
         version="normal",
-        layer_size=64,
+        layer_size=32,
         replay_buffer_size=int(1E4),
         algorithm_kwargs=dict(
             num_epochs=5,
@@ -99,7 +99,7 @@ if __name__ == "__main__":
             batch_size=128,
         ),
         trainer_kwargs=dict(
-            discount=0.9,
+            discount=0.98,
             soft_target_tau=5e-3,
             target_update_period=1,
             policy_lr=3E-3,
@@ -108,6 +108,6 @@ if __name__ == "__main__":
             use_automatic_entropy_tuning=True,
         ),
     )
-    setup_logger('.\\test\\',variant=variant)
+    setup_logger('.\\test\\',variant=variant,snapshot_mode='all')
     #ptu.set_gpu_mode(True)  # optionally set the GPU (default=False)
     experiment(variant)
