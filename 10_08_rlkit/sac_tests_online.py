@@ -98,20 +98,20 @@ def experiment(variant):
     algorithm.train()
 
 
-chkpt = './data/test/test/_2020_10_22_10_28_45_0000--s-0/itr_3.pkl'
+chkpt = None
 
 if __name__ == "__main__":
     # noinspection PyTypeChecker
     variant = dict(
         algorithm="SAC",
         version="normal",
-        layer_size=32,
+        layer_size=16,
         replay_buffer_size=int(1E4),
         algorithm_kwargs=dict(
             num_epochs=4,
             num_eval_steps_per_epoch=500,
-            num_trains_per_train_loop=2000,
-            num_expl_steps_per_train_loop=1000,
+            num_trains_per_train_loop=3000,
+            num_expl_steps_per_train_loop=1500,
             min_num_steps_before_training=500,
             max_path_length=500,
             batch_size=128,
