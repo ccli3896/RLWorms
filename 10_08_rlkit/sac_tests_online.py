@@ -24,6 +24,7 @@ def experiment(variant):
     if variant['checkpt'] is None:
         obs_dim = expl_env.observation_space.low.size
         action_dim = eval_env.action_space.low.size
+        chkpt_log_alpha = None
         M = variant['layer_size']
 
         qf1 = ConcatMlp(
@@ -58,6 +59,7 @@ def experiment(variant):
         target_qf1 = net['trainer/target_qf1']
         target_qf2 = net['trainer/target_qf2']
         policy = net['trainer/policy']
+        chkpt_log_alpha = net['trainer/fin_log_alpha']
 
     eval_policy = MakeDeterministic(policy)
     eval_path_collector = MdpPathCollector(
@@ -73,12 +75,14 @@ def experiment(variant):
         expl_env,
     )
     trainer = SACTrainer(
+        # Takes prev log alpha if it exists
         env=eval_env,
         policy=policy,
         qf1=qf1,
         qf2=qf2,
         target_qf1=target_qf1,
         target_qf2=target_qf2,
+        log_alpha=chkpt_log_alpha,
         **variant['trainer_kwargs']
     )
     algorithm = TorchOnlineRLAlgorithm(
@@ -94,7 +98,7 @@ def experiment(variant):
     algorithm.train()
 
 
-chkpt = './data/test/test/_2020_10_20_15_02_55_0000--s-0/itr_4.pkl'
+chkpt = None # './data/test/test/_2020_10_20_15_02_55_0000--s-0/itr_4.pkl'
 
 if __name__ == "__main__":
     # noinspection PyTypeChecker
@@ -104,7 +108,7 @@ if __name__ == "__main__":
         layer_size=32,
         replay_buffer_size=int(1E4),
         algorithm_kwargs=dict(
-            num_epochs=5,
+            num_epochs=4,
             num_eval_steps_per_epoch=500,
             num_trains_per_train_loop=2000,
             num_expl_steps_per_train_loop=1000,
