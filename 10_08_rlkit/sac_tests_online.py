@@ -98,7 +98,7 @@ def experiment(variant):
     algorithm.train()
 
 
-chkpt = None # './data/test/test/_2020_10_20_15_02_55_0000--s-0/itr_4.pkl'
+chkpt = './data/test/test/_2020_10_21_20_59_06_0000--s-0/itr_3.pkl'
 
 if __name__ == "__main__":
     # noinspection PyTypeChecker
