@@ -116,6 +116,7 @@ class NormalizedBoxEnv(ProxyEnv):
     Normalize action to in [-1, 1].
 
     Optionally normalize observations and scale reward.
+    
     """
 
     def __init__(
@@ -123,7 +124,7 @@ class NormalizedBoxEnv(ProxyEnv):
             env,
             reward_scale=1.,
             obs_mean=None,
-            obs_std=None,
+            obs_std=None
     ):
         ProxyEnv.__init__(self, env)
         self._should_normalize = not (obs_mean is None and obs_std is None)

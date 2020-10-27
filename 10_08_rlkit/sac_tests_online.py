@@ -12,6 +12,7 @@ from rlkit.samplers.data_collector.step_collector import MdpStepCollector
 
 from torch import load as load_net
 from worm_env_cont import *
+import os
 
 def experiment(variant):
     # Sets up experiment with an option to start from a previous run. 
@@ -74,6 +75,13 @@ def experiment(variant):
         variant['replay_buffer_size'],
         expl_env,
     )
+
+    ###
+    # Replay buffer load block
+    if os.path.exists(variant['chkpt'][:-9]+'buffer.pkl'):
+        replay_buffer.load_buffer(variant['chkpt'][:-9]+'buffer.pkl')
+    ###
+
     trainer = SACTrainer(
         # Takes prev log alpha if it exists
         env=eval_env,
@@ -98,14 +106,15 @@ def experiment(variant):
     algorithm.train()
 
 
-chkpt = './data/10-23-0/10_23_0/_2020_10_27_11_31_24_0000--s-0/itr_3.pkl'
+
+chkpt = './data/10_22_0/_2020_10_22_16_06_11_0000--s-0/itr_3.pkl'
 
 if __name__ == "__main__":
     # noinspection PyTypeChecker
     variant = dict(
         algorithm="SAC",
         version="normal",
-        layer_size=16,
+        layer_size=32,
         replay_buffer_size=int(1E4),
         algorithm_kwargs=dict(
             num_epochs=4,
@@ -128,6 +137,6 @@ if __name__ == "__main__":
         checkpt=chkpt,
     )
     
-    setup_logger('.\\10_23_0\\',variant=variant,snapshot_mode='all')
+    setup_logger('.\\10_22_0\\',variant=variant,snapshot_mode='all')
     #ptu.set_gpu_mode(True)  # optionally set the GPU (default=False)
     experiment(variant)

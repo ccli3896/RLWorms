@@ -3,6 +3,7 @@ from gym.spaces import Discrete
 from rlkit.data_management.simple_replay_buffer import SimpleReplayBuffer
 from rlkit.envs.env_utils import get_dim
 import numpy as np
+import pickle
 
 
 class EnvReplayBuffer(SimpleReplayBuffer):
@@ -48,3 +49,13 @@ class EnvReplayBuffer(SimpleReplayBuffer):
             terminal=terminal,
             **kwargs
         )
+
+    ### Added by CL to carry over replay buffer between runs
+    def save_buffer(self):
+        with open('buffer.pkl') as f:
+            pickle.dump(self,f)
+    def load_buffer(self,fname):
+        env = self.env
+        with open(fname) as f:
+            self = pickle.load(f)
+        self.env = env

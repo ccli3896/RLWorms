@@ -69,10 +69,10 @@ class BaseRLAlgorithm(object, metaclass=abc.ABCMeta):
         snapshot = {}
         for k, v in self.trainer.get_snapshot().items():
             snapshot['trainer/' + k] = v
-        for k, v in self.expl_data_collector.get_snapshot().items():
-            snapshot['exploration/' + k] = v
-        for k, v in self.eval_data_collector.get_snapshot().items():
-            snapshot['evaluation/' + k] = v
+        #for k, v in self.expl_data_collector.get_snapshot().items():
+        #    snapshot['exploration/' + k] = v
+        #for k, v in self.eval_data_collector.get_snapshot().items():
+        #    snapshot['evaluation/' + k] = v
         for k, v in self.replay_buffer.get_snapshot().items():
             snapshot['replay_buffer/' + k] = v
         return snapshot
