@@ -98,7 +98,7 @@ def experiment(variant):
     algorithm.train()
 
 
-chkpt = None
+chkpt = './data/10-23-0/10_23_0/_2020_10_27_11_31_24_0000--s-0/itr_3.pkl'
 
 if __name__ == "__main__":
     # noinspection PyTypeChecker
@@ -128,6 +128,6 @@ if __name__ == "__main__":
         checkpt=chkpt,
     )
     
-    setup_logger('.\\test\\',variant=variant,snapshot_mode='all')
+    setup_logger('.\\10_23_0\\',variant=variant,snapshot_mode='all')
     #ptu.set_gpu_mode(True)  # optionally set the GPU (default=False)
     experiment(variant)

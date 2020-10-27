@@ -7,4 +7,3 @@ rlkit/launchers/conf_private.py
 MANIFEST
 *.egg-info
 \.idea/
-data/

@@ -142,7 +142,7 @@ class ProcessedWorm(gym.Env):
         plt.imshow(worm['img'])
 
     """ BELOW: UTILITY FUNCTIONS """
-    def make_bgs(self, light_vec=[0,1], total_time=20):
+    def make_bgs(self, light_vec=[0], total_time=20):
         """Makes background images and stores in self"""
         return make_vec_bg(self.cam,self.task,light_vec,total_time=total_time)
         
