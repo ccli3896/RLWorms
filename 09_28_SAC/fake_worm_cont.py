@@ -55,7 +55,7 @@ class FakeWorm(gym.Env):
         obs = np.array([random.choice(state_vec),random.choice(state_vec)])
         self.state = obs
 
-        if self.steps > 1000:
+        if self.steps > 100:
             finished = True
         else:
             finished = False

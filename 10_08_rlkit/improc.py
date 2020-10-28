@@ -509,3 +509,37 @@ def if_stmt_angle(direction,cam,task,bgs,templates,bodies,total_time=600,track_r
         
     task.write(0)
     return np.array(track),np.array(angs),np.array(lights)
+
+###################################################################
+# RL utilities
+###################################################################
+
+class SaveBufferObj():
+    def __init__(self):
+        pass
+
+    def store(self, bufferobj):
+        self._observations = bufferobj._observations
+        self._actions = bufferobj._actions
+        self._rewards = bufferobj._rewards 
+        self._terminals = bufferobj._terminals
+        self._next_obs = bufferobj._next_obs 
+        self._top = bufferobj._top 
+        self._size = bufferobj._size 
+    
+    def save_buffer(self,fname,bufferobj):
+        self.store(bufferobj)
+        with open(fname,'wb') as f:
+            pickle.dump(self,f)
+
+    def load_buffer(self,fname,bufferobj):
+        with open(fname,'rb') as f:
+            self = pickle.load(f)
+        bufferobj._observations = self._observations
+        bufferobj._actions = self._actions
+        bufferobj._rewards = self._rewards 
+        bufferobj._terminals = self._terminals
+        bufferobj._next_obs = self._next_obs 
+        bufferobj._top = self._top 
+        bufferobj._size = self._size 
+        return bufferobj

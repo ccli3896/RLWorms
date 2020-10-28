@@ -14,11 +14,15 @@ from torch import load as load_net
 from worm_env_cont import *
 import os
 
+fold = './10-28-0/'
+chkpt = None #'./data/10-28-0/10-28-0/_2020_10_28_16_07_43_0000--s-0/itr_3.pkl'
+
+
 def experiment(variant):
     # Sets up experiment with an option to start from a previous run. 
     # Checkpoint in variant is defined before main.
 
-    expl_env = NormalizedBoxEnv(ProcessedWorm(0),obs_mean=0,obs_std=180)
+    expl_env = NormalizedBoxEnv(ProcessedWorm(0,ep_len=500),obs_mean=0,obs_std=1)
         # Makes observations the networks see range from -1 to 1
     eval_env = expl_env
 
@@ -78,8 +82,12 @@ def experiment(variant):
 
     ###
     # Replay buffer load block
-    if os.path.exists(variant['chkpt'][:-9]+'buffer.pkl'):
-        replay_buffer.load_buffer(variant['chkpt'][:-9]+'buffer.pkl')
+    try:
+        if os.path.exists('./data/'+fold[2:]+'buffer.pkl'):
+            sb = SaveBufferObj()
+            sb.load_buffer('./data/'+fold[2:]+'buffer.pkl',replay_buffer)
+    except KeyError:
+        pass
     ###
 
     trainer = SACTrainer(
@@ -104,22 +112,20 @@ def experiment(variant):
     )
     algorithm.to(ptu.device)
     algorithm.train()
-
-
-
-chkpt = './data/10_22_0/_2020_10_22_16_06_11_0000--s-0/itr_3.pkl'
+    sb = SaveBufferObj()
+    sb.save_buffer('./data/'+fold[2:]+'buffer.pkl',replay_buffer)
 
 if __name__ == "__main__":
     # noinspection PyTypeChecker
     variant = dict(
         algorithm="SAC",
         version="normal",
-        layer_size=32,
+        layer_size=16,
         replay_buffer_size=int(1E4),
         algorithm_kwargs=dict(
             num_epochs=4,
             num_eval_steps_per_epoch=500,
-            num_trains_per_train_loop=3000,
+            num_trains_per_train_loop=7500,
             num_expl_steps_per_train_loop=1500,
             min_num_steps_before_training=500,
             max_path_length=500,
@@ -137,6 +143,6 @@ if __name__ == "__main__":
         checkpt=chkpt,
     )
     
-    setup_logger('.\\10_22_0\\',variant=variant,snapshot_mode='all')
+    setup_logger(fold,variant=variant,snapshot_mode='all')
     #ptu.set_gpu_mode(True)  # optionally set the GPU (default=False)
     experiment(variant)
