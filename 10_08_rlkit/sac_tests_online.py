@@ -1,6 +1,7 @@
 import rlkit.torch.pytorch_util as ptu
 from rlkit.torch.sac.policies import TanhGaussianPolicy, MakeDeterministic
-from rlkit.torch.sac.sac import SACTrainer
+#from rlkit.torch.sac.sac import SACTrainer
+from rlkit.torch.sac.ac import SACTrainer
 from rlkit.torch.networks import ConcatMlp
 from rlkit.torch.torch_rl_algorithm import TorchOnlineRLAlgorithm
 
@@ -14,8 +15,8 @@ from torch import load as load_net
 from worm_env_cont import *
 import os
 
-fold = './10-28-0/'
-chkpt = None #'./data/10-28-0/10-28-0/_2020_10_28_16_07_43_0000--s-0/itr_3.pkl'
+fold = './10-29-0/'
+chkpt = None #'./data/10-28-0/10-28-0/_2020_10_29_11_11_13_0000--s-0/itr_3.pkl'
 
 
 def experiment(variant):
@@ -138,7 +139,7 @@ if __name__ == "__main__":
             policy_lr=3E-3,
             qf_lr=3E-3,
             reward_scale=1,
-            use_automatic_entropy_tuning=True,
+            use_automatic_entropy_tuning=False,
         ),
         checkpt=chkpt,
     )
