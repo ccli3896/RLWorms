@@ -70,6 +70,8 @@ class SACTrainer(TorchTrainer, LossFunction):
                 [self.log_alpha],
                 lr=policy_lr,
             )
+        else:
+            self.log_alpha = None
 
         self.plotter = plotter
         self.render_eval_paths = render_eval_paths

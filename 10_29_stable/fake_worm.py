@@ -33,8 +33,10 @@ class FakeWorm(gym.Env):
         """
         super(FakeWorm, self).__init__()
 
-        self.action_space = spaces.Box(low=0,high=1,shape=(1,),dtype=np.float32)
-        self.observation_space = spaces.Box(low=np.array([-1,-1]), high=np.array([1,1]), dtype=np.uint8)
+        N_DISCRETE_ACTIONS = 2 # on or off
+
+        self.action_space = spaces.Discrete(N_DISCRETE_ACTIONS)
+        self.observation_space = spaces.Box(low=np.array([-1,-1]), high=np.array([1,1]), dtype=np.float)
         
         self.steps = 0
         self.state = np.zeros(2)
@@ -48,9 +50,9 @@ class FakeWorm(gym.Env):
         self.steps += 1
 
         reward = np.random.normal()
-        if self.state[0]*self.state[1] < 0 and action > .5:
+        if self.state[0]*self.state[1] < 0 and action == 1:
             reward = np.random.normal(loc=1)
-        elif self.state[0]*self.state[1] > 0 and action >.5:
+        elif self.state[0]*self.state[1] > 0 and action == 1:
             reward = np.random.normal(loc=-1)
         
         obs = np.array([random.choice(state_vec),random.choice(state_vec)])

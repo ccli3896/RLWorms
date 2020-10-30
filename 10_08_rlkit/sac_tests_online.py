@@ -12,10 +12,11 @@ from rlkit.samplers.data_collector import MdpPathCollector
 from rlkit.samplers.data_collector.step_collector import MdpStepCollector
 
 from torch import load as load_net
-from worm_env_cont import *
+from fake_worm_cont import *
+#from worm_env_cont import *
 import os
 
-fold = './10-29-0/'
+fold = './10-29-2-fake/'
 chkpt = None #'./data/10-28-0/10-28-0/_2020_10_29_11_11_13_0000--s-0/itr_3.pkl'
 
 
@@ -23,7 +24,7 @@ def experiment(variant):
     # Sets up experiment with an option to start from a previous run. 
     # Checkpoint in variant is defined before main.
 
-    expl_env = NormalizedBoxEnv(ProcessedWorm(0,ep_len=500),obs_mean=0,obs_std=1)
+    expl_env = NormalizedBoxEnv(FakeWorm(ep_len=500),obs_mean=0,obs_std=1)
         # Makes observations the networks see range from -1 to 1
     eval_env = expl_env
 
@@ -113,20 +114,20 @@ def experiment(variant):
     )
     algorithm.to(ptu.device)
     algorithm.train()
-    sb = SaveBufferObj()
-    sb.save_buffer('./data/'+fold[2:]+'buffer.pkl',replay_buffer)
+    # sb = SaveBufferObj()
+    # sb.save_buffer('./data/'+fold[2:]+'buffer.pkl',replay_buffer)
 
 if __name__ == "__main__":
     # noinspection PyTypeChecker
     variant = dict(
         algorithm="SAC",
         version="normal",
-        layer_size=16,
+        layer_size=128,
         replay_buffer_size=int(1E4),
         algorithm_kwargs=dict(
-            num_epochs=4,
+            num_epochs=16,
             num_eval_steps_per_epoch=500,
-            num_trains_per_train_loop=7500,
+            num_trains_per_train_loop=1500,
             num_expl_steps_per_train_loop=1500,
             min_num_steps_before_training=500,
             max_path_length=500,
@@ -139,7 +140,7 @@ if __name__ == "__main__":
             policy_lr=3E-3,
             qf_lr=3E-3,
             reward_scale=1,
-            use_automatic_entropy_tuning=False,
+            use_automatic_entropy_tuning=True,
         ),
         checkpt=chkpt,
     )
