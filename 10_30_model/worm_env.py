@@ -171,5 +171,6 @@ class ProcessedWorm(gym.Env):
         return SWITCH
 
     def close(self):
-        self.cam.exit()
         self.task.write(0)
+        self.task.close()
+        self.cam.exit()

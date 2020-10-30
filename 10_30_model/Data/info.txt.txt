@@ -1,0 +1,10 @@
+ONE WORM
+1. Actions chosen at every timestep (fps about 5)
+	traj30-10-2020_18-03-44
+2. Actions chosen every 5 steps (about 1 per second)
+	traj30-10-2020_18-14-00
+3. Same as 1
+	traj30-10-2020_18-24-08
+4. Same as 2
+	traj30-10-2020_18-34-10
+NEXT WORM
