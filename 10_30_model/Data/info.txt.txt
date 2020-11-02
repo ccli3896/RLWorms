@@ -7,4 +7,8 @@ ONE WORM
 	traj30-10-2020_18-24-08
 4. Same as 2
 	traj30-10-2020_18-34-10
-NEXT WORM
+NEXT WORM (same as above)
+1. traj02-11-2020_15-43-12
+2. traj02-11-2020_15-53-56
+3. traj02-11-2020_16-04-27
+4. traj02-11-2020_16-14-45
