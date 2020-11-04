@@ -16,15 +16,16 @@ from fake_worm_cont import *
 #from worm_env_cont import *
 import os
 
-fold = './10-29-2-fake/'
+fold = './11-04-20/'
 chkpt = None #'./data/10-28-0/10-28-0/_2020_10_29_11_11_13_0000--s-0/itr_3.pkl'
+ep_len = 180
 
 
 def experiment(variant):
     # Sets up experiment with an option to start from a previous run. 
     # Checkpoint in variant is defined before main.
 
-    expl_env = NormalizedBoxEnv(FakeWorm(ep_len=500),obs_mean=0,obs_std=1)
+    expl_env = NormalizedBoxEnv(FakeWorm(ep_len=ep_len),obs_mean=0,obs_std=1)
         # Makes observations the networks see range from -1 to 1
     eval_env = expl_env
 
@@ -114,27 +115,30 @@ def experiment(variant):
     )
     algorithm.to(ptu.device)
     algorithm.train()
-    # sb = SaveBufferObj()
-    # sb.save_buffer('./data/'+fold[2:]+'buffer.pkl',replay_buffer)
+    sb = SaveBufferObj()
+    sb.save_buffer('./data/'+fold[2:]+'buffer.pkl',replay_buffer)
+
+trains_per_step = 3
+eps_per_epoch = 4
 
 if __name__ == "__main__":
     # noinspection PyTypeChecker
     variant = dict(
         algorithm="SAC",
         version="normal",
-        layer_size=128,
+        layer_size=64,
         replay_buffer_size=int(1E4),
         algorithm_kwargs=dict(
-            num_epochs=16,
-            num_eval_steps_per_epoch=500,
-            num_trains_per_train_loop=1500,
-            num_expl_steps_per_train_loop=1500,
-            min_num_steps_before_training=500,
-            max_path_length=500,
-            batch_size=128,
+            num_epochs=4,
+            num_eval_steps_per_epoch=ep_len,
+            num_trains_per_train_loop=ep_len*trains_per_step*eps_per_epoch,
+            num_expl_steps_per_train_loop=ep_len*eps_per_epoch,
+            min_num_steps_before_training=ep_len,
+            max_path_length=ep_len,
+            batch_size=64,
         ),
         trainer_kwargs=dict(
-            discount=0.98,
+            discount=0.717, # time constant 3 sec
             soft_target_tau=5e-3,
             target_update_period=1,
             policy_lr=3E-3,
