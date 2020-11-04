@@ -55,7 +55,7 @@ class ProcessedWorm(gym.Env):
         self.finished = False
 
 
-    def step(self, action, sleep_time=0):
+    def step(self, action, sleep_time=.7):
         """Chooses action and returns a (step_type, reward, discount, observation)"""
         # In info, returns worm info for that step 
         # {'img':_, 'loc':(x,y), 't':_}
@@ -63,10 +63,10 @@ class ProcessedWorm(gym.Env):
         self.steps += 1
 
         self.task.write(action)
-        time.sleep(sleep_time)
 
         # Get data
         img = grab_im(self.cam, self.bg)
+        time.sleep(sleep_time)
         worms = find_worms(img, self.templates, self.bodies, ref_pts=[self.head], num_worms=1)
 
         # Timer checks: episode end and HT
