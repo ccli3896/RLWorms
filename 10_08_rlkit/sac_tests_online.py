@@ -12,11 +12,11 @@ from rlkit.samplers.data_collector import MdpPathCollector
 from rlkit.samplers.data_collector.step_collector import MdpStepCollector
 
 from torch import load as load_net
-from fake_worm_cont import *
-#from worm_env_cont import *
+#from fake_worm_cont import *
+from worm_env_cont import *
 import os
 
-fold = './11-04-20/'
+fold = './11-04-0/'
 chkpt = None #'./data/10-28-0/10-28-0/_2020_10_29_11_11_13_0000--s-0/itr_3.pkl'
 ep_len = 180
 
@@ -25,7 +25,7 @@ def experiment(variant):
     # Sets up experiment with an option to start from a previous run. 
     # Checkpoint in variant is defined before main.
 
-    expl_env = NormalizedBoxEnv(FakeWorm(ep_len=ep_len),obs_mean=0,obs_std=1)
+    expl_env = NormalizedBoxEnv(ProcessedWorm(0,ep_len=ep_len),obs_mean=0,obs_std=1)
         # Makes observations the networks see range from -1 to 1
     eval_env = expl_env
 
