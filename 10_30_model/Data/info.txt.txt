@@ -18,3 +18,15 @@ NEXT WORM (same as above)
 2. traj03-11-2020_14-46-45
 3. traj03-11-2020_14-57-43
 4. traj03-11-2020_15-08-07
+
+NEXT WORM, all actions chosen every 5 steps (about 1 per second)
+1. traj12-11-2020_19-04-41
+2. traj12-11-2020_19-14-38
+3. traj12-11-2020_19-24-30
+4. traj12-11-2020_19-35-31
+
+NEXT WORM (same as above)
+1. traj12-11-2020_19-55-19
+2. traj12-11-2020_20-05-11
+3. traj12-11-2020_20-15-17
+4. traj12-11-2020_20-25-06
