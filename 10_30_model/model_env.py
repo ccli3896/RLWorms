@@ -100,63 +100,79 @@ def lin_interp_mat(mat, wraparound=False):
 
     return mat[1:-1,1:-1]
 
-
-def get_stats_angs(df,obs,newkey):
-    # gets mean and std for the newkey df values that match obs in oldkey, centered on obs.
-    # As in, series will first be translated to [obs-180,obs+180].
-    # Keeping the convention of keep the floor, remove the ceiling when rounding.
-    
-    # Remove points where HT orientation switched
-    backwards = obs[0]-180
-    if backwards < -180:
-        backwards += 360
-    
-    series = df.query('obs_b=='+str(obs[0])+'& obs_h=='+str(obs[1])+
-                      '& next_obs_b!='+str(backwards))[newkey].to_numpy()
-    
-    if newkey=='next_obs_h':
-        series[series<obs[1]-180] += 360
-        series[series>=obs[1]+180] -= 360
-    elif newkey=='next_obs_b':
-        series[series<obs[0]-180] += 360
-        series[series>=obs[0]+180] -= 360     
-    
-    # if there was only one sample, make up a distribution anyway.
-    if series.size == 0:
-        sermean,stderr = np.nan,np.nan
-    else:
-        if np.std(series)==0:
-            stderr = np.nan # Leaving it up to interpolation
+def make_stat_mats(traj,newkey)
+    def get_stats_angs(df,obs,newkey):
+        # gets mean and std for the newkey df values that match obs in oldkey, centered on obs.
+        # As in, series will first be translated to [obs-180,obs+180].
+        # Keeping the convention of keep the floor, remove the ceiling when rounding.
+        
+        # Remove points where HT orientation switched
+        backwards = obs[0]-180
+        if backwards < -180:
+            backwards += 360
+        
+        series = df.query('obs_b=='+str(obs[0])+'& obs_h=='+str(obs[1])+
+                        '& next_obs_b!='+str(backwards))[newkey].to_numpy()
+        
+        if newkey=='next_obs_h':
+            series[series<obs[1]-180] += 360
+            series[series>=obs[1]+180] -= 360
+        elif newkey=='next_obs_b':
+            series[series<obs[0]-180] += 360
+            series[series>=obs[0]+180] -= 360     
+        
+        # if there was only one sample, make up a distribution anyway.
+        if series.size == 0:
+            sermean,stderr = np.nan,np.nan
         else:
-            stderr = np.std(series) #/np.sqrt(series.size)
+            if np.std(series)==0:
+                stderr = np.nan # Leaving it up to interpolation
+            else:
+                stderr = np.std(series) #/np.sqrt(series.size)
 
-        sermean = np.mean(series)
-        if sermean<-180:
-            sermean += 360
-        elif sermean>=180:
-            sermean -= 360
-            
-    return sermean,stderr
+            sermean = np.mean(series)
+            if sermean<-180:
+                sermean += 360
+            elif sermean>=180:
+                sermean -= 360
+                
+        return sermean,stderr
 
-def make_interp(mat, wraparound=False, plotit=True):
-    # Returns a matrix that's been through the linear interpolation function.
-    # [12,12,2] with dimensions [body,head,mu/sig] 
-    
-    sh = mat.shape
-    if plotit:
-        fig,ax = plt.subplots(1,sh[2])
-        fig.set_size_inches((8,5))
-    if len(sh) < 3:
-        mat = np.expand_dims(mat,axis=2)
-    m_ints = np.zeros((sh[0],sh[1],2))
-    
-    for i in range(2):
-        m_ints[:,:,i] = lin_interp_mat(mat[:,:,i],wraparound=wraparound)
-        if plotit:
-            im = ax[i].imshow(m_ints[:,:,i])
-            fig.colorbar(im,ax=ax[i])
-    return np.squeeze(m_ints)
-
+    stat_mats = np.zeros((12,12,2)) + np.nan 
+    for i,theta_b in enumerate(np.arange(-180,180,30)):
+        for j,theta_h in enumerate(np.arange(-180,180,30)):
+            stat_mats[i,j,:] = get_stats_angs(traj,[theta_b,theta_h],newkey)
+    return stat_mats
 
 def make_dist_dict(traj):
-    
+    # Makes a dictionary of distributions using trajectory statistics.
+    def interp2(mat, wraparound=False):
+        # Returns a matrix that's been through the linear interpolation function.
+        # [12,12,2] with dimensions [body,head,mu/sig] 
+        
+        m_ints = np.zeros(mat.shape)
+        for i in range(2):
+            m_ints[:,:,i] = lin_interp_mat(mat[:,:,i],wraparound=wraparound)
+        return np.squeeze(m_ints)
+
+    traj_on = traj.query('action==1')
+    traj_off = traj.query('action==0')
+
+    for i,theta_b in enumerate(np.arange(-180,180,30)):
+        for j,theta_h in enumerate(np.arange(-180,180,30)):
+            r_on_mat = make_stat_mats(traj_on,'reward')
+            b_on_mat = make_stat_mats(traj_on,'next_obs_b')
+            h_on_mat = make_stat_mats(traj_on,'next_obs_h')
+            
+            r_off_mat = make_stat_mats(traj_off,'reward')
+            b_off_mat = make_stat_mats(traj_off,'next_obs_b')
+            h_off_mat = make_stat_mats(traj_off,'next_obs_h')
+        
+    dist_dict = {
+        'body_on': interp2(b_on_mat),
+        'body_off': interp2(b_off_mat),
+        'head_on': interp2(h_on_mat),
+        'head_off': interp2(h_off_mat),
+        'reward_on': interp2(r_on_mat),
+        'reward_off': interp2(r_off_mat),
+    }
