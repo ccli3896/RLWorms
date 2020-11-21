@@ -59,10 +59,10 @@ class FakeWorm(gym.Env):
                        
         # Return obs, reward, done (boolean), info (dict)
         self._state = self.grid2obs(self.state)
-        return self.state, reward, self.finished, {}
+        return self._state, reward, self.finished, {}
 
         
-    def reset(self,start=None,target=None):
+    def reset(self,start=None):
         """Returns the first `TimeStep` of a new episode."""
         self.finished = False
         self.steps = 0
