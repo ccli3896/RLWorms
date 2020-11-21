@@ -1,0 +1,32 @@
+What to do next.
+
+The agents are learning the model environment. The only issue is, as usual, regularization. Is there a way I can push the agents toward generalizable solutions here? One way is to sample from many trajectories. Another is to keep an ensemble of models. Or the binning. 
+
+Could I come up with model likelihoods? I'll have to think about this more carefully. One part is regularizing the model; the other part is regularizing the agent. 
+
+An easy thing to do would be to write up a grid search. Store evaluation vectors and the policies and see how all of them compare.
+
+Which means two directions. Three directions, broadly.
+	1. Work on improving the model
+	2. Work on learning from the model (grid search)
+	3. Go to worm testing and see how it plays out.
+
+I think going to worm testing would be premature. Grid search first, and maybe code up some of the easier models. Trees, sarsa, n-step methods. They would all be really good practice, too. 
+
+That's a lot of compute time, but I can send them to the cluster. 
+
+Then I would work on trying to integrate the agent into learning real-time. I'd definitely have to get Sondak or someone involved at that point. 
+
+So for now, several things I have to do. One, start looking at cameras. Two, alternate between improving the model and branch out with agents and testing. They need to be flexible enough to be able to  interact with each other each time I update one. 
+
+Steps for agents/testing:
+Write a grid search protocol, standardized.
+How would I use my current script for n-step methods? Need to rewrite, potentially.
+Try more agents.
+
+Steps for model:
+Wraparound
+Smoothing/better way to handle errors
+Binning
+
+Once I have an idea on the agents side what might work, I'll move to testing.
