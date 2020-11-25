@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-# Interaction should be primarily with these functions
+# Interaction should be primarily with these functions 
 
 def make_df(fnames, time_ahead=30, 
             xlimit=None,ylimit=None, 
