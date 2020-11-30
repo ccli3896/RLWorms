@@ -62,7 +62,7 @@ def make_df(fnames, time_ahead=30,
 
     return df
 
-def make_dist_dict(traj):
+def make_dist_dict(traj,bin_z=3):
     # Makes a dictionary of distributions using trajectory statistics.
     def interp2(mat, wraparound=False):
         # Returns a matrix that's been through the linear interpolation function.
@@ -77,12 +77,12 @@ def make_dist_dict(traj):
     traj_off = traj.query('action==0')
 
     r_on_mat = make_stat_mats(traj_on,'reward')
-    b_on_mat,bin_on = make_obs_mat(traj_on,'b')
-    h_on_mat,bin_on = make_obs_mat(traj_on,'h')
+    b_on_mat,bin_on = make_obs_mat(traj_on,'b',bin_z=bin_z)
+    h_on_mat,bin_on = make_obs_mat(traj_on,'h',bin_z=bin_z)
 
     r_off_mat = make_stat_mats(traj_off,'reward')
-    b_off_mat,bin_off = make_obs_mat(traj_off,'b')
-    h_off_mat,bin_off = make_obs_mat(traj_off,'h')
+    b_off_mat,bin_off = make_obs_mat(traj_off,'b',bin_z=bin_z)
+    h_off_mat,bin_off = make_obs_mat(traj_off,'h',bin_z=bin_z)
         
     dist_dict = {
         'obs_on_bins': bin_on,

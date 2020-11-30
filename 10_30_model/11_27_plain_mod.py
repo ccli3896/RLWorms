@@ -4,8 +4,37 @@ import matplotlib.pyplot as plt
 import pickle
 import sys
 
-import bin_utils as ut
-import bin_model_env as me
+import utils as ut
+import model_env as me
+import tab_agents as tab
+
+
+'''
+Setting hyperparameters
+'''
+i = int(sys.argv[1])
+alphas = [.1, .05, .01, .005, .001]
+gammas = [.7, .8, .9, .95, .98]
+epsilons = [.1, .05, .01]
+runtimes = [10000, 20000]
+
+it = i//150
+i -= it*150
+alpha_ind = i//30
+gamma_ind = (i-(30*alpha_ind))//6
+epsilon_ind = (i-30*alpha_ind-6*gamma_ind)//2
+runtime_ind = (i-30*alpha_ind-6*gamma_ind-2*epsilon_ind)
+
+alpha = alphas[alpha_ind]
+gamma = gammas[gamma_ind]
+epsilon = epsilons[epsilon_ind]
+runtime = runtimes[runtime_ind]
+
+fbase = './Outputs/Plain_a'+str(alpha_ind)+'g'+str(gamma_ind)+'e'+str(epsilon_ind)+'r'+str(runtime_ind)+'_iter'+str(it)+'.json'
+
+'''
+Making dist dict
+'''
 
 fnames=[
     # First worm
@@ -27,25 +56,15 @@ dist_dict = ut.make_dist_dict(traj_df)
 
 
 '''
-Setting hyperparameters
+Running the script 
 '''
-i = int(sys.argv[1])
-alphas = [.1, .05, .01, .005, .001]
-gammas = [.7, .8, .9, .95, .98]
-epsilons = [.1, .05, .01]
-runtimes = [10000, 20000]
+worm = me.FakeWorm(dist_dict)
+alph_mouse = tab.Q_Alpha_Agent(worm,gamma=gamma,epsilon=epsilon,alpha=alpha)
 
-alpha_ind = i//30
-gamma_ind = (i-(30*alpha_ind))//6
-epsilon_ind = (i-30*alpha_ind-6*gamma_ind)//2
-runtime_ind = (i-30*alpha_ind-6*gamma_ind-2*epsilon_ind)
+alpha_mouse_learned, rewards, eval_rewards = tab.learner(alph_mouse,worm,episodes=runtime)
 
-alpha = alphas[alpha_ind]
-gamma = gammas[gamma_ind]
-epsilon = epsilons[epsilon_ind]
-runtime = runtimes[runtime_ind]
+alpha_mouse_learned.rewards = rewards
+alpha_mouse_learned.eval_rewards = eval_rewards
+with open(fbase,'wb') as f:
+    pickle.dump(alpha_mouse_learned,f)
 
-fbase = './Outputs/A'+str(alpha_ind)+'G'+str(gamma_ind)+'E'+str(epsilon_ind)+'R'+str(runtime_ind)
-'''
-
-'''

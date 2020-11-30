@@ -1,0 +1,70 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import pickle
+import sys
+
+import utils as ut
+import model_env as me
+import tab_agents as tab
+
+
+'''
+Setting hyperparameters
+'''
+i = int(sys.argv[1])
+alphas = [.5, .25, .1]
+gammas = [0, .25, .5, .75]
+epsilons = [.1, .05, .01]
+runtimes = [20000]
+
+it = i//36
+i -= it*36
+alpha_ind = i//12
+gamma_ind = (i-(12*alpha_ind))//3
+epsilon_ind = (i-12*alpha_ind-3*gamma_ind)
+runtime_ind = 0
+
+alpha = alphas[alpha_ind]
+gamma = gammas[gamma_ind]
+epsilon = epsilons[epsilon_ind]
+runtime = runtimes[runtime_ind]
+
+fbase = './Outputs/Plain_a'+str(alpha_ind)+'g'+str(gamma_ind)+'e'+str(epsilon_ind)+'r'+str(runtime_ind)+'_iter'+str(it)+'.json'
+
+'''
+Making dist dict
+'''
+
+fnames=[
+    # First worm
+    'Data/traj12-11-2020_19-04-41.pkl', #none
+    'Data/traj12-11-2020_19-14-38.pkl', #none
+    'Data/traj12-11-2020_19-24-30.pkl', #xlim 800
+    # 'Data/traj12-11-2020_19-35-31.pkl', #none # Seems like an especially bad dataset. Actually ruined all the others
+    # Second worm
+    'Data/traj12-11-2020_19-55-19.pkl', #none
+    'Data/traj12-11-2020_20-05-11.pkl', #none
+    'Data/traj12-11-2020_20-15-17.pkl', #none
+    'Data/traj12-11-2020_20-25-06.pkl', #xlim 1430
+]
+
+xlims = [1e6,1e6,800,1e6,1e6,1e6,1430]
+
+traj_df = ut.make_df(fnames,xlimit=xlims,time_steps=10)
+dist_dict = ut.make_dist_dict(traj_df)
+
+
+'''
+Running the script 
+'''
+worm = me.FakeWorm(dist_dict)
+alph_mouse = tab.Q_Alpha_Agent(worm,gamma=gamma,epsilon=epsilon,alpha=alpha)
+
+alpha_mouse_learned, rewards, eval_rewards = tab.learner(alph_mouse,worm,episodes=runtime)
+
+alpha_mouse_learned.rewards = rewards
+alpha_mouse_learned.eval_rewards = eval_rewards
+with open(fbase,'wb') as f:
+    pickle.dump(alpha_mouse_learned,f)
+
