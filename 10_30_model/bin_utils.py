@@ -64,7 +64,7 @@ def make_df(fnames, time_ahead=30,
 
 def make_dist_dict(traj,bin_z=3):
     # Makes a dictionary of distributions using trajectory statistics.
-    def interp2(mat, wraparound=False):
+    def interp2(mat, wraparound=True):
         # Returns a matrix that's been through the linear interpolation function.
         # [12,12,2] with dimensions [body,head,mu/sig] 
         
@@ -208,7 +208,7 @@ def wrap_correct(arr,ref=0):
         arr[arr>ref+180] -= 360
     return arr
 
-def make_obs_mat(traj, ang_key, bin_z=1):
+def make_obs_mat(traj, ang_key, bin_z=3):
     # Makes an array [theta_h,2] where second axis is mu/sig. Standard deviation.
     # Result is mean for CHANGE in body angle, which is why it's not an axis in the output array.
     # ang_key is 'b' for body angle, 'h' for head angle. 
