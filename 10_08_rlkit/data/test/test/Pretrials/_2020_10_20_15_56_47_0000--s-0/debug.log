@@ -1,0 +1,1280 @@
+2020-10-20 16:05:28.081201 Eastern Daylight Time | [C:\Users\ccli3\Documents\Research\20_09_07_NewPC\RLWorms\10_08_rlkit\rlkit\..\data\.\test\.\test\_2020_10_20_15_56_47_0000--s-0] Epoch 0 finished
+-----------------------------------------  --------------
+replay_buffer/size                         1500
+trainer/num train calls                    2000
+trainer/QF1 Loss                              3.82772
+trainer/QF2 Loss                              3.86377
+trainer/Policy Loss                          -2.14722
+trainer/Q1 Predictions Mean                   3.26731
+trainer/Q1 Predictions Std                    0.780244
+trainer/Q1 Predictions Max                    4.96802
+trainer/Q1 Predictions Min                    2.13368
+trainer/Q2 Predictions Mean                   3.29102
+trainer/Q2 Predictions Std                    0.7822
+trainer/Q2 Predictions Max                    5.08411
+trainer/Q2 Predictions Min                    2.19377
+trainer/Q Targets Mean                        2.2811
+trainer/Q Targets Std                         1.55452
+trainer/Q Targets Max                         7.85159
+trainer/Q Targets Min                        -1.88906
+trainer/Log Pis Mean                          1.0723
+trainer/Log Pis Std                           1.24001
+trainer/Log Pis Max                           7.24697
+trainer/Log Pis Min                          -2.31992
+trainer/policy/mean Mean                      0.202389
+trainer/policy/mean Std                       0.618447
+trainer/policy/mean Max                       0.975555
+trainer/policy/mean Min                      -0.91332
+trainer/policy/normal/std Mean                0.312729
+trainer/policy/normal/std Std                 0.364412
+trainer/policy/normal/std Max                 1.78485
+trainer/policy/normal/std Min                 0.0150241
+trainer/policy/normal/log_std Mean           -1.54837
+trainer/policy/normal/log_std Std             0.839025
+trainer/policy/normal/log_std Max             0.579335
+trainer/policy/normal/log_std Min            -4.1981
+trainer/Alpha                                 1
+trainer/Alpha Loss                           -0
+exploration/num steps total                1500
+exploration/num paths total                   3
+exploration/path length Mean                500
+exploration/path length Std                   0
+exploration/path length Max                 500
+exploration/path length Min                 500
+exploration/Rewards Mean                      0.00505556
+exploration/Rewards Std                       0.12241
+exploration/Rewards Max                       3
+exploration/Rewards Min                      -0.5
+exploration/Returns Mean                      2.52778
+exploration/Returns Std                       0.527778
+exploration/Returns Max                       3.05556
+exploration/Returns Min                       2
+exploration/Actions Mean                     -0.422715
+exploration/Actions Std                       0.60946
+exploration/Actions Max                       0.993919
+exploration/Actions Min                      -0.999805
+exploration/Num Paths                         2
+exploration/Average Returns                   2.52778
+exploration/env_infos/final/loc Mean        378.917
+exploration/env_infos/final/loc Std         397.825
+exploration/env_infos/final/loc Max         929.222
+exploration/env_infos/final/loc Min           0
+exploration/env_infos/initial/loc Mean        0
+exploration/env_infos/initial/loc Std         0
+exploration/env_infos/initial/loc Max         0
+exploration/env_infos/initial/loc Min         0
+exploration/env_infos/loc Mean              179.852
+exploration/env_infos/loc Std               344.215
+exploration/env_infos/loc Max              1814
+exploration/env_infos/loc Min                 0
+exploration/env_infos/final/t Mean           88.1405
+exploration/env_infos/final/t Std             0.9685
+exploration/env_infos/final/t Max            89.109
+exploration/env_infos/final/t Min            87.172
+exploration/env_infos/initial/t Mean          0.359
+exploration/env_infos/initial/t Std           2.32831e-10
+exploration/env_infos/initial/t Max           0.359
+exploration/env_infos/initial/t Min           0.359
+exploration/env_infos/t Mean                 44.2363
+exploration/env_infos/t Std                  25.303
+exploration/env_infos/t Max                  89.109
+exploration/env_infos/t Min                   0.359
+exploration/env_infos/final/endpts Mean     377
+exploration/env_infos/final/endpts Std      396.369
+exploration/env_infos/final/endpts Max      934
+exploration/env_infos/final/endpts Min       -1
+exploration/env_infos/initial/endpts Mean    -1
+exploration/env_infos/initial/endpts Std      0
+exploration/env_infos/initial/endpts Max     -1
+exploration/env_infos/initial/endpts Min     -1
+exploration/env_infos/endpts Mean           178.839
+exploration/env_infos/endpts Std            344.128
+exploration/env_infos/endpts Max           1820
+exploration/env_infos/endpts Min             -1
+exploration/env_infos/final/obs Mean        -15
+exploration/env_infos/final/obs Std          86.1684
+exploration/env_infos/final/obs Max          90
+exploration/env_infos/final/obs Min        -150
+exploration/env_infos/initial/obs Mean        0
+exploration/env_infos/initial/obs Std         0
+exploration/env_infos/initial/obs Max         0
+exploration/env_infos/initial/obs Min         0
+exploration/env_infos/obs Mean                0.84
+exploration/env_infos/obs Std                42.6508
+exploration/env_infos/obs Max               150
+exploration/env_infos/obs Min              -150
+exploration/env_infos/final/reward Mean       0.0277778
+exploration/env_infos/final/reward Std        0.0277778
+exploration/env_infos/final/reward Max        0.0555556
+exploration/env_infos/final/reward Min        0
+exploration/env_infos/initial/reward Mean     0
+exploration/env_infos/initial/reward Std      0
+exploration/env_infos/initial/reward Max      0
+exploration/env_infos/initial/reward Min      0
+exploration/env_infos/reward Mean             0.00505556
+exploration/env_infos/reward Std              0.12241
+exploration/env_infos/reward Max              3
+exploration/env_infos/reward Min             -0.5
+exploration/env_infos/final/target Mean      45
+exploration/env_infos/final/target Std       45
+exploration/env_infos/final/target Max       90
+exploration/env_infos/final/target Min        0
+exploration/env_infos/initial/target Mean    45
+exploration/env_infos/initial/target Std     45
+exploration/env_infos/initial/target Max     90
+exploration/env_infos/initial/target Min      0
+exploration/env_infos/target Mean            45
+exploration/env_infos/target Std             45
+exploration/env_infos/target Max             90
+exploration/env_infos/target Min              0
+exploration/env_infos/final/action Mean       0.291845
+exploration/env_infos/final/action Std        0.272246
+exploration/env_infos/final/action Max        0.564091
+exploration/env_infos/final/action Min        0.0195983
+exploration/env_infos/initial/action Mean     0.487211
+exploration/env_infos/initial/action Std      0.477913
+exploration/env_infos/initial/action Max      0.965124
+exploration/env_infos/initial/action Min      0.00929815
+exploration/env_infos/action Mean             0.288643
+exploration/env_infos/action Std              0.30473
+exploration/env_infos/action Max              0.99696
+exploration/env_infos/action Min              9.74536e-05
+evaluation/num steps total                  500
+evaluation/num paths total                    1
+evaluation/path length Mean                 500
+evaluation/path length Std                    0
+evaluation/path length Max                  500
+evaluation/path length Min                  500
+evaluation/Rewards Mean                       0.002
+evaluation/Rewards Std                        0.464934
+evaluation/Rewards Max                        2.5
+evaluation/Rewards Min                       -2
+evaluation/Returns Mean                       1
+evaluation/Returns Std                        0
+evaluation/Returns Max                        1
+evaluation/Returns Min                        1
+evaluation/Actions Mean                       0.801878
+evaluation/Actions Std                        0.414472
+evaluation/Actions Max                        0.995563
+evaluation/Actions Min                       -0.958301
+evaluation/Num Paths                          1
+evaluation/Average Returns                    1
+evaluation/env_infos/final/loc Mean           0
+evaluation/env_infos/final/loc Std            0
+evaluation/env_infos/final/loc Max            0
+evaluation/env_infos/final/loc Min            0
+evaluation/env_infos/initial/loc Mean         0
+evaluation/env_infos/initial/loc Std          0
+evaluation/env_infos/initial/loc Max          0
+evaluation/env_infos/initial/loc Min          0
+evaluation/env_infos/loc Mean               166.41
+evaluation/env_infos/loc Std                452.591
+evaluation/env_infos/loc Max               1583
+evaluation/env_infos/loc Min                  0
+evaluation/env_infos/final/t Mean            90.532
+evaluation/env_infos/final/t Std              0
+evaluation/env_infos/final/t Max             90.532
+evaluation/env_infos/final/t Min             90.532
+evaluation/env_infos/initial/t Mean           0.375
+evaluation/env_infos/initial/t Std            0
+evaluation/env_infos/initial/t Max            0.375
+evaluation/env_infos/initial/t Min            0.375
+evaluation/env_infos/t Mean                  45.3667
+evaluation/env_infos/t Std                   26.0721
+evaluation/env_infos/t Max                   90.532
+evaluation/env_infos/t Min                    0.375
+evaluation/env_infos/final/endpts Mean       -1
+evaluation/env_infos/final/endpts Std         0
+evaluation/env_infos/final/endpts Max        -1
+evaluation/env_infos/final/endpts Min        -1
+evaluation/env_infos/initial/endpts Mean     -1
+evaluation/env_infos/initial/endpts Std       0
+evaluation/env_infos/initial/endpts Max      -1
+evaluation/env_infos/initial/endpts Min      -1
+evaluation/env_infos/endpts Mean            164.386
+evaluation/env_infos/endpts Std             450.497
+evaluation/env_infos/endpts Max            1590
+evaluation/env_infos/endpts Min              -1
+evaluation/env_infos/final/obs Mean           0
+evaluation/env_infos/final/obs Std            0
+evaluation/env_infos/final/obs Max            0
+evaluation/env_infos/final/obs Min            0
+evaluation/env_infos/initial/obs Mean         0
+evaluation/env_infos/initial/obs Std          0
+evaluation/env_infos/initial/obs Max          0
+evaluation/env_infos/initial/obs Min          0
+evaluation/env_infos/obs Mean                -8.16
+evaluation/env_infos/obs Std                 45.7145
+evaluation/env_infos/obs Max                150
+evaluation/env_infos/obs Min               -180
+evaluation/env_infos/final/reward Mean        0
+evaluation/env_infos/final/reward Std         0
+evaluation/env_infos/final/reward Max         0
+evaluation/env_infos/final/reward Min         0
+evaluation/env_infos/initial/reward Mean      0
+evaluation/env_infos/initial/reward Std       0
+evaluation/env_infos/initial/reward Max       0
+evaluation/env_infos/initial/reward Min       0
+evaluation/env_infos/reward Mean              0.002
+evaluation/env_infos/reward Std               0.464934
+evaluation/env_infos/reward Max               2.5
+evaluation/env_infos/reward Min              -2
+evaluation/env_infos/final/target Mean      270
+evaluation/env_infos/final/target Std         0
+evaluation/env_infos/final/target Max       270
+evaluation/env_infos/final/target Min       270
+evaluation/env_infos/initial/target Mean    270
+evaluation/env_infos/initial/target Std       0
+evaluation/env_infos/initial/target Max     270
+evaluation/env_infos/initial/target Min     270
+evaluation/env_infos/target Mean            270
+evaluation/env_infos/target Std               0
+evaluation/env_infos/target Max             270
+evaluation/env_infos/target Min             270
+evaluation/env_infos/final/action Mean        0.594758
+evaluation/env_infos/final/action Std         0
+evaluation/env_infos/final/action Max         0.594758
+evaluation/env_infos/final/action Min         0.594758
+evaluation/env_infos/initial/action Mean      0.980333
+evaluation/env_infos/initial/action Std       0
+evaluation/env_infos/initial/action Max       0.980333
+evaluation/env_infos/initial/action Min       0.980333
+evaluation/env_infos/action Mean              0.900939
+evaluation/env_infos/action Std               0.207236
+evaluation/env_infos/action Max               0.997781
+evaluation/env_infos/action Min               0.0208496
+time/data storing (s)                         0.0098943
+time/evaluation sampling (s)                115.174
+time/exploration sampling (s)               230.909
+time/logging (s)                              0.0219795
+time/sac training (s)                        18.7924
+time/saving (s)                               0.0042547
+time/training (s)                             0.0403811
+time/epoch (s)                              364.951
+time/total (s)                              521.934
+Epoch                                         0
+-----------------------------------------  --------------
+2020-10-20 16:13:29.912130 Eastern Daylight Time | [C:\Users\ccli3\Documents\Research\20_09_07_NewPC\RLWorms\10_08_rlkit\rlkit\..\data\.\test\.\test\_2020_10_20_15_56_47_0000--s-0] Epoch 1 finished
+-----------------------------------------  ------------
+replay_buffer/size                         2500
+trainer/num train calls                    4000
+trainer/QF1 Loss                              1.77392
+trainer/QF2 Loss                              2.50477
+trainer/Policy Loss                          -4.53195
+trainer/Q1 Predictions Mean                   4.7807
+trainer/Q1 Predictions Std                    1.11581
+trainer/Q1 Predictions Max                    6.49634
+trainer/Q1 Predictions Min                    2.63881
+trainer/Q2 Predictions Mean                   3.79834
+trainer/Q2 Predictions Std                    1.36321
+trainer/Q2 Predictions Max                    7.88847
+trainer/Q2 Predictions Min                    2.47057
+trainer/Q Targets Mean                        4.27583
+trainer/Q Targets Std                         1.11889
+trainer/Q Targets Max                         7.83253
+trainer/Q Targets Min                         0
+trainer/Log Pis Mean                          1.53853
+trainer/Log Pis Std                           0.706319
+trainer/Log Pis Max                           2.89165
+trainer/Log Pis Min                          -2.69075
+trainer/policy/mean Mean                     -0.0604747
+trainer/policy/mean Std                       0.353072
+trainer/policy/mean Max                       0.97327
+trainer/policy/mean Min                      -0.75321
+trainer/policy/normal/std Mean                0.0902807
+trainer/policy/normal/std Std                 0.116838
+trainer/policy/normal/std Max                 0.829908
+trainer/policy/normal/std Min                 0.0423071
+trainer/policy/normal/log_std Mean           -2.65367
+trainer/policy/normal/log_std Std             0.527568
+trainer/policy/normal/log_std Max            -0.18644
+trainer/policy/normal/log_std Min            -3.1628
+trainer/Alpha                                 0.0366497
+trainer/Alpha Loss                            1.78058
+exploration/num steps total                2500
+exploration/num paths total                   5
+exploration/path length Mean                500
+exploration/path length Std                   0
+exploration/path length Max                 500
+exploration/path length Min                 500
+exploration/Rewards Mean                      0.011
+exploration/Rewards Std                       0.211847
+exploration/Rewards Max                       6
+exploration/Rewards Min                       0
+exploration/Returns Mean                      5.5
+exploration/Returns Std                       5.5
+exploration/Returns Max                      11
+exploration/Returns Min                       0
+exploration/Actions Mean                      0.356704
+exploration/Actions Std                       0.543794
+exploration/Actions Max                       0.999806
+exploration/Actions Min                      -0.991405
+exploration/Num Paths                         2
+exploration/Average Returns                   5.5
+exploration/env_infos/final/loc Mean          0
+exploration/env_infos/final/loc Std           0
+exploration/env_infos/final/loc Max           0
+exploration/env_infos/final/loc Min           0
+exploration/env_infos/initial/loc Mean        0
+exploration/env_infos/initial/loc Std         0
+exploration/env_infos/initial/loc Max         0
+exploration/env_infos/initial/loc Min         0
+exploration/env_infos/loc Mean               20.4375
+exploration/env_infos/loc Std               176.511
+exploration/env_infos/loc Max              2007
+exploration/env_infos/loc Min                 0
+exploration/env_infos/final/t Mean           89.8515
+exploration/env_infos/final/t Std             1.9145
+exploration/env_infos/final/t Max            91.766
+exploration/env_infos/final/t Min            87.937
+exploration/env_infos/initial/t Mean          0.3755
+exploration/env_infos/initial/t Std           0.0315
+exploration/env_infos/initial/t Max           0.407
+exploration/env_infos/initial/t Min           0.344
+exploration/env_infos/t Mean                 45.0439
+exploration/env_infos/t Std                  26.1903
+exploration/env_infos/t Max                  91.766
+exploration/env_infos/t Min                   0.344
+exploration/env_infos/final/endpts Mean      -1
+exploration/env_infos/final/endpts Std        0
+exploration/env_infos/final/endpts Max       -1
+exploration/env_infos/final/endpts Min       -1
+exploration/env_infos/initial/endpts Mean    -1
+exploration/env_infos/initial/endpts Std      0
+exploration/env_infos/initial/endpts Max     -1
+exploration/env_infos/initial/endpts Min     -1
+exploration/env_infos/endpts Mean            19.4485
+exploration/env_infos/endpts Std            176.591
+exploration/env_infos/endpts Max           2005
+exploration/env_infos/endpts Min             -1
+exploration/env_infos/final/obs Mean          0
+exploration/env_infos/final/obs Std           0
+exploration/env_infos/final/obs Max           0
+exploration/env_infos/final/obs Min           0
+exploration/env_infos/initial/obs Mean        0
+exploration/env_infos/initial/obs Std         0
+exploration/env_infos/initial/obs Max         0
+exploration/env_infos/initial/obs Min         0
+exploration/env_infos/obs Mean               -0.765
+exploration/env_infos/obs Std                 7.98528
+exploration/env_infos/obs Max                60
+exploration/env_infos/obs Min              -120
+exploration/env_infos/final/reward Mean       0
+exploration/env_infos/final/reward Std        0
+exploration/env_infos/final/reward Max        0
+exploration/env_infos/final/reward Min        0
+exploration/env_infos/initial/reward Mean     0
+exploration/env_infos/initial/reward Std      0
+exploration/env_infos/initial/reward Max      0
+exploration/env_infos/initial/reward Min      0
+exploration/env_infos/reward Mean             0.011
+exploration/env_infos/reward Std              0.211847
+exploration/env_infos/reward Max              6
+exploration/env_infos/reward Min              0
+exploration/env_infos/final/target Mean      45
+exploration/env_infos/final/target Std       45
+exploration/env_infos/final/target Max       90
+exploration/env_infos/final/target Min        0
+exploration/env_infos/initial/target Mean    45
+exploration/env_infos/initial/target Std     45
+exploration/env_infos/initial/target Max     90
+exploration/env_infos/initial/target Min      0
+exploration/env_infos/target Mean            45
+exploration/env_infos/target Std             45
+exploration/env_infos/target Max             90
+exploration/env_infos/target Min              0
+exploration/env_infos/final/action Mean       0.753608
+exploration/env_infos/final/action Std        0.243744
+exploration/env_infos/final/action Max        0.997352
+exploration/env_infos/final/action Min        0.509864
+exploration/env_infos/initial/action Mean     0.695819
+exploration/env_infos/initial/action Std      0.271801
+exploration/env_infos/initial/action Max      0.96762
+exploration/env_infos/initial/action Min      0.424018
+exploration/env_infos/action Mean             0.678352
+exploration/env_infos/action Std              0.271897
+exploration/env_infos/action Max              0.999903
+exploration/env_infos/action Min              0.0042975
+evaluation/num steps total                 1000
+evaluation/num paths total                    2
+evaluation/path length Mean                 500
+evaluation/path length Std                    0
+evaluation/path length Max                  500
+evaluation/path length Min                  500
+evaluation/Rewards Mean                       0.407
+evaluation/Rewards Std                        0.780933
+evaluation/Rewards Max                        7
+evaluation/Rewards Min                       -1.73611
+evaluation/Returns Mean                     203.5
+evaluation/Returns Std                        0
+evaluation/Returns Max                      203.5
+evaluation/Returns Min                      203.5
+evaluation/Actions Mean                       0.0842769
+evaluation/Actions Std                        0.404014
+evaluation/Actions Max                        0.997672
+evaluation/Actions Min                       -0.987702
+evaluation/Num Paths                          1
+evaluation/Average Returns                  203.5
+evaluation/env_infos/final/loc Mean        1163
+evaluation/env_infos/final/loc Std          456.929
+evaluation/env_infos/final/loc Max         1619.93
+evaluation/env_infos/final/loc Min          706.071
+evaluation/env_infos/initial/loc Mean      1017
+evaluation/env_infos/initial/loc Std        514
+evaluation/env_infos/initial/loc Max       1531
+evaluation/env_infos/initial/loc Min        503
+evaluation/env_infos/loc Mean              1071.07
+evaluation/env_infos/loc Std                468.195
+evaluation/env_infos/loc Max               1619.93
+evaluation/env_infos/loc Min                  0
+evaluation/env_infos/final/t Mean            93.171
+evaluation/env_infos/final/t Std              0
+evaluation/env_infos/final/t Max             93.171
+evaluation/env_infos/final/t Min             93.171
+evaluation/env_infos/initial/t Mean           0.39
+evaluation/env_infos/initial/t Std            0
+evaluation/env_infos/initial/t Max            0.39
+evaluation/env_infos/initial/t Min            0.39
+evaluation/env_infos/t Mean                  46.6682
+evaluation/env_infos/t Std                   26.8623
+evaluation/env_infos/t Max                   93.171
+evaluation/env_infos/t Min                    0.39
+evaluation/env_infos/final/endpts Mean     1162.25
+evaluation/env_infos/final/endpts Std       457.283
+evaluation/env_infos/final/endpts Max      1627
+evaluation/env_infos/final/endpts Min       703
+evaluation/env_infos/initial/endpts Mean   1018
+evaluation/env_infos/initial/endpts Std     513.521
+evaluation/env_infos/initial/endpts Max    1535
+evaluation/env_infos/initial/endpts Min     499
+evaluation/env_infos/endpts Mean           1070.91
+evaluation/env_infos/endpts Std             468.733
+evaluation/env_infos/endpts Max            1627
+evaluation/env_infos/endpts Min              -1
+evaluation/env_infos/final/obs Mean          60
+evaluation/env_infos/final/obs Std            0
+evaluation/env_infos/final/obs Max           60
+evaluation/env_infos/final/obs Min           60
+evaluation/env_infos/initial/obs Mean         0
+evaluation/env_infos/initial/obs Std         60
+evaluation/env_infos/initial/obs Max         60
+evaluation/env_infos/initial/obs Min        -60
+evaluation/env_infos/obs Mean               -12.9
+evaluation/env_infos/obs Std                 72.8148
+evaluation/env_infos/obs Max                150
+evaluation/env_infos/obs Min               -150
+evaluation/env_infos/final/reward Mean        0.214286
+evaluation/env_infos/final/reward Std         0
+evaluation/env_infos/final/reward Max         0.214286
+evaluation/env_infos/final/reward Min         0.214286
+evaluation/env_infos/initial/reward Mean      0.428571
+evaluation/env_infos/initial/reward Std       0
+evaluation/env_infos/initial/reward Max       0.428571
+evaluation/env_infos/initial/reward Min       0.428571
+evaluation/env_infos/reward Mean              0.407
+evaluation/env_infos/reward Std               0.780933
+evaluation/env_infos/reward Max               7
+evaluation/env_infos/reward Min              -1.73611
+evaluation/env_infos/final/target Mean      270
+evaluation/env_infos/final/target Std         0
+evaluation/env_infos/final/target Max       270
+evaluation/env_infos/final/target Min       270
+evaluation/env_infos/initial/target Mean    270
+evaluation/env_infos/initial/target Std       0
+evaluation/env_infos/initial/target Max     270
+evaluation/env_infos/initial/target Min     270
+evaluation/env_infos/target Mean            270
+evaluation/env_infos/target Std               0
+evaluation/env_infos/target Max             270
+evaluation/env_infos/target Min             270
+evaluation/env_infos/final/action Mean        0.457442
+evaluation/env_infos/final/action Std         0
+evaluation/env_infos/final/action Max         0.457442
+evaluation/env_infos/final/action Min         0.457442
+evaluation/env_infos/initial/action Mean      0.354455
+evaluation/env_infos/initial/action Std       0
+evaluation/env_infos/initial/action Max       0.354455
+evaluation/env_infos/initial/action Min       0.354455
+evaluation/env_infos/action Mean              0.542138
+evaluation/env_infos/action Std               0.202007
+evaluation/env_infos/action Max               0.998836
+evaluation/env_infos/action Min               0.0061492
+time/data storing (s)                         0.0103898
+time/evaluation sampling (s)                117.777
+time/exploration sampling (s)               344.217
+time/logging (s)                              0.0146956
+time/sac training (s)                        19.0053
+time/saving (s)                               0.0039223
+time/training (s)                             0.0415534
+time/epoch (s)                              481.07
+time/total (s)                             1003.71
+Epoch                                         1
+-----------------------------------------  ------------
+2020-10-20 16:19:43.756879 Eastern Daylight Time | [C:\Users\ccli3\Documents\Research\20_09_07_NewPC\RLWorms\10_08_rlkit\rlkit\..\data\.\test\.\test\_2020_10_20_15_56_47_0000--s-0] Epoch 2 finished
+-----------------------------------------  --------------
+replay_buffer/size                         3500
+trainer/num train calls                    6000
+trainer/QF1 Loss                              0.632187
+trainer/QF2 Loss                              0.641286
+trainer/Policy Loss                          -3.6159
+trainer/Q1 Predictions Mean                   3.66629
+trainer/Q1 Predictions Std                    0.326899
+trainer/Q1 Predictions Max                    5.56301
+trainer/Q1 Predictions Min                    3.31948
+trainer/Q2 Predictions Mean                   3.70066
+trainer/Q2 Predictions Std                    0.371973
+trainer/Q2 Predictions Max                    5.90782
+trainer/Q2 Predictions Min                    3.27867
+trainer/Q Targets Mean                        3.68941
+trainer/Q Targets Std                         0.808683
+trainer/Q Targets Max                        10.3215
+trainer/Q Targets Min                         0.21498
+trainer/Log Pis Mean                          1.7096
+trainer/Log Pis Std                           1.47127
+trainer/Log Pis Max                           4.85522
+trainer/Log Pis Min                          -4.77174
+trainer/policy/mean Mean                      0.736434
+trainer/policy/mean Std                       0.445346
+trainer/policy/mean Max                       0.973963
+trainer/policy/mean Min                      -0.994728
+trainer/policy/normal/std Mean                0.594977
+trainer/policy/normal/std Std                 0.328811
+trainer/policy/normal/std Max                 0.810724
+trainer/policy/normal/std Min                 0.015287
+trainer/policy/normal/log_std Mean           -0.898744
+trainer/policy/normal/log_std Std             1.09099
+trainer/policy/normal/log_std Max            -0.209828
+trainer/policy/normal/log_std Min            -4.18075
+trainer/Alpha                                 0.0269433
+trainer/Alpha Loss                            2.56449
+exploration/num steps total                3500
+exploration/num paths total                   7
+exploration/path length Mean                500
+exploration/path length Std                   0
+exploration/path length Max                 500
+exploration/path length Min                 500
+exploration/Rewards Mean                     -0.378749
+exploration/Rewards Std                       0.473332
+exploration/Rewards Max                       0.654762
+exploration/Rewards Min                      -2.98413
+exploration/Returns Mean                   -189.374
+exploration/Returns Std                     114.551
+exploration/Returns Max                     -74.8235
+exploration/Returns Min                    -303.925
+exploration/Actions Mean                      0.24642
+exploration/Actions Std                       0.470924
+exploration/Actions Max                       0.999942
+exploration/Actions Min                      -1
+exploration/Num Paths                         2
+exploration/Average Returns                -189.374
+exploration/env_infos/final/loc Mean        947.167
+exploration/env_infos/final/loc Std         282.446
+exploration/env_infos/final/loc Max        1347.83
+exploration/env_infos/final/loc Min         647.7
+exploration/env_infos/initial/loc Mean     1079.71
+exploration/env_infos/initial/loc Std       412.96
+exploration/env_infos/initial/loc Max      1651.08
+exploration/env_infos/initial/loc Min       643.484
+exploration/env_infos/loc Mean             1009.7
+exploration/env_infos/loc Std               349.294
+exploration/env_infos/loc Max              1651.19
+exploration/env_infos/loc Min               634.278
+exploration/env_infos/final/t Mean           90.469
+exploration/env_infos/final/t Std             0.156
+exploration/env_infos/final/t Max            90.625
+exploration/env_infos/final/t Min            90.313
+exploration/env_infos/initial/t Mean          0.391
+exploration/env_infos/initial/t Std           2.32831e-10
+exploration/env_infos/initial/t Max           0.391
+exploration/env_infos/initial/t Min           0.391
+exploration/env_infos/t Mean                 45.4208
+exploration/env_infos/t Std                  26.0688
+exploration/env_infos/t Max                  90.625
+exploration/env_infos/t Min                   0.391
+exploration/env_infos/final/endpts Mean     947
+exploration/env_infos/final/endpts Std      283.287
+exploration/env_infos/final/endpts Max     1354
+exploration/env_infos/final/endpts Min      641
+exploration/env_infos/initial/endpts Mean  1079.75
+exploration/env_infos/initial/endpts Std    413.278
+exploration/env_infos/initial/endpts Max   1658
+exploration/env_infos/initial/endpts Min    641
+exploration/env_infos/endpts Mean          1009.68
+exploration/env_infos/endpts Std            349.798
+exploration/env_infos/endpts Max           1658
+exploration/env_infos/endpts Min            630
+exploration/env_infos/final/obs Mean         45
+exploration/env_infos/final/obs Std          91.2414
+exploration/env_infos/final/obs Max         150
+exploration/env_infos/final/obs Min         -60
+exploration/env_infos/initial/obs Mean       60
+exploration/env_infos/initial/obs Std        73.4847
+exploration/env_infos/initial/obs Max       120
+exploration/env_infos/initial/obs Min       -60
+exploration/env_infos/obs Mean               33.945
+exploration/env_infos/obs Std                75.2109
+exploration/env_infos/obs Max               150
+exploration/env_infos/obs Min              -180
+exploration/env_infos/final/reward Mean      -0.368542
+exploration/env_infos/final/reward Std        0.0503603
+exploration/env_infos/final/reward Max       -0.318182
+exploration/env_infos/final/reward Min       -0.418902
+exploration/env_infos/initial/reward Mean    -0.490239
+exploration/env_infos/initial/reward Std      0.182838
+exploration/env_infos/initial/reward Max     -0.3074
+exploration/env_infos/initial/reward Min     -0.673077
+exploration/env_infos/reward Mean            -0.378749
+exploration/env_infos/reward Std              0.473332
+exploration/env_infos/reward Max              0.654762
+exploration/env_infos/reward Min             -2.98413
+exploration/env_infos/final/target Mean      45
+exploration/env_infos/final/target Std       45
+exploration/env_infos/final/target Max       90
+exploration/env_infos/final/target Min        0
+exploration/env_infos/initial/target Mean    45
+exploration/env_infos/initial/target Std     45
+exploration/env_infos/initial/target Max     90
+exploration/env_infos/initial/target Min      0
+exploration/env_infos/target Mean            45
+exploration/env_infos/target Std             45
+exploration/env_infos/target Max             90
+exploration/env_infos/target Min              0
+exploration/env_infos/final/action Mean       0.741366
+exploration/env_infos/final/action Std        0.123142
+exploration/env_infos/final/action Max        0.864508
+exploration/env_infos/final/action Min        0.618224
+exploration/env_infos/initial/action Mean     0.482692
+exploration/env_infos/initial/action Std      0.482692
+exploration/env_infos/initial/action Max      0.965385
+exploration/env_infos/initial/action Min      0
+exploration/env_infos/action Mean             0.62321
+exploration/env_infos/action Std              0.235462
+exploration/env_infos/action Max              0.999971
+exploration/env_infos/action Min              0
+evaluation/num steps total                 1500
+evaluation/num paths total                    3
+evaluation/path length Mean                 500
+evaluation/path length Std                    0
+evaluation/path length Max                  500
+evaluation/path length Min                  500
+evaluation/Rewards Mean                       0.005
+evaluation/Rewards Std                        0.24433
+evaluation/Rewards Max                        2.33333
+evaluation/Rewards Min                       -4
+evaluation/Returns Mean                       2.5
+evaluation/Returns Std                        0
+evaluation/Returns Max                        2.5
+evaluation/Returns Min                        2.5
+evaluation/Actions Mean                       0.95421
+evaluation/Actions Std                        0.120317
+evaluation/Actions Max                        0.973963
+evaluation/Actions Min                       -0.600147
+evaluation/Num Paths                          1
+evaluation/Average Returns                    2.5
+evaluation/env_infos/final/loc Mean        1233.75
+evaluation/env_infos/final/loc Std          502.25
+evaluation/env_infos/final/loc Max         1736
+evaluation/env_infos/final/loc Min          731.5
+evaluation/env_infos/initial/loc Mean         0
+evaluation/env_infos/initial/loc Std          0
+evaluation/env_infos/initial/loc Max          0
+evaluation/env_infos/initial/loc Min          0
+evaluation/env_infos/loc Mean                62.0202
+evaluation/env_infos/loc Std                301.43
+evaluation/env_infos/loc Max               2069
+evaluation/env_infos/loc Min                  0
+evaluation/env_infos/final/t Mean            94.641
+evaluation/env_infos/final/t Std              0
+evaluation/env_infos/final/t Max             94.641
+evaluation/env_infos/final/t Min             94.641
+evaluation/env_infos/initial/t Mean           0.36
+evaluation/env_infos/initial/t Std            0
+evaluation/env_infos/initial/t Max            0.36
+evaluation/env_infos/initial/t Min            0.36
+evaluation/env_infos/t Mean                  45.7537
+evaluation/env_infos/t Std                   26.7934
+evaluation/env_infos/t Max                   94.641
+evaluation/env_infos/t Min                    0.36
+evaluation/env_infos/final/endpts Mean     1234
+evaluation/env_infos/final/endpts Std       504.025
+evaluation/env_infos/final/endpts Max      1745
+evaluation/env_infos/final/endpts Min       729
+evaluation/env_infos/initial/endpts Mean     -1
+evaluation/env_infos/initial/endpts Std       0
+evaluation/env_infos/initial/endpts Max      -1
+evaluation/env_infos/initial/endpts Min      -1
+evaluation/env_infos/endpts Mean             61.1045
+evaluation/env_infos/endpts Std             301.889
+evaluation/env_infos/endpts Max            2070
+evaluation/env_infos/endpts Min              -1
+evaluation/env_infos/final/obs Mean         -45
+evaluation/env_infos/final/obs Std          105
+evaluation/env_infos/final/obs Max           60
+evaluation/env_infos/final/obs Min         -150
+evaluation/env_infos/initial/obs Mean         0
+evaluation/env_infos/initial/obs Std          0
+evaluation/env_infos/initial/obs Max          0
+evaluation/env_infos/initial/obs Min          0
+evaluation/env_infos/obs Mean                 0.6
+evaluation/env_infos/obs Std                 17.5852
+evaluation/env_infos/obs Max                120
+evaluation/env_infos/obs Min               -150
+evaluation/env_infos/final/reward Mean       -0.166667
+evaluation/env_infos/final/reward Std         0
+evaluation/env_infos/final/reward Max        -0.166667
+evaluation/env_infos/final/reward Min        -0.166667
+evaluation/env_infos/initial/reward Mean      0
+evaluation/env_infos/initial/reward Std       0
+evaluation/env_infos/initial/reward Max       0
+evaluation/env_infos/initial/reward Min       0
+evaluation/env_infos/reward Mean              0.005
+evaluation/env_infos/reward Std               0.24433
+evaluation/env_infos/reward Max               2.33333
+evaluation/env_infos/reward Min              -4
+evaluation/env_infos/final/target Mean      270
+evaluation/env_infos/final/target Std         0
+evaluation/env_infos/final/target Max       270
+evaluation/env_infos/final/target Min       270
+evaluation/env_infos/initial/target Mean    270
+evaluation/env_infos/initial/target Std       0
+evaluation/env_infos/initial/target Max     270
+evaluation/env_infos/initial/target Min     270
+evaluation/env_infos/target Mean            270
+evaluation/env_infos/target Std               0
+evaluation/env_infos/target Max             270
+evaluation/env_infos/target Min             270
+evaluation/env_infos/final/action Mean        0.68187
+evaluation/env_infos/final/action Std         0
+evaluation/env_infos/final/action Max         0.68187
+evaluation/env_infos/final/action Min         0.68187
+evaluation/env_infos/initial/action Mean      0.986982
+evaluation/env_infos/initial/action Std       0
+evaluation/env_infos/initial/action Max       0.986982
+evaluation/env_infos/initial/action Min       0.986982
+evaluation/env_infos/action Mean              0.977105
+evaluation/env_infos/action Std               0.0601583
+evaluation/env_infos/action Max               0.986982
+evaluation/env_infos/action Min               0.199927
+time/data storing (s)                         0.0120597
+time/evaluation sampling (s)                119.196
+time/exploration sampling (s)               234.87
+time/logging (s)                              0.0259556
+time/sac training (s)                        18.9516
+time/saving (s)                               0.0040907
+time/training (s)                             0.039806
+time/epoch (s)                              373.1
+time/total (s)                             1377.52
+Epoch                                         2
+-----------------------------------------  --------------
+2020-10-20 16:26:26.372522 Eastern Daylight Time | [C:\Users\ccli3\Documents\Research\20_09_07_NewPC\RLWorms\10_08_rlkit\rlkit\..\data\.\test\.\test\_2020_10_20_15_56_47_0000--s-0] Epoch 3 finished
+-----------------------------------------  ------------
+replay_buffer/size                         4500
+trainer/num train calls                    8000
+trainer/QF1 Loss                              0.227542
+trainer/QF2 Loss                              0.302023
+trainer/Policy Loss                          -3.49121
+trainer/Q1 Predictions Mean                   3.47893
+trainer/Q1 Predictions Std                    0.475352
+trainer/Q1 Predictions Max                    4.98372
+trainer/Q1 Predictions Min                    3.05602
+trainer/Q2 Predictions Mean                   3.54481
+trainer/Q2 Predictions Std                    0.550597
+trainer/Q2 Predictions Max                    5.94363
+trainer/Q2 Predictions Min                    3.01754
+trainer/Q Targets Mean                        3.4574
+trainer/Q Targets Std                         0.588432
+trainer/Q Targets Max                         7.47612
+trainer/Q Targets Min                         1.96403
+trainer/Log Pis Mean                          1.50731
+trainer/Log Pis Std                           0.699681
+trainer/Log Pis Max                           3.29592
+trainer/Log Pis Min                          -1.55135
+trainer/policy/mean Mean                     -0.210367
+trainer/policy/mean Std                       0.48979
+trainer/policy/mean Max                       0.87167
+trainer/policy/mean Min                      -0.5717
+trainer/policy/normal/std Mean                0.0924115
+trainer/policy/normal/std Std                 0.0294225
+trainer/policy/normal/std Max                 0.214512
+trainer/policy/normal/std Min                 0.0220216
+trainer/policy/normal/log_std Mean           -2.44597
+trainer/policy/normal/log_std Std             0.389099
+trainer/policy/normal/log_std Max            -1.53939
+trainer/policy/normal/log_std Min            -3.81573
+trainer/Alpha                                 0.0304575
+trainer/Alpha Loss                            1.77125
+exploration/num steps total                4500
+exploration/num paths total                   9
+exploration/path length Mean                500
+exploration/path length Std                   0
+exploration/path length Max                 500
+exploration/path length Min                 500
+exploration/Rewards Mean                     -0.292237
+exploration/Rewards Std                       0.325452
+exploration/Rewards Max                       0.765152
+exploration/Rewards Min                      -1.57882
+exploration/Returns Mean                   -146.119
+exploration/Returns Std                       3.59369
+exploration/Returns Max                    -142.525
+exploration/Returns Min                    -149.712
+exploration/Actions Mean                      0.288614
+exploration/Actions Std                       0.295626
+exploration/Actions Max                       1
+exploration/Actions Min                      -0.969729
+exploration/Num Paths                         2
+exploration/Average Returns                -146.119
+exploration/env_infos/final/loc Mean        954.771
+exploration/env_infos/final/loc Std          80.3765
+exploration/env_infos/final/loc Max        1075.76
+exploration/env_infos/final/loc Min         853.6
+exploration/env_infos/initial/loc Mean      920.73
+exploration/env_infos/initial/loc Std        55.0813
+exploration/env_infos/initial/loc Max       996.391
+exploration/env_infos/initial/loc Min       840.864
+exploration/env_infos/loc Mean              932.247
+exploration/env_infos/loc Std                50.3226
+exploration/env_infos/loc Max              1075.76
+exploration/env_infos/loc Min               840.667
+exploration/env_infos/final/t Mean           90.4685
+exploration/env_infos/final/t Std             0.0935
+exploration/env_infos/final/t Max            90.562
+exploration/env_infos/final/t Min            90.375
+exploration/env_infos/initial/t Mean          0.367
+exploration/env_infos/initial/t Std           0.008
+exploration/env_infos/initial/t Max           0.375
+exploration/env_infos/initial/t Min           0.359
+exploration/env_infos/t Mean                 45.399
+exploration/env_infos/t Std                  26.0617
+exploration/env_infos/t Max                  90.562
+exploration/env_infos/t Min                   0.359
+exploration/env_infos/final/endpts Mean     955.125
+exploration/env_infos/final/endpts Std       79.4079
+exploration/env_infos/final/endpts Max     1079
+exploration/env_infos/final/endpts Min      848
+exploration/env_infos/initial/endpts Mean   920.5
+exploration/env_infos/initial/endpts Std     55.263
+exploration/env_infos/initial/endpts Max   1002
+exploration/env_infos/initial/endpts Min    838
+exploration/env_infos/endpts Mean           932.202
+exploration/env_infos/endpts Std             50.5443
+exploration/env_infos/endpts Max           1081
+exploration/env_infos/endpts Min            835
+exploration/env_infos/final/obs Mean        -75
+exploration/env_infos/final/obs Std          86.1684
+exploration/env_infos/final/obs Max          60
+exploration/env_infos/final/obs Min        -150
+exploration/env_infos/initial/obs Mean       45
+exploration/env_infos/initial/obs Std        45
+exploration/env_infos/initial/obs Max       120
+exploration/env_infos/initial/obs Min         0
+exploration/env_infos/obs Mean              -40.8
+exploration/env_infos/obs Std                88.413
+exploration/env_infos/obs Max               150
+exploration/env_infos/obs Min              -150
+exploration/env_infos/final/reward Mean      -0.483846
+exploration/env_infos/final/reward Std        0.166154
+exploration/env_infos/final/reward Max       -0.317692
+exploration/env_infos/final/reward Min       -0.65
+exploration/env_infos/initial/reward Mean     0.0205981
+exploration/env_infos/initial/reward Std      0.245706
+exploration/env_infos/initial/reward Max      0.266304
+exploration/env_infos/initial/reward Min     -0.225108
+exploration/env_infos/reward Mean            -0.292237
+exploration/env_infos/reward Std              0.325452
+exploration/env_infos/reward Max              0.765152
+exploration/env_infos/reward Min             -1.57882
+exploration/env_infos/final/target Mean      45
+exploration/env_infos/final/target Std       45
+exploration/env_infos/final/target Max       90
+exploration/env_infos/final/target Min        0
+exploration/env_infos/initial/target Mean    45
+exploration/env_infos/initial/target Std     45
+exploration/env_infos/initial/target Max     90
+exploration/env_infos/initial/target Min      0
+exploration/env_infos/target Mean            45
+exploration/env_infos/target Std             45
+exploration/env_infos/target Max             90
+exploration/env_infos/target Min              0
+exploration/env_infos/final/action Mean       0.61152
+exploration/env_infos/final/action Std        0.0125257
+exploration/env_infos/final/action Max        0.624046
+exploration/env_infos/final/action Min        0.598994
+exploration/env_infos/initial/action Mean     0.507568
+exploration/env_infos/initial/action Std      0.492432
+exploration/env_infos/initial/action Max      1
+exploration/env_infos/initial/action Min      0.0151356
+exploration/env_infos/action Mean             0.644307
+exploration/env_infos/action Std              0.147813
+exploration/env_infos/action Max              1
+exploration/env_infos/action Min              0.0151356
+evaluation/num steps total                 2000
+evaluation/num paths total                    4
+evaluation/path length Mean                 500
+evaluation/path length Std                    0
+evaluation/path length Max                  500
+evaluation/path length Min                  500
+evaluation/Rewards Mean                       0.248728
+evaluation/Rewards Std                        0.391268
+evaluation/Rewards Max                        1.53305
+evaluation/Rewards Min                       -1.00284
+evaluation/Returns Mean                     124.364
+evaluation/Returns Std                        0
+evaluation/Returns Max                      124.364
+evaluation/Returns Min                      124.364
+evaluation/Actions Mean                      -0.0434272
+evaluation/Actions Std                        0.448862
+evaluation/Actions Max                        0.929967
+evaluation/Actions Min                       -0.785076
+evaluation/Num Paths                          1
+evaluation/Average Returns                  124.364
+evaluation/env_infos/final/loc Mean         943.074
+evaluation/env_infos/final/loc Std           60.8676
+evaluation/env_infos/final/loc Max         1003.94
+evaluation/env_infos/final/loc Min          882.206
+evaluation/env_infos/initial/loc Mean       898.179
+evaluation/env_infos/initial/loc Std        139.714
+evaluation/env_infos/initial/loc Max       1037.89
+evaluation/env_infos/initial/loc Min        758.464
+evaluation/env_infos/loc Mean               915.018
+evaluation/env_infos/loc Std                108.276
+evaluation/env_infos/loc Max               1037.89
+evaluation/env_infos/loc Min                758.464
+evaluation/env_infos/final/t Mean            91.954
+evaluation/env_infos/final/t Std              0
+evaluation/env_infos/final/t Max             91.954
+evaluation/env_infos/final/t Min             91.954
+evaluation/env_infos/initial/t Mean           0.375
+evaluation/env_infos/initial/t Std            0
+evaluation/env_infos/initial/t Max            0.375
+evaluation/env_infos/initial/t Min            0.375
+evaluation/env_infos/t Mean                  45.8151
+evaluation/env_infos/t Std                   26.6568
+evaluation/env_infos/t Max                   91.954
+evaluation/env_infos/t Min                    0.375
+evaluation/env_infos/final/endpts Mean      943.25
+evaluation/env_infos/final/endpts Std        60.94
+evaluation/env_infos/final/endpts Max      1006
+evaluation/env_infos/final/endpts Min       876
+evaluation/env_infos/initial/endpts Mean    898.75
+evaluation/env_infos/initial/endpts Std     139.849
+evaluation/env_infos/initial/endpts Max    1041
+evaluation/env_infos/initial/endpts Min     752
+evaluation/env_infos/endpts Mean            914.869
+evaluation/env_infos/endpts Std             108.646
+evaluation/env_infos/endpts Max            1041
+evaluation/env_infos/endpts Min             752
+evaluation/env_infos/final/obs Mean         -15
+evaluation/env_infos/final/obs Std           15
+evaluation/env_infos/final/obs Max            0
+evaluation/env_infos/final/obs Min          -30
+evaluation/env_infos/initial/obs Mean        90
+evaluation/env_infos/initial/obs Std         60
+evaluation/env_infos/initial/obs Max        150
+evaluation/env_infos/initial/obs Min         30
+evaluation/env_infos/obs Mean                 4.47
+evaluation/env_infos/obs Std                 72.1548
+evaluation/env_infos/obs Max                150
+evaluation/env_infos/obs Min               -150
+evaluation/env_infos/final/reward Mean        0.719396
+evaluation/env_infos/final/reward Std         0
+evaluation/env_infos/final/reward Max         0.719396
+evaluation/env_infos/final/reward Min         0.719396
+evaluation/env_infos/initial/reward Mean      0.62218
+evaluation/env_infos/initial/reward Std       0
+evaluation/env_infos/initial/reward Max       0.62218
+evaluation/env_infos/initial/reward Min       0.62218
+evaluation/env_infos/reward Mean              0.248728
+evaluation/env_infos/reward Std               0.391268
+evaluation/env_infos/reward Max               1.53305
+evaluation/env_infos/reward Min              -1.00284
+evaluation/env_infos/final/target Mean      270
+evaluation/env_infos/final/target Std         0
+evaluation/env_infos/final/target Max       270
+evaluation/env_infos/final/target Min       270
+evaluation/env_infos/initial/target Mean    270
+evaluation/env_infos/initial/target Std       0
+evaluation/env_infos/initial/target Max     270
+evaluation/env_infos/initial/target Min     270
+evaluation/env_infos/target Mean            270
+evaluation/env_infos/target Std               0
+evaluation/env_infos/target Max             270
+evaluation/env_infos/target Min             270
+evaluation/env_infos/final/action Mean        0.276866
+evaluation/env_infos/final/action Std         0
+evaluation/env_infos/final/action Max         0.276866
+evaluation/env_infos/final/action Min         0.276866
+evaluation/env_infos/initial/action Mean      0.326789
+evaluation/env_infos/initial/action Std       0
+evaluation/env_infos/initial/action Max       0.326789
+evaluation/env_infos/initial/action Min       0.326789
+evaluation/env_infos/action Mean              0.478286
+evaluation/env_infos/action Std               0.224431
+evaluation/env_infos/action Max               0.964983
+evaluation/env_infos/action Min               0.107462
+time/data storing (s)                         0.0099903
+time/evaluation sampling (s)                116.168
+time/exploration sampling (s)               266.442
+time/logging (s)                              0.01495
+time/sac training (s)                        19.161
+time/saving (s)                               0.0031291
+time/training (s)                             0.0396793
+time/epoch (s)                              401.838
+time/total (s)                             1780.08
+Epoch                                         3
+-----------------------------------------  ------------
+2020-10-20 16:33:13.645870 Eastern Daylight Time | [C:\Users\ccli3\Documents\Research\20_09_07_NewPC\RLWorms\10_08_rlkit\rlkit\..\data\.\test\.\test\_2020_10_20_15_56_47_0000--s-0] Epoch 4 finished
+-----------------------------------------  -------------
+replay_buffer/size                          5500
+trainer/num train calls                    10000
+trainer/QF1 Loss                               0.284593
+trainer/QF2 Loss                               0.378733
+trainer/Policy Loss                           -2.06328
+trainer/Q1 Predictions Mean                    2.03711
+trainer/Q1 Predictions Std                     0.838842
+trainer/Q1 Predictions Max                     3.98588
+trainer/Q1 Predictions Min                    -0.104527
+trainer/Q2 Predictions Mean                    2.08894
+trainer/Q2 Predictions Std                     0.856678
+trainer/Q2 Predictions Max                     4.10465
+trainer/Q2 Predictions Min                     0.0158991
+trainer/Q Targets Mean                         1.97375
+trainer/Q Targets Std                          1.00147
+trainer/Q Targets Max                          5.8612
+trainer/Q Targets Min                         -0.763097
+trainer/Log Pis Mean                           1.47762
+trainer/Log Pis Std                            1.80897
+trainer/Log Pis Max                            5.72167
+trainer/Log Pis Min                           -1.75706
+trainer/policy/mean Mean                       0.466827
+trainer/policy/mean Std                        0.315655
+trainer/policy/mean Max                        0.995727
+trainer/policy/mean Min                       -0.602135
+trainer/policy/normal/std Mean                 1.0272
+trainer/policy/normal/std Std                  1.05058
+trainer/policy/normal/std Max                  2.26274
+trainer/policy/normal/std Min                  0.0135157
+trainer/policy/normal/log_std Mean            -1.19524
+trainer/policy/normal/log_std Std              1.93099
+trainer/policy/normal/log_std Max              0.816575
+trainer/policy/normal/log_std Min             -4.3039
+trainer/Alpha                                  0.0132752
+trainer/Alpha Loss                             2.06423
+exploration/num steps total                 5500
+exploration/num paths total                   11
+exploration/path length Mean                 500
+exploration/path length Std                    0
+exploration/path length Max                  500
+exploration/path length Min                  500
+exploration/Rewards Mean                       0.280051
+exploration/Rewards Std                        0.351069
+exploration/Rewards Max                        1.95
+exploration/Rewards Min                       -1.92308
+exploration/Returns Mean                     140.026
+exploration/Returns Std                        4.33533
+exploration/Returns Max                      144.361
+exploration/Returns Min                      135.69
+exploration/Actions Mean                       0.340714
+exploration/Actions Std                        0.544275
+exploration/Actions Max                        0.995935
+exploration/Actions Min                       -1
+exploration/Num Paths                          2
+exploration/Average Returns                  140.026
+exploration/env_infos/final/loc Mean         968.87
+exploration/env_infos/final/loc Std           53.0765
+exploration/env_infos/final/loc Max         1048.2
+exploration/env_infos/final/loc Min          902.935
+exploration/env_infos/initial/loc Mean       963.883
+exploration/env_infos/initial/loc Std         96.0163
+exploration/env_infos/initial/loc Max       1038.18
+exploration/env_infos/initial/loc Min        801.476
+exploration/env_infos/loc Mean               968.831
+exploration/env_infos/loc Std                 89.9957
+exploration/env_infos/loc Max               1088.7
+exploration/env_infos/loc Min                  0
+exploration/env_infos/final/t Mean            90.5395
+exploration/env_infos/final/t Std              0.0395
+exploration/env_infos/final/t Max             90.579
+exploration/env_infos/final/t Min             90.5
+exploration/env_infos/initial/t Mean           0.375
+exploration/env_infos/initial/t Std            0
+exploration/env_infos/initial/t Max            0.375
+exploration/env_infos/initial/t Min            0.375
+exploration/env_infos/t Mean                  45.4496
+exploration/env_infos/t Std                   26.0803
+exploration/env_infos/t Max                   90.579
+exploration/env_infos/t Min                    0.375
+exploration/env_infos/final/endpts Mean      969.375
+exploration/env_infos/final/endpts Std        53.2657
+exploration/env_infos/final/endpts Max      1050
+exploration/env_infos/final/endpts Min       900
+exploration/env_infos/initial/endpts Mean    963.25
+exploration/env_infos/initial/endpts Std      96.213
+exploration/env_infos/initial/endpts Max    1043
+exploration/env_infos/initial/endpts Min     796
+exploration/env_infos/endpts Mean            968.798
+exploration/env_infos/endpts Std              90.0036
+exploration/env_infos/endpts Max            1092
+exploration/env_infos/endpts Min              -1
+exploration/env_infos/final/obs Mean         -22.5
+exploration/env_infos/final/obs Std           32.6917
+exploration/env_infos/final/obs Max           30
+exploration/env_infos/final/obs Min          -60
+exploration/env_infos/initial/obs Mean         7.5
+exploration/env_infos/initial/obs Std         24.8747
+exploration/env_infos/initial/obs Max         30
+exploration/env_infos/initial/obs Min        -30
+exploration/env_infos/obs Mean                -3.15
+exploration/env_infos/obs Std                 58.9862
+exploration/env_infos/obs Max                150
+exploration/env_infos/obs Min               -150
+exploration/env_infos/final/reward Mean        0.413043
+exploration/env_infos/final/reward Std         0.347826
+exploration/env_infos/final/reward Max         0.76087
+exploration/env_infos/final/reward Min         0.0652174
+exploration/env_infos/initial/reward Mean      0.26236
+exploration/env_infos/initial/reward Std       0.186169
+exploration/env_infos/initial/reward Max       0.448529
+exploration/env_infos/initial/reward Min       0.0761905
+exploration/env_infos/reward Mean              0.280051
+exploration/env_infos/reward Std               0.351069
+exploration/env_infos/reward Max               1.95
+exploration/env_infos/reward Min              -1.92308
+exploration/env_infos/final/target Mean       45
+exploration/env_infos/final/target Std        45
+exploration/env_infos/final/target Max        90
+exploration/env_infos/final/target Min         0
+exploration/env_infos/initial/target Mean     45
+exploration/env_infos/initial/target Std      45
+exploration/env_infos/initial/target Max      90
+exploration/env_infos/initial/target Min       0
+exploration/env_infos/target Mean             45
+exploration/env_infos/target Std              45
+exploration/env_infos/target Max              90
+exploration/env_infos/target Min               0
+exploration/env_infos/final/action Mean        0.443294
+exploration/env_infos/final/action Std         0.171553
+exploration/env_infos/final/action Max         0.614847
+exploration/env_infos/final/action Min         0.27174
+exploration/env_infos/initial/action Mean      0.0189678
+exploration/env_infos/initial/action Std       0.0189678
+exploration/env_infos/initial/action Max       0.0379355
+exploration/env_infos/initial/action Min       0
+exploration/env_infos/action Mean              0.670357
+exploration/env_infos/action Std               0.272137
+exploration/env_infos/action Max               0.997968
+exploration/env_infos/action Min               0
+evaluation/num steps total                  2500
+evaluation/num paths total                     5
+evaluation/path length Mean                  500
+evaluation/path length Std                     0
+evaluation/path length Max                   500
+evaluation/path length Min                   500
+evaluation/Rewards Mean                       -0.0463609
+evaluation/Rewards Std                         0.238184
+evaluation/Rewards Max                         0.854119
+evaluation/Rewards Min                        -1.00216
+evaluation/Returns Mean                      -23.1804
+evaluation/Returns Std                         0
+evaluation/Returns Max                       -23.1804
+evaluation/Returns Min                       -23.1804
+evaluation/Actions Mean                        0.460637
+evaluation/Actions Std                         0.317329
+evaluation/Actions Max                         0.997588
+evaluation/Actions Min                        -1
+evaluation/Num Paths                           1
+evaluation/Average Returns                   -23.1804
+evaluation/env_infos/final/loc Mean          901.413
+evaluation/env_infos/final/loc Std            86.6827
+evaluation/env_infos/final/loc Max           988.096
+evaluation/env_infos/final/loc Min           814.731
+evaluation/env_infos/initial/loc Mean        981.274
+evaluation/env_infos/initial/loc Std          30.2738
+evaluation/env_infos/initial/loc Max        1011.55
+evaluation/env_infos/initial/loc Min         951
+evaluation/env_infos/loc Mean                926.275
+evaluation/env_infos/loc Std                  70.5815
+evaluation/env_infos/loc Max                1011.55
+evaluation/env_infos/loc Min                 803.143
+evaluation/env_infos/final/t Mean             92.75
+evaluation/env_infos/final/t Std               0
+evaluation/env_infos/final/t Max              92.75
+evaluation/env_infos/final/t Min              92.75
+evaluation/env_infos/initial/t Mean            0.359
+evaluation/env_infos/initial/t Std             0
+evaluation/env_infos/initial/t Max             0.359
+evaluation/env_infos/initial/t Min             0.359
+evaluation/env_infos/t Mean                   46.6384
+evaluation/env_infos/t Std                    26.6914
+evaluation/env_infos/t Max                    92.75
+evaluation/env_infos/t Min                     0.359
+evaluation/env_infos/final/endpts Mean       901.5
+evaluation/env_infos/final/endpts Std         88.1036
+evaluation/env_infos/final/endpts Max        995
+evaluation/env_infos/final/endpts Min        811
+evaluation/env_infos/initial/endpts Mean     980.75
+evaluation/env_infos/initial/endpts Std       30.7032
+evaluation/env_infos/initial/endpts Max     1016
+evaluation/env_infos/initial/endpts Min      945
+evaluation/env_infos/endpts Mean             926.178
+evaluation/env_infos/endpts Std               70.6689
+evaluation/env_infos/endpts Max             1016
+evaluation/env_infos/endpts Min              796
+evaluation/env_infos/final/obs Mean          -60
+evaluation/env_infos/final/obs Std            90
+evaluation/env_infos/final/obs Max            30
+evaluation/env_infos/final/obs Min          -150
+evaluation/env_infos/initial/obs Mean        -60
+evaluation/env_infos/initial/obs Std          90
+evaluation/env_infos/initial/obs Max          30
+evaluation/env_infos/initial/obs Min        -150
+evaluation/env_infos/obs Mean                -32.58
+evaluation/env_infos/obs Std                  68.1905
+evaluation/env_infos/obs Max                 150
+evaluation/env_infos/obs Min                -150
+evaluation/env_infos/final/reward Mean        -0.0411011
+evaluation/env_infos/final/reward Std          0
+evaluation/env_infos/final/reward Max         -0.0411011
+evaluation/env_infos/final/reward Min         -0.0411011
+evaluation/env_infos/initial/reward Mean       0.271023
+evaluation/env_infos/initial/reward Std        0
+evaluation/env_infos/initial/reward Max        0.271023
+evaluation/env_infos/initial/reward Min        0.271023
+evaluation/env_infos/reward Mean              -0.0463609
+evaluation/env_infos/reward Std                0.238184
+evaluation/env_infos/reward Max                0.854119
+evaluation/env_infos/reward Min               -1.00216
+evaluation/env_infos/final/target Mean       270
+evaluation/env_infos/final/target Std          0
+evaluation/env_infos/final/target Max        270
+evaluation/env_infos/final/target Min        270
+evaluation/env_infos/initial/target Mean     270
+evaluation/env_infos/initial/target Std        0
+evaluation/env_infos/initial/target Max      270
+evaluation/env_infos/initial/target Min      270
+evaluation/env_infos/target Mean             270
+evaluation/env_infos/target Std                0
+evaluation/env_infos/target Max              270
+evaluation/env_infos/target Min              270
+evaluation/env_infos/final/action Mean         0.648781
+evaluation/env_infos/final/action Std          0
+evaluation/env_infos/final/action Max          0.648781
+evaluation/env_infos/final/action Min          0.648781
+evaluation/env_infos/initial/action Mean       0
+evaluation/env_infos/initial/action Std        0
+evaluation/env_infos/initial/action Max        0
+evaluation/env_infos/initial/action Min        0
+evaluation/env_infos/action Mean               0.730319
+evaluation/env_infos/action Std                0.158664
+evaluation/env_infos/action Max                0.998794
+evaluation/env_infos/action Min                0
+time/data storing (s)                          0.0121533
+time/evaluation sampling (s)                 117.398
+time/exploration sampling (s)                269.93
+time/logging (s)                               0.0143236
+time/sac training (s)                         19.1041
+time/saving (s)                                0.0037378
+time/training (s)                              0.0394157
+time/epoch (s)                               406.502
+time/total (s)                              2187.3
+Epoch                                          4
+-----------------------------------------  -------------

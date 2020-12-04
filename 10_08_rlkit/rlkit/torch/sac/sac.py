@@ -28,6 +28,7 @@ class SACTrainer(TorchTrainer, LossFunction):
             target_qf1,
             target_qf2,
 
+            log_alpha=None,
             discount=0.99,
             reward_scale=1.0,
 
@@ -61,7 +62,10 @@ class SACTrainer(TorchTrainer, LossFunction):
                     self.env.action_space.shape).item()
             else:
                 self.target_entropy = target_entropy
+            # The following lines were modified to set the alpha to a checkpoint alpha, if it exists.
             self.log_alpha = ptu.zeros(1, requires_grad=True)
+            if log_alpha is not None:
+                self.log_alpha = log_alpha
             self.alpha_optimizer = optimizer_class(
                 [self.log_alpha],
                 lr=policy_lr,
@@ -255,10 +259,12 @@ class SACTrainer(TorchTrainer, LossFunction):
         ]
 
     def get_snapshot(self):
+        # Modified to also save last log alpha 
         return dict(
             policy=self.policy,
             qf1=self.qf1,
             qf2=self.qf2,
             target_qf1=self.target_qf1,
             target_qf2=self.target_qf2,
+            fin_log_alpha = self.log_alpha,
         )

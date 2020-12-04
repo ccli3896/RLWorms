@@ -5,6 +5,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
+##########################
+# This is a version where observations are normalized to [-1,1] WITHIN this environment.
+# Did it because the normalized box wrapper seemed buggy and wasn't normalizing
+# the first observation for each epoch.
+##########################
+
+
 def add_to_traj(trajectory,info):
     # appends each key in info to the corresponding key in trajectory.
     # If trajectory is empty, returns trajectory as copy of info but with each element as list
@@ -21,7 +28,7 @@ class ProcessedWorm(gym.Env):
     """Custom Environment that follows gym interface"""
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, target, ep_len=200, ht_time=3):
+    def __init__(self, target, ep_len=500, ht_time=3):
         
         """
         Initializes the camera, light, worm starting point.
@@ -34,13 +41,13 @@ class ProcessedWorm(gym.Env):
         # They must be gym.spaces objects
 
         self.action_space = spaces.Box(low=0,high=1,shape=(1,),dtype=np.float32)
-        self.observation_space = spaces.Box(low=np.array([-180,-180]), high=np.array([180,180]), dtype=np.uint8)
+        self.observation_space = spaces.Box(low=np.array([-1,-1]), high=np.array([1,1]), dtype=np.uint8)
 
         self.target = target
         self.ep_len = ep_len
         self.templates, self.bodies = load_templates()
         self.cam, self.task = init_instruments()
-        self.bg = self.make_bgs()[0]
+        #self.bg = self.make_bgs()[0]
 
         self.timer = Timer(ep_len)
         self.ht_timer= Timer(ht_time)
@@ -48,7 +55,7 @@ class ProcessedWorm(gym.Env):
         self.finished = False
 
 
-    def step(self, action, sleep_time=0):
+    def step(self, action, sleep_time=.7):
         """Chooses action and returns a (step_type, reward, discount, observation)"""
         # In info, returns worm info for that step 
         # {'img':_, 'loc':(x,y), 't':_}
@@ -56,10 +63,10 @@ class ProcessedWorm(gym.Env):
         self.steps += 1
 
         self.task.write(action)
-        time.sleep(sleep_time)
 
         # Get data
         img = grab_im(self.cam, self.bg)
+        time.sleep(sleep_time)
         worms = find_worms(img, self.templates, self.bodies, ref_pts=[self.head], num_worms=1)
 
         # Timer checks: episode end and HT
@@ -89,7 +96,7 @@ class ProcessedWorm(gym.Env):
         self.worm = worms[0]
         body_dir = relative_angle(self.worm['body'], self.target)
         head_body = relative_angle(self.worm['angs'][0], self.worm['body'])
-        obs = np.array([body_dir, head_body])
+        obs = np.sign(np.array([body_dir, head_body])/180.) ############ changed for simplified env
         
         # Find reward and then update last_loc variable
         reward = proj(self.worm['loc']-self.last_loc, [np.cos(self.target*pi/180),-np.sin(self.target*pi/180)])

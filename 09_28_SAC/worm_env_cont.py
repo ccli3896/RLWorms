@@ -35,19 +35,25 @@ class ProcessedWorm(gym.Env):
 
         self.action_space = spaces.Box(low=0,high=1,shape=(1,),dtype=np.float32)
         self.observation_space = spaces.Box(low=np.array([-180,-180]), high=np.array([180,180]), dtype=np.uint8)
-        
+
         self.target = target
+        self.ep_len = ep_len
         self.templates, self.bodies = load_templates()
         self.cam, self.task = init_instruments()
+        #self.bg = self.make_bgs()[0]
 
         self.timer = Timer(ep_len)
         self.ht_timer= Timer(ht_time)
+        self.steps = 0
+        self.finished = False
 
 
-    def step(self, action, sleep_time=.1):
+    def step(self, action, sleep_time=0):
         """Chooses action and returns a (step_type, reward, discount, observation)"""
         # In info, returns worm info for that step 
         # {'img':_, 'loc':(x,y), 't':_}
+
+        self.steps += 1
 
         self.task.write(action)
         time.sleep(sleep_time)
@@ -56,17 +62,24 @@ class ProcessedWorm(gym.Env):
         img = grab_im(self.cam, self.bg)
         worms = find_worms(img, self.templates, self.bodies, ref_pts=[self.head], num_worms=1)
 
+        # Timer checks: episode end and HT
+        if self.steps > self.ep_len:
+            self.finished = True
+        self.timer.update()
+        self.ht_timer.update()
+        if self.ht_timer.check():
+            SWITCHED = self.check_ht()
+
         if worms is None:
-            # Returns nans if no worm is found or something went wrong
+            # Returns zeros if worm isn't found or something went wrong.
             self.task.write(0)
-            self.bg = self.bgs[0]
             print(f'No worm \t\t\r',end='')
-            return np.array([np.nan,np.nan]), 0, False, {
-                'img': None,
-                'loc': np.array([np.nan,np.nan]),
+            return np.zeros(2), 0, self.finished, {
+                #'img': None,
+                'loc': np.zeros(2),
                 't': self.timer.t,
-                'endpts': np.zeros((2,2))+np.nan,
-                'obs': np.array([np.nan,np.nan]),
+                'endpts': np.zeros((2,2))-1,
+                'obs': np.zeros(2),
                 'reward': 0,
                 'target': self.target,
                 'action': action
@@ -83,22 +96,10 @@ class ProcessedWorm(gym.Env):
         self.last_loc = self.worm['loc']
         if np.isnan(reward) or np.abs(reward)>10:
             reward = 0
-
-        # Timer checks: episode end and HT
-        self.timer.update()
-        if self.timer.check():
-            finished = True
-            self.task.write(0)
-        else:
-            finished = False
-        self.ht_timer.update()
-        if self.ht_timer.check():
-            SWITCHED = self.check_ht()
-
         
         # return obs, reward, done (boolean), info (dict)
-        return obs, reward, finished, {
-            'img': self.worm['img'],
+        return obs, reward, self.finished, {
+            #'img': self.worm['img'],
             'loc': self.worm['loc'],
             't': self.timer.t,
             'endpts': self.worm['endpts'],
@@ -113,31 +114,39 @@ class ProcessedWorm(gym.Env):
         """Returns the first `TimeStep` of a new episode."""
         if target is not None:
             self.target = target
+        else:
+            # Rotates target by 90 deg on each reset
+            self.target = (self.target+90)%360
         self.head, self.old_loc = [0,0],[1,1]
         self.last_loc = self.old_loc
 
+        self.bg = self.make_bgs()[0]
+
         self.timer.reset()
         self.ht_timer.reset()
+        self.finished = False
+        self.steps = 0
         
         # Takes one step and returns the observation
         return self.step(0)[0]
     
     def render(self, mode='human', close=False):
         # Render the environment to the screen
-        img = grab_im(self.cam, self.bg)
-        worms = find_worms(img, self.templates, self.bodies, ref_pts=[self.head], num_worms=1)
-        if worms is None:
-            # Returns nans if no worm is found or something went wrong
-            self.task.write(0)
-            self.bg = self.bgs[0]
-            print('No worm')
-            return
-        worm = worms[0]
-        print(worm)
-        plt.imshow(worm['img'])
+        # img = grab_im(self.cam, self.bg)
+        # worms = find_worms(img, self.templates, self.bodies, ref_pts=[self.head], num_worms=1)
+        # if worms is None:
+        #     # Returns nans if no worm is found or something went wrong
+        #     self.task.write(0)
+        #     self.bg = self.bg
+        #     print('No worm')
+        #     return
+        # worm = worms[0]
+        # print(worm)
+        # plt.imshow(worm['img'])
+        pass
 
     """ BELOW: UTILITY FUNCTIONS """
-    def make_bgs(self, light_vec=[0,1], total_time=20):
+    def make_bgs(self, light_vec=[0], total_time=20):
         """Makes background images and stores in self"""
         return make_vec_bg(self.cam,self.task,light_vec,total_time=total_time)
         
