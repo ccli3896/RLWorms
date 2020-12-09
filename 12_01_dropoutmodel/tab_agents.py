@@ -19,7 +19,7 @@ class Q_Agent_Base():
         
         # Initialize Q table with optimistic starts
         if q_checkpoint is None:
-            self.Qtab = np.random.normal(2,.5,size=(self.obs_n, self.act_n))
+            self.Qtab = np.random.normal(2,.5,size=(self.obs_n, self.act_n)) # Optimistic mean at 2
         else:
             self.Qtab = q_checkpoint
         

@@ -46,6 +46,8 @@ class FakeWorm(gym.Env):
             
         # Draws new reward and state from previous state 
         olds = self.grid2coords(self.state)
+        if np.any(olds>12):
+            print('olds',olds,self.state,self._state )
         if action==0:
             self.state[0] = self.get_sample('body_off', olds)
             self.state[1] = self.get_sample('head_off', olds)
@@ -64,6 +66,8 @@ class FakeWorm(gym.Env):
             if self.state[i] >= 180:
                 self.state[i] -= 360
         self._state = self.grid2obs(self.state)
+        if self._state > 143 or self._state < 0:
+            print(self._state,self.state,olds,reward)
         return self._state, reward, self.finished, {}
 
         
@@ -90,11 +94,11 @@ class FakeWorm(gym.Env):
     def get_sample(self,dkey,olds):
         # Returns a single sample from normal distribution given by statistics in dictionary[dkey], 
         # at location given by olds (index into matrix in dkey)
-        mu,sig = self.dist_dict[dkey][olds[0],olds[1]]
+        mu,variance = self.dist_dict[dkey][olds[0],olds[1]]
         if 'reward' in dkey:
-            return np.random.normal(mu,sig)
+            return np.random.normal(mu,np.sqrt(variance))
         else:
-            return self.keep_inside(self.myround(np.random.normal(mu,sig)))
+            return self.keep_inside(self.myround(np.random.normal(mu,np.sqrt(variance))))
                        
     def myround(self, x, base=30):
         return base * round(x/base)
@@ -105,6 +109,8 @@ class FakeWorm(gym.Env):
             num+=bound*2
         elif num>=bound:
             num-=bound*2
+        if num<-bound or num>=bound:
+            print('bad')
         return num
 
     ''' Conversion functions '''
