@@ -49,6 +49,7 @@ class FakeWorm(gym.Env):
         if action==0:
             self.state[0] = self.get_sample('body_off', olds)
             self.state[1] = self.get_sample('head_off', olds)
+
             reward = self.get_sample('reward_off', olds)
         elif action==1:
             self.state[0] = self.get_sample('body_on', olds)
@@ -58,6 +59,10 @@ class FakeWorm(gym.Env):
             raise ValueError('Invalid action')
                        
         # Return obs, reward, done (boolean), info (dict)
+        # Something is going out of bounds somewhere. Below is a (temporary) patch
+        for i in range(len(self.state)):
+            if self.state[i] >= 180:
+                self.state[i] -= 360
         self._state = self.grid2obs(self.state)
         return self._state, reward, self.finished, {}
 
@@ -94,12 +99,12 @@ class FakeWorm(gym.Env):
     def myround(self, x, base=30):
         return base * round(x/base)
 
-    def keep_inside(self,num):
+    def keep_inside(self,num,bound=180):
         # Restricts values to [-180,180)
-        if num<-180:
-            num+=360
-        elif num>=180:
-            num-=360
+        if num<-bound:
+            num+=bound*2
+        elif num>=bound:
+            num-=bound*2
         return num
 
     ''' Conversion functions '''
@@ -114,7 +119,10 @@ class FakeWorm(gym.Env):
         return self.grid_width*gridcoords[0] + gridcoords[1]
     def grid2coords(self,gridcoords):
         coords = (np.array(gridcoords)+180)//30
-        return self.keep_inside(coords[0]), self.keep_inside(coords[1])
+        for i in range(len(coords)):
+            if coords[i]>=12:
+                coords[i]-=12
+        return coords
     def coords2grid(self,coords):
         return (np.array(coords)*30)-180
     ''' End of conversion functions '''
