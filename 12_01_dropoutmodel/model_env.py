@@ -113,7 +113,8 @@ class FakeWorm(gym.Env):
         gridcoords = ((np.array(gridcoords)+180)/30).astype(int)
         return self.grid_width*gridcoords[0] + gridcoords[1]
     def grid2coords(self,gridcoords):
-        return (np.array(gridcoords)+180)//30
+        coords = (np.array(gridcoords)+180)//30
+        return self.keep_inside(coords[0]), self.keep_inside(coords[1])
     def coords2grid(self,coords):
         return (np.array(coords)*30)-180
     ''' End of conversion functions '''
