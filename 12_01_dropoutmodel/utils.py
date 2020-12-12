@@ -79,18 +79,44 @@ def make_dist_dict(df, sm_pars=None,
 # NEEDS TO BE FINISHED
 
 
-def make_stat_mats(df):
-    # This version, compared to old utils DOES NOT remove HT-switches.
+def make_stat_mats(df, cut_reversals=True):
+    # This version should have an option to check HT switches so I can test.
     # Inner func does most of the work querying for each obs.
+    # cut_reversals is True if body angle switches happen. Note that it does cut both incorrect
+    #   switches and correct ones.
     # Returns everything at once: 
     #   r_mat[12,12,2], b_mat[12,12,2], h_mat[12,12,2], counts[12,12].
 
-    def get_stats_angs(df,obs):
+    def get_stats_angs(df, obs, cut_reversals=True):
         # Gets mean and var of df values that match obs, centered on obs
-        series = df.query('obs_b=='+str(obs[0])+'& obs_h=='+str(obs[1]))
-        series['']
-### STOPPED RIGHT HERE
-###################################################3
+        # Remove points where HT orientation switched
+        # Returns r_stats, b_stats, h_stats, count. The first three are tuples [mu,var].
+
+        if cut_reversals:
+            backwards = obs[0]-180
+            if backwards < -180:
+                backwards += 360
+        else:
+            backwards = 1e5
+
+        df_d = dict(zip(df.columns,range(len(df.columns))))
+        series = df.query('obs_b=='+str(obs[0])+'& obs_h=='+str(obs[1])+
+            '& next_obs_b!='+str(backwards)).copy()
+        series.iloc[:,df_d['next_obs_b']] = wrap_correct(series['next_obs_b'].to_numpy(),ref=series['obs_b'].to_numpy())
+        series.iloc[:,df_d['next_obs_h']] = wrap_correct(series['next_obs_h'].to_numpy(),ref=series['obs_h'].to_numpy())
+
+        # Handles case for one sample (initialize)
+        r_sts,b_sts,h_sts,count = [np.nan,np.nan],[np.nan,np.nan],[np.nan,np.nan],0
+        if series.size > 0:    
+            r_sts[0],b_sts[0],h_sts[0] = wrap_correct(series['reward'].mean()), \
+                                            wrap_correct(series['next_obs_b'].mean()), \
+                                            wrap_correct(series['next_obs_h'].mean())
+            if series.size > 1:
+                r_sts[1],b_sts[1],h_sts[1] = series['reward'].var(), \
+                                                series['next_obs_b'].var(), \
+                                                series['next_obs_h'].var()
+        return r_sts,b_sts,h_sts,series.size
+
 
     r_mat = np.zeros((12,12,2)) + np.nan 
     b_mat = np.zeros((12,12,2)) + np.nan 
