@@ -23,19 +23,22 @@ def make_df(fnames,
           prev_act_window: how many steps to look back to make sure all actions were 'on' or 'off'
                jump_limit: data are processed to remove faulty points where worm loc has jumped really far.
                            This is the maximum jump distance allowed before points are tossed.
+                     disc: discretization of angles
 
     Output:
         dataframe object with keys:
             't', 'obs_b', 'obs_h', 'prev_actions', 'next_obs_b', 'next_obs_h', 'reward', 'loc'
     '''
     def add_ind_to_df(traj,df,i, reward_ahead, prev_act_window):
+        # Assumes data for angle observations go from -1 to 1. (not sure why)
+        ANG_BOUND = 180
         return df.append({
             't'           : traj['t'][i],
-            'obs_b'       : traj['obs'][i][0],
-            'obs_h'       : traj['obs'][i][1],
-            'prev_actions': sum(traj['action'][i-prev_act_window+1:i+1]), # Includes current action
-            'next_obs_b'  : traj['obs'][i+1][0],
-            'next_obs_h'  : traj['obs'][i+1][1],
+            'obs_b'       : int(traj['obs'][i][0]*ANG_BOUND),
+            'obs_h'       : int(traj['obs'][i][1]*ANG_BOUND),
+            'prev_actions': sum(traj['action'][i-prev_act_window:i]), # Note does not include current action
+            'next_obs_b'  : int(traj['obs'][i+1][0]*ANG_BOUND),
+            'next_obs_h'  : int(traj['obs'][i+1][1]*ANG_BOUND),
             'reward'      : sum(traj['reward'][i:i+reward_ahead]),
             'loc'         : traj['loc'][i],
         }, ignore_index=True)
@@ -53,9 +56,8 @@ def make_df(fnames,
         with open(fname, 'rb') as f:
             traj = pickle.load(f)
 
-        for i in np.arange(prev_act_window+1,len(traj['t'])-reward_ahead,timestep_gap):
+        for i in np.arange(prev_act_window,len(traj['t'])-reward_ahead,timestep_gap):
             # For every timestep, check if the jump is reasonable and add to dataframe.
-            # Reset for new files
             if newf:
                 if sum(traj['loc'][i])!=0:
                     df = add_ind_to_df(traj,df,i,reward_ahead,prev_act_window)
@@ -66,17 +68,44 @@ def make_df(fnames,
     return df
 
 def make_dist_dict(df, sm_pars=None,
-    prev_act_window=3):
+    prev_act_window=3,
+    cut_reversals=True):
     # Makes a dictionary of distributions using trajectory statistics.
     # sm_pars is a dict of form {'lambda': .05, 'iters': 30}
     #     If None, then no smoothing.
+    # cut_reversals is a boolean
 
     traj_on = df.query('prev_actions=='+str(prev_act_window))
     traj_off = df.query('prev_actions==0')
 
-    pass
-#############################################3
-# NEEDS TO BE FINISHED
+    r_on, b_on, h_on, count_on = make_stat_mats(traj_on, cut_reversals=cut_reversals)
+    r_off, b_off, h_off, count_off = make_stat_mats(traj_off, cut_reversals=cut_reversals)
+
+    all_mats = [r_on,b_on,h_on,r_off,b_off,h_off]
+    counts = [count_on,count_off]
+
+    for i in range(len(all_mats)):
+        for j in range(2):
+            if j==1 or i==0 or i==3:
+                ang_par = False
+            else:
+                ang_par = True
+            all_mats[i][:,:,j] = lin_interp_mat(all_mats[i][:,:,j], ang_par)
+            
+            if sm_pars is not None:
+                all_mats[i][:,:,j] = smoothen(all_mats[i][:,:,j], 
+                                                counts[i//3], ang_par, 
+                                                smooth_par=sm_pars['lambda'], iters=sm_pars['iters'])
+
+    dist_dict = {
+        'body_on': b_on,
+        'body_off': b_off,
+        'head_on': h_on,
+        'head_off': h_off,
+        'reward_on': r_on,
+        'reward_off': r_off,
+    }    
+    return dist_dict
 
 
 def make_stat_mats(df, cut_reversals=True):
@@ -137,13 +166,14 @@ Matrix regularizers: interpolation and smoothing
 '''
 def lin_interp_mat(mat,ang,wraparound=True):
     # Fills in NaNs in matrix by linear interpolation. 
+    # ang is a boolean (True if data are for angles)
     # Only considers nearest neighbors (no diagonals).
     # Fills in NaNs from most neighbors to least neighbors.
     # wraparound extends matrix in all four directions. 
     if ang:
         buffer=180
     else:
-        buffer=1e5
+        buffer=1e6
 
     mat = make_wraparound(mat,ang,wraparound=wraparound)
 
@@ -163,7 +193,7 @@ def lin_interp_mat(mat,ang,wraparound=True):
             neighbor_lim-=1
         nan_inds = np.argwhere(np.isnan(mat[1:-1,1:-1])) + 1
 
-    return set_range(mat[1:-1,1:-1])
+    return wrap_correct(mat[1:-1,1:-1],buffer=buffer)
 
 def smoothen(matrix,counts,ang,smooth_par=.05,iters=30,wraparound=True,diagonals=True): 
     # matrix is in form [12,12]
@@ -174,6 +204,10 @@ def smoothen(matrix,counts,ang,smooth_par=.05,iters=30,wraparound=True,diagonals
     # So the shapes start out right before looping 
     matrix = make_wraparound(matrix, ang, wraparound=True)
     counts = make_wraparound(counts, False, wraparound=True)
+    if ang:
+        buffer=180
+    else:
+        buffer=None
     
     for it in range(iters):
         matrix = make_wraparound(matrix[1:-1,1:-1], ang, wraparound=True)
@@ -183,12 +217,12 @@ def smoothen(matrix,counts,ang,smooth_par=.05,iters=30,wraparound=True,diagonals
         # Loops through each matrix element and weights changes by counts
         for i in np.arange(rows)+1:
             for j in np.arange(cols)+1:
-                neighs = np.append(get_neighbors(matrix,(i,j)), matrix[i,j])
+                neighs = wrap_correct(np.append(get_neighbors(matrix,(i,j)), matrix[i,j]), ref=matrix[i,j], buffer=buffer)
                 neigh_counts = np.append(get_neighbors(counts,(i,j)), counts[i,j])
                 del_sm = np.sum(np.multiply(neigh_counts, neighs))
                 if diagonals:
                     # Diagonal entries (scaled by 1/sqrt(2))
-                    neighs_d = np.append(get_diags(matrix,(i,j)), matrix[i,j])
+                    neighs_d = wrap_correct(np.append(get_diags(matrix,(i,j)), matrix[i,j]), ref=matrix[i,j], buffer=buffer)
                     neighs_counts_d = np.append(get_diags(counts,(i,j)), counts[i,j])
                     del_sm_d = (np.sum(np.multiply(neighs_counts_d, neighs_d)))/np.sqrt(2)
                     Z = np.sum(neigh_counts) + np.sum(neighs_counts_d)/np.sqrt(2)
@@ -201,18 +235,25 @@ def smoothen(matrix,counts,ang,smooth_par=.05,iters=30,wraparound=True,diagonals
         # After tempmat is updated, set reference matrix to be the same
         # This way updates within one iteration don't get included in the same iteration
         matrix = np.copy(tempmat)
+        
+        if it==0:
+            counts+=1
     
-    return matrix[1:-1,1:-1]
+    return wrap_correct(matrix[1:-1,1:-1], buffer=buffer)
 
 
 '''
 Small funcs and utils
 '''
-def wrap_correct(arr,ref=0,buffer=180):
+def wrap_correct(arr_orig,ref=0,buffer=None):
     # Takes angles and translates them to +/-buffer around ref.
     # For things like std, use large buffer so it doesn't change
     # If both arrays, send each element through this function.
-    if hasattr(arr,"__len__"):
+    if buffer is None:
+        return arr_orig
+    
+    if hasattr(arr_orig,"__len__"):
+        arr = arr_orig.copy()
         if hasattr(ref,"__len__"):
             for i in range(len(arr)):
                 arr[i] = wrap_correct(arr[i],ref=ref[i])
@@ -223,6 +264,7 @@ def wrap_correct(arr,ref=0,buffer=180):
             if len(arr[arr<ref-buffer])>0 or len(arr[arr>=ref+buffer])>0:
                 arr = wrap_correct(arr,ref=ref)
     else:
+        arr = arr_orig
         if arr<ref-buffer:
             arr+=buffer*2
             if arr<ref-buffer:
@@ -241,7 +283,7 @@ def make_wraparound(mat,ang,wraparound=True):
     if ang:
         buffer=180
     else:
-        buffer=1e5
+        buffer=None
 
     if wraparound:
         # diagonals
