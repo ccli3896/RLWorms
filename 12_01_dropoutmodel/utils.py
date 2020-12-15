@@ -30,7 +30,8 @@ def make_df(fnames,
             't', 'obs_b', 'obs_h', 'prev_actions', 'next_obs_b', 'next_obs_h', 'reward', 'loc'
     '''
     def add_ind_to_df(traj,df,i, reward_ahead, prev_act_window):
-        # Assumes data for angle observations go from -1 to 1. (not sure why)
+        # Assumes data for angle observations go from -1 to 1. 
+        # This was because of use w/ normalized box wrapper with actual worm env
         ANG_BOUND = 180
         return df.append({
             't'           : traj['t'][i],
@@ -131,15 +132,15 @@ def make_stat_mats(df, cut_reversals=True):
         df_d = dict(zip(df.columns,range(len(df.columns))))
         series = df.query('obs_b=='+str(obs[0])+'& obs_h=='+str(obs[1])+
             '& next_obs_b!='+str(backwards)).copy()
-        series.iloc[:,df_d['next_obs_b']] = wrap_correct(series['next_obs_b'].to_numpy(),ref=series['obs_b'].to_numpy())
-        series.iloc[:,df_d['next_obs_h']] = wrap_correct(series['next_obs_h'].to_numpy(),ref=series['obs_h'].to_numpy())
+        series.iloc[:,df_d['next_obs_b']] = wrap_correct(series['next_obs_b'].to_numpy(),ref=series['obs_b'].to_numpy(),buffer=180)
+        series.iloc[:,df_d['next_obs_h']] = wrap_correct(series['next_obs_h'].to_numpy(),ref=series['obs_h'].to_numpy(),buffer=180)
 
         # Handles case for one sample (initialize)
         r_sts,b_sts,h_sts,count = [np.nan,np.nan],[np.nan,np.nan],[np.nan,np.nan],0
         if series.size > 0:    
-            r_sts[0],b_sts[0],h_sts[0] = wrap_correct(series['reward'].mean()), \
-                                            wrap_correct(series['next_obs_b'].mean()), \
-                                            wrap_correct(series['next_obs_h'].mean())
+            r_sts[0],b_sts[0],h_sts[0] = wrap_correct(series['reward'].mean(),buffer=None), \
+                                            wrap_correct(series['next_obs_b'].mean(),buffer=180), \
+                                            wrap_correct(series['next_obs_h'].mean(),buffer=180)
             if series.size > 1:
                 r_sts[1],b_sts[1],h_sts[1] = series['reward'].var(), \
                                                 series['next_obs_b'].var(), \
@@ -245,7 +246,7 @@ def smoothen(matrix,counts,ang,smooth_par=.05,iters=30,wraparound=True,diagonals
 '''
 Small funcs and utils
 '''
-def wrap_correct(arr_orig,ref=0,buffer=None):
+def wrap_correct(arr_orig,ref=0,buffer=180):
     # Takes angles and translates them to +/-buffer around ref.
     # For things like std, use large buffer so it doesn't change
     # If both arrays, send each element through this function.
@@ -256,23 +257,23 @@ def wrap_correct(arr_orig,ref=0,buffer=None):
         arr = arr_orig.copy()
         if hasattr(ref,"__len__"):
             for i in range(len(arr)):
-                arr[i] = wrap_correct(arr[i],ref=ref[i])
+                arr[i] = wrap_correct(arr[i],ref=ref[i],buffer=buffer)
         # If only arr is an array
         else:
             arr[arr<ref-buffer]+=buffer*2
             arr[arr>=ref+buffer]-=buffer*2
             if len(arr[arr<ref-buffer])>0 or len(arr[arr>=ref+buffer])>0:
-                arr = wrap_correct(arr,ref=ref)
+                arr = wrap_correct(arr,ref=ref,buffer=buffer)
     else:
         arr = arr_orig
         if arr<ref-buffer:
             arr+=buffer*2
             if arr<ref-buffer:
-                arr = wrap_correct(arr,ref=ref)
+                arr = wrap_correct(arr,ref=ref,buffer=buffer)
         elif arr>=ref+buffer:
             arr-=buffer*2
             if arr>=ref+buffer:
-                arr = wrap_correct(arr,ref=ref)
+                arr = wrap_correct(arr,ref=ref,buffer=buffer)
     return arr
         
 def make_wraparound(mat,ang,wraparound=True):

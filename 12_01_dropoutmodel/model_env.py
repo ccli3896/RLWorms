@@ -2,12 +2,13 @@ import gym
 from gym import spaces
 import numpy as np
 import matplotlib.pyplot as plt
+import utils as ut
 
 class FakeWorm(gym.Env):
     """Custom Environment that follows gym interface"""
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, distribution_dict, start=None, ep_len=1e6):
+    def __init__(self, dist_dict, start=None, ep_len=None):
         '''
         distribution_dict must have the following:
         body_on: [12,12,2] with dimensions [body angle, head angle, mu/sig]. 
@@ -29,9 +30,10 @@ class FakeWorm(gym.Env):
         else:
             self._state = self.grid2obs(start)
         self.state = self.obs2grid(self._state)
+        self.state_inds = self.grid2coords(self.state)
             
         # Setting self parameters
-        self.dist_dict = distribution_dict
+        self.dist_dict = dist_dict
         self.ep_len = ep_len
         self.steps = 0
         self.finished = False
@@ -41,33 +43,24 @@ class FakeWorm(gym.Env):
         """Chooses action and returns a (step_type, reward, discount, observation)"""
         self.steps += 1
         # If step count reaches episode length
-        if self.steps >= self.ep_len:
+        if self.ep_len is not None and self.steps >= self.ep_len:
             self.finished = True
             
         # Draws new reward and state from previous state 
-        olds = self.grid2coords(self.state)
-        if np.any(olds>12):
-            print('olds',olds,self.state,self._state )
         if action==0:
-            self.state[0] = self.get_sample('body_off', olds)
-            self.state[1] = self.get_sample('head_off', olds)
-
-            reward = self.get_sample('reward_off', olds)
+            self.state[0] = self.get_sample('body_off', self.state_inds)
+            self.state[1] = self.get_sample('head_off', self.state_inds)
+            reward = self.get_sample('reward_off', self.state_inds)
         elif action==1:
-            self.state[0] = self.get_sample('body_on', olds)
-            self.state[1] = self.get_sample('head_on', olds)
-            reward = self.get_sample('reward_on', olds)
+            self.state[0] = self.get_sample('body_on', self.state_inds)
+            self.state[1] = self.get_sample('head_on', self.state_inds)
+            reward = self.get_sample('reward_on', self.state_inds)
         else:
             raise ValueError('Invalid action')
                        
         # Return obs, reward, done (boolean), info (dict)
-        # Something is going out of bounds somewhere. Below is a (temporary) patch
-        for i in range(len(self.state)):
-            if self.state[i] >= 180:
-                self.state[i] -= 360
         self._state = self.grid2obs(self.state)
-        if self._state > 143 or self._state < 0:
-            print(self._state,self.state,olds,reward)
+        self.state_inds = self.grid2coords(self.state)
         return self._state, reward, self.finished, {}
 
         
@@ -81,13 +74,13 @@ class FakeWorm(gym.Env):
         else:
             self._state = self.grid2obs(start)
         self.state = self.obs2grid(self._state)
+        self.state_inds = self.grid2coords(self.state)
         
         # Takes one step and returns the observation
         return self._state
     
     def render(self, mode='human', close=False):
         print('At',self.state)
-
 
 
     ''' Utility '''
@@ -98,37 +91,33 @@ class FakeWorm(gym.Env):
         if 'reward' in dkey:
             return np.random.normal(mu,np.sqrt(variance))
         else:
-            return self.keep_inside(self.myround(np.random.normal(mu,np.sqrt(variance))))
+            return ut.wrap_correct(self.myround(np.random.normal(mu,np.sqrt(variance))),buffer=180)
                        
     def myround(self, x, base=30):
         return base * round(x/base)
-
-    def keep_inside(self,num,bound=180):
-        # Restricts values to [-180,180)
-        if num<-bound:
-            num+=bound*2
-        elif num>=bound:
-            num-=bound*2
-        if num<-bound or num>=bound:
-            print('bad')
-        return num
 
     ''' Conversion functions '''
     # obs is from 0 to 143.
     # grid is [-180 to 150, -180 to 150]
     # coords is [0 to 11, 0 to 11]
     def obs2grid(self,obs):
+        if obs<0 or obs>143:
+            raise ValueError('obs is out of range.')
         gridcoords = np.array([obs//self.grid_width, obs%self.grid_width])
         return (gridcoords*30)-180
     def grid2obs(self,gridcoords):
-        gridcoords = ((np.array(gridcoords)+180)/30).astype(int)
-        return self.grid_width*gridcoords[0] + gridcoords[1]
+        if gridcoords[0]<-180 or gridcoords[0]>=180:
+            if gridcoords[1]<-180 or gridcoords[0]>=180:
+                raise ValueError('gridcoords are out of range.')
+        tcoords = ((np.array(gridcoords)+180)/30).astype(int)
+        return self.grid_width*tcoords[0] + tcoords[1]
     def grid2coords(self,gridcoords):
+        if gridcoords[0]<-180 or gridcoords[0]>=180:
+            if gridcoords[1]<-180 or gridcoords[0]>=180:
+                raise ValueError('gridcoords are out of range.')
         coords = (np.array(gridcoords)+180)//30
-        for i in range(len(coords)):
-            if coords[i]>=12:
-                coords[i]-=12
         return coords
     def coords2grid(self,coords):
+        #Unused
         return (np.array(coords)*30)-180
     ''' End of conversion functions '''
