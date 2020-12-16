@@ -5,7 +5,8 @@ class Q_Agent_Base():
     # Following pseudocode from pp131. 
     # Assumes epsilon greedy.
     def __init__(self,
-                env,
+                env_obs_n=144,
+                env_act_n=2,
                 gamma=0.98,
                 epsilon=0.05,
                 q_checkpoint = None,
@@ -14,8 +15,8 @@ class Q_Agent_Base():
         # Set hyperparameters and env
         self.gamma = gamma
         self.epsilon = epsilon
-        self.obs_n = env.observation_space.n
-        self.act_n = env.action_space.n
+        self.obs_n = env_obs_n 
+        self.act_n = env_act_n
         
         # Initialize Q table with optimistic starts
         if q_checkpoint is None:
@@ -50,14 +51,16 @@ class Q_Av_Agent(Q_Agent_Base):
     # Following pseudocode from pp131. 
     # Except using averaging instead of steps, because all these data should be the same.
     def __init__(self,
-                env,
+                env_obs_n=144,
+                env_act_n=2,
                 gamma=0.98,
                 epsilon=0.05,
                 q_checkpoint = None,
                 q_counts_checkpoint = None,
                 ):
         
-        super().__init__(env,
+        super().__init__(env_obs_n=env_obs_n,
+                        env_act_n=env_act_n,
                          gamma=gamma,
                          epsilon=epsilon,
                          q_checkpoint=q_checkpoint)
@@ -76,7 +79,8 @@ class Q_Av_Agent(Q_Agent_Base):
 class Q_Alpha_Agent(Q_Agent_Base):
     # Following pseudocode from pp131. 
     def __init__(self,
-                env,
+                env_obs_n=144,
+                env_act_n=2,
                 gamma=0.98,
                 epsilon=0.05,
                 alpha=0.005,
@@ -84,7 +88,8 @@ class Q_Alpha_Agent(Q_Agent_Base):
                 q_counts_checkpoint = None,
                 ):
         
-        super().__init__(env,
+        super().__init__(env_obs_n=env_obs_n,
+                         env_act_n=env_act_n,
                          gamma=gamma,
                          epsilon=epsilon,
                          q_checkpoint=q_checkpoint)
@@ -136,3 +141,5 @@ def learner(agent, env,
             print(f'Eval {eval_reward_ind}: average {eval_rewards[eval_reward_ind]}')
     
     return agent, rewards, eval_rewards
+
+    

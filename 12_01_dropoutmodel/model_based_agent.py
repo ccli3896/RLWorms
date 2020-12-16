@@ -72,20 +72,34 @@ class DataHandler():
 
 
 
-class learner():
+class Learner():
     # Agents take a model_set object and sample randomly, uniformly, from all models at each step.
     # The agent_manager trains one agent on model_set in separate processes. Means multiple agent_managers need
     # to be spawned to learn in parallel.
-    def __init__(self):
-        # Makes an agent, inits hps. 
-        
+    def __init__(self,agent,worm):
+        # Stores an agent.
+        self.agent = agent 
+        self.env = worm
+        self.rewards = []
+        self.eval_rewards = []
         
     def _learn_step(self):
         # Internal function to take one step.
-        pass 
+        # Chooses an action based on model state, takes action, gets info. 
+        # Updates.
+        obs = self.env.grid2obs(self.env.state)
+        action = self.agent.act(self.env.state_inds)
+        next_obs,rew,done,_ = self.env.step(action)
+        self.agent.update(obs,action,next_obs,rew)  
+
     def learn(self,poison_queue=None):
         # Learning loop. Has an option for a poison_queue input, which will stop and return the function
         # if a stop signal is received.
+        pass
+
+    def eval_ep(self):
+        pass
+    def save_agent(self):
         pass
 
 class learner_manager():
