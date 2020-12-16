@@ -70,17 +70,6 @@ class DataHandler():
             return f'No dataframe\nParams are {self.params}'
         return f'Len of dataframe is {len(self.df)}\nParams are {self.params}'
 
- 
-class model_set():
-    # Creates and stores lists of models that sample randomly from saved trajectories.
-    # Idea for now: each model is actually a large list of sampled models.
-    def __init__(self,num_models,samples):
-        pass 
-    def update_df(self):
-        pass
-    def get_model(self):
-        # Makes distribution dictionary for a model.
-        pass 
 
 
 class learner():
@@ -89,7 +78,8 @@ class learner():
     # to be spawned to learn in parallel.
     def __init__(self):
         # Makes an agent, inits hps. 
-        pass 
+        
+        
     def _learn_step(self):
         # Internal function to take one step.
         pass 
