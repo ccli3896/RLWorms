@@ -307,5 +307,5 @@ def get_neighbors(mat,i):
 def get_diags(mat,i):
     return np.array([mat[i[0]-1,i[1]-1], mat[i[0]-1,i[1]+1], mat[i[0]+1,i[1]-1], mat[i[0]+1,i[1]+1]])
 
-def myround(self, x, base=30):
+def myround(x, base=30):
     return base * round(x/base)

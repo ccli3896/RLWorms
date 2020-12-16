@@ -28,6 +28,7 @@ class FakeWorm(gym.Env):
         self.state_inds = self.grid2coords(self.state)
             
         # Setting self parameters
+        self.modset = modset
         self.model_id = model_id
         self.ep_len = ep_len
         self.steps = 0
@@ -42,7 +43,7 @@ class FakeWorm(gym.Env):
             self.finished = True
             
         # Draws new reward and state from previous state 
-        self.state, reward = self.modset.sample(self.state_inds,action,model_id=self.model_id)
+        self.state[0],self.state[1],reward = self.modset.sample(self.state_inds,action,model_id=self.model_id)
                        
         # Return obs, reward, done (boolean), info (dict)
         self._state = self.grid2obs(self.state)
@@ -67,21 +68,7 @@ class FakeWorm(gym.Env):
         return self._state
     
     def render(self, mode='human', close=False):
-        print('At',self.state)
-
-
-    ''' Utility '''
-    def get_sample(self,dkey,olds):
-        # Returns a single sample from normal distribution given by statistics in dictionary[dkey], 
-        # at location given by olds (index into matrix in dkey)
-        mu,variance = self.dist_dict[dkey][olds[0],olds[1]]
-        if 'reward' in dkey:
-            return np.random.normal(mu,np.sqrt(variance))
-        else:
-            return ut.wrap_correct(self.myround(np.random.normal(mu,np.sqrt(variance))),buffer=180)
-                       
-    def myround(self, x, base=30):
-        return base * round(x/base)
+        print('At',self.state)              
 
     ''' Conversion functions '''
     # obs is from 0 to 143.
@@ -107,6 +94,10 @@ class FakeWorm(gym.Env):
     def coords2grid(self,coords):
         #Unused
         return (np.array(coords)*30)-180
+    def obs2coords(self,obs):
+        if obs<0 or obs>143:
+            raise ValueError('obs is out of range.')
+        return np.array([obs//self.grid_width, obs%self.grid_width])
     ''' End of conversion functions '''
 
 class ModelSet():
@@ -128,17 +119,18 @@ class ModelSet():
         self.models = []
         for _ in range(self.num_models):
             if self.frac is not None:
-                samps = handler.sample(frac=self.frac)
+                samps = handler.df.sample(frac=self.frac)
             elif self.samples is not None:
-                samps = handler.sample(n=self.samples)
+                samps = handler.df.sample(n=self.samples)
             else:
                 raise InputError('Samples and frac cannot both be None')
 
-            self.models.append(make_dist_dict(samps, sm_pars=sm_pars, 
+            self.models.append(ut.make_dist_dict(samps, sm_pars=sm_pars, 
                                 prev_act_window=self.model_params['prev_act_window']))
     
     def sample(self,inds,action,model_id=None):
         # inds is the list to say which states to sample for. [theta_b,theta_h]
+        # In format coords.
         # model_id is if we want to sample consistently from one model. 
         # Returns state and reward values. [body, head, reward]
         if model_id is None:

@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import utils as ut 
 import model_env as me 
-import worm_env as we 
+#import worm_env as we 
 import pickle
 import pandas as pd 
 import tab_agents as tab 
@@ -91,19 +91,30 @@ class Learner():
         action = self.agent.act(self.env.state_inds)
         next_obs,rew,done,_ = self.env.step(action)
         self.agent.update(obs,action,next_obs,rew)  
+        return rew
+    
+    def _eval_step(self):
+        obs = self.env.grid2obs(self.env._state)
+        action = self.agent.eval_act(obs) 
 
-    def learn(self,poison_queue=None):
+    def learn(self,num_steps=1000,poison_queue=None):
         # Learning loop. Has an option for a poison_queue input, which will stop and return the function
         # if a stop signal is received.
-        pass
+        while len(poison_queue)==0:
+            for i in range(num_steps):
+                self.rewards.append(self._learn_step())
+
+        # After the learner gets a signal to stop, do an eval episode
+        self.env.reset()
+        self.
 
     def eval_ep(self):
         pass
     def save_agent(self):
         pass
 
-class learner_manager():
-    # 
+# class learner_manager():
+#     pass
 
 class worm_runner():
     # Can run multiple types of worm episodes. Each must have the option to return a stop code that plays nice with
