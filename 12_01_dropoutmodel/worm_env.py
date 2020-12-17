@@ -2,7 +2,6 @@ import gym
 from gym import spaces
 from improc import *
 import numpy as np
-import matplotlib.pyplot as plt
 import time
 
 ##########################
@@ -11,18 +10,6 @@ import time
 # the first observation for each epoch.
 ##########################
 
-
-def add_to_traj(trajectory,info):
-    # appends each key in info to the corresponding key in trajectory.
-    # If trajectory is empty, returns trajectory as copy of info but with each element as list
-    # so it can be appended to in the future.
-
-    if trajectory:
-        for k in info.keys():
-            trajectory[k].append(info[k])
-    else:
-        for k in info.keys():
-            trajectory[k] = [info[k]]
 
 class ProcessedWorm(gym.Env):
     """Custom Environment that follows gym interface"""
@@ -173,3 +160,14 @@ class ProcessedWorm(gym.Env):
     def close(self):
         self.cam.exit()
         self.task.write(0)
+    
+    def realobs2obs(self,realobs):
+        # Takes angle measurements from -1 to 1 [theta_b, theta_h] and maps to obs [0,143]
+        # EVENTUALLY THIS WILL BE FIXED TO PLAY NICE WITH THE MODEL ENV
+        gridcoords = realobs*180
+        # Below is from ensemble_mod_env utils
+        if gridcoords[0]<-180 or gridcoords[0]>=180:
+            if gridcoords[1]<-180 or gridcoords[0]>=180:
+                raise ValueError('gridcoords are out of range.')
+        tcoords = ((np.array(gridcoords)+180)/30).astype(int)
+        return 12*tcoords[0] + tcoords[1]
