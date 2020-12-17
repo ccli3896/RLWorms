@@ -2,6 +2,7 @@ import numpy as np
 import utils as ut 
 import pickle
 import ensemble_mod_env as eme
+import fake_worm as fw
 
 '''
 Flow of script:
@@ -70,22 +71,25 @@ class Learner():
     # Agents take a model_set object and sample randomly, uniformly, from all models at each step.
     # The agent_manager trains one agent on model_set in separate processes. Means multiple agent_managers need
     # to be spawned to learn in parallel.
-    '''
-    NEEDS TO BE TESTED
-    '''
-    def __init__(self, agent, handler, label, worm_pars={'num_models':10, 'frac':.5}):
+
+    def __init__(self, agent, handler, label, worm_pars={'num_models':10, 'frac':.5}, num_steps=1000,eval_steps=1000):
         # Stores an agent.
         self.agent = agent 
         self.label = label
-        self.rewards = []
-        self.eval_rewards = []
+        self.reset_reward_vecs()
+
+        self.num_steps = num_steps
+        self.eval_steps = eval_steps
         
         # Make different sampled group of worms for each Learner object
-        modset = eme.ModelSet(worm_pars['num_models'], frac=worm_pars['frac'])
-        self.env = eme.FakeWorm(modset)
-        self.env.make_models(handler, sm_pars={'lambda':.05, 'iters':30})
+        #modset = eme.ModelSet(worm_pars['num_models'], frac=worm_pars['frac'])
+        #modset.make_models(handler,sm_pars={'lambda':.05, 'iters':30})
+        self.env = fw.FakeWorm() #eme.FakeWorm(modset)
 
-        
+    def reset_reward_vecs(self):
+        self.rewards = []
+        self.eval_rewards = []
+
     def _learn_step(self):
         # Internal function to take one step.
         # Chooses an action based on model state, takes action, gets info. 
@@ -101,21 +105,27 @@ class Learner():
         action = self.agent.eval_act(obs) 
         next_obs,rew,done,_ = self.env.step(action)
         return rew
+    
+    def eval_ep(self):
+        self.eval_rewards = []
+        for _ in range(self.eval_steps):
+            self.eval_rewards.append(self._eval_step())
+        return self.eval_rewards
 
-    def learn(self,num_steps=1000,eval_steps=1000,poison_queue=None,learn_limit=1e6):
+    def learn(self,poison_queue=None,learn_limit=1e6):
         # Learning loop. Has an option for a poison_queue input, which will stop and return the function
         # if a stop signal is received.
         learn_eps = 0
+        if poison_queue is None: poison_queue=[]
         while len(poison_queue)==0 and learn_eps<learn_limit:
-            print(f'Agent {self.label} is on ep {learn_eps}')
-            for i in range(num_steps):
+            if learn_eps%100==0: print(f'Agent {self.label} is on ep {learn_eps}')
+            for i in range(self.num_steps):
                 self.rewards.append(self._learn_step())
             learn_eps+=1
 
         # After the learner gets a signal to stop, do an eval episode
         self.env.reset()
-        for i in range(eval_steps):
-            self.eval_rewards.append(self._eval_step())
+        return np.mean(self.eval_ep())
         
     def save_agent(self,fname):
         with open(fname,'wb') as f:
@@ -130,9 +140,7 @@ class Learner():
 class WormRunner():
     # Can run multiple types of worm episodes. Each must have the option to return a stop code that plays nice with
     # agent_manager and pool.apply_async(). 
-    '''
-    NEEDS TO BE TESTED
-    '''
+
     def __init__(self,worm,agent):
         # Start a worm (worm is the env ProcessedWorm)
         # agent should be an agent class with averaged qtables from a multiprocessed run. 
@@ -144,22 +152,24 @@ class WormRunner():
     def eval_ep(self,fname):
         # Runs an evaluation episode on the worm and returns the total rewards collected.
         self.eval_traj = {}
-        obs = self.realobs2obs(self.worm.reset())
+        obs = self.worm.realobs2obs(self.worm.reset())
         done = False
         while not done:
             action = self.agent.eval_act(obs)
             next_obs, rew, done, info = self.worm.step(action, sleep_time=0) 
             self.add_to_traj(self.eval_traj, info)
-            obs = self.realobs2obs(next_obs)
+            obs = self.worm.realobs2obs(next_obs)
         with open(fname,'wb') as f:
             pickle.dump(self.eval_traj, f)
-        return sum(self.eval_traj['reward'])
+        return np.mean((self.eval_traj['reward']))
 
-    def full_run(self, num_eps, fname, eps_vector=None):
+    def full_run(self, num_eps, fname, eps_vector=None, poison_queue=None):
         # Runs a number of episodes of runtype. Saves trajectory at end.
-        # Then runs an eval episode and saves it. 
         # eps_vector is a list of epsilon values for each episode. If there's one value [eps], then 
         # every episode uses the same value.
+        # poison_queue is a multiprocessing.Manager.Queue() object
+        #
+        # Saves traj 
         if eps_vector is None:
             eps_vector = np.zeros(num_eps)+.1
         elif len(eps_vector)==1:
@@ -170,17 +180,20 @@ class WormRunner():
             self.eps_greedy_ep(eps_vector[ep]) # Background is reset each time this is called
 
         self.save_traj(fname) 
-        self.eval_ep(fname[:-4]+'_eval.pkl')
+        #self.eval_ep(fname[:-4]+'_eval_end.pkl')
+
+        if poison_queue is not None:
+            poison_queue.put('STOP')
 
     def eps_greedy_ep(self,epsilon):
         self.agent.epsilon = epsilon
-        obs = self.realobs2obs(self.worm.reset())
+        obs = self.worm.realobs2obs(self.worm.reset())
         done = False
         while not done:
             action = self.agent.act(obs)
             next_obs, rew, done, info = self.worm.step(action, sleep_time=0)
             self.add_to_traj(self.traj, info)
-            obs = self.realobs2obs(next_obs) 
+            obs = self.worm.realobs2obs(next_obs) 
 
     def save_traj(self,fname):
         with open(fname,'wb') as f:

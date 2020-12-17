@@ -19,15 +19,17 @@ class Q_Agent_Base():
         self.act_n = env_act_n
         
         # Initialize Q table with optimistic starts
-        if q_checkpoint is None:
-            self.Qtab = np.random.normal(2,.5,size=(self.obs_n, self.act_n)) # Optimistic mean at 2
-        else:
-            self.Qtab = q_checkpoint
+        self.resetq(q_checkpoint=q_checkpoint)
         
         # Initialize other things
         self.eps = 0
-        self.steps = 0 # For current episode, not sure if this will be useful
         self.tot_steps = 0
+    
+    def resetq(self, q_checkpoint=None):
+        if q_checkpoint is None:
+            self.Qtab = np.random.normal(2,1,size=(self.obs_n, self.act_n)) # Optimistic mean at 2
+        else:
+            self.Qtab = q_checkpoint
     
     def update(self, obs, action, next_obs, reward):
         raise NotImplementedError

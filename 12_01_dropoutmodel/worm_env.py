@@ -15,7 +15,7 @@ class ProcessedWorm(gym.Env):
     """Custom Environment that follows gym interface"""
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, target, ep_len=500, ht_time=3):
+    def __init__(self, target, ep_len=600, ht_time=3):
         
         """
         Initializes the camera, light, worm starting point.
@@ -170,4 +170,4 @@ class ProcessedWorm(gym.Env):
             if gridcoords[1]<-180 or gridcoords[0]>=180:
                 raise ValueError('gridcoords are out of range.')
         tcoords = ((np.array(gridcoords)+180)/30).astype(int)
-        return 12*tcoords[0] + tcoords[1]
+        return int(12*tcoords[0] + tcoords[1])

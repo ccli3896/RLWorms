@@ -4,5 +4,6 @@ def createandsort (n):
     a = rand.rand(n) #Generate an array of size n
     return a.sort() #Sort the array
 
-def worker(x):
+def worker(x=2):
+    print(x*x)
     return x*x
