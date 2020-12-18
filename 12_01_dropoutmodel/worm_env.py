@@ -15,7 +15,7 @@ class ProcessedWorm(gym.Env):
     """Custom Environment that follows gym interface"""
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, target, ep_len=600, ht_time=3):
+    def __init__(self, target, ep_len=1200, ht_time=3):
         
         """
         Initializes the camera, light, worm starting point.
@@ -160,6 +160,7 @@ class ProcessedWorm(gym.Env):
     def close(self):
         self.cam.exit()
         self.task.write(0)
+        self.task.close()
     
     def realobs2obs(self,realobs):
         # Takes angle measurements from -1 to 1 [theta_b, theta_h] and maps to obs [0,143]

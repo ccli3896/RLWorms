@@ -114,7 +114,7 @@ class ModelSet():
 
     def make_models(self,handler,sm_pars):
         # handler is a DataHandler object from model_based_agent file.
-        self.model_params = handler.params 
+        self.model_params = dict(handler.params) 
         self.model_params['sm_pars'] = sm_pars 
         self.models = []
         for _ in range(self.num_models):

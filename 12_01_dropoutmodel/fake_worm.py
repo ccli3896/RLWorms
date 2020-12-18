@@ -25,7 +25,7 @@ class FakeWorm(gym.Env):
     """
     metadata = {'render.modes': ['human']}
 
-    def __init__(self,ep_len=500):
+    def __init__(self,ep_len=5000):
         """
         Initializes the camera, light, worm starting point.
         ep_len is in seconds; each episode will terminate afterward. 
@@ -102,7 +102,7 @@ class FakeRealWorm(gym.Env):
         Initializes the camera, light, worm starting point.
         ep_len is in seconds; each episode will terminate afterward. 
         """
-        super(FakeWorm, self).__init__()
+        super(FakeRealWorm, self).__init__()
 
         N_DISCRETE_ACTIONS = 2 # on or off
 

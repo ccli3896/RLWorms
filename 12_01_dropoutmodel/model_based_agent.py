@@ -82,9 +82,9 @@ class Learner():
         self.eval_steps = eval_steps
         
         # Make different sampled group of worms for each Learner object
-        #modset = eme.ModelSet(worm_pars['num_models'], frac=worm_pars['frac'])
-        #modset.make_models(handler,sm_pars={'lambda':.05, 'iters':30})
-        self.env = fw.FakeWorm() #eme.FakeWorm(modset)
+        modset = eme.ModelSet(worm_pars['num_models'], frac=worm_pars['frac'])
+        modset.make_models(handler,sm_pars={'lambda':.05, 'iters':30})
+        self.env = eme.FakeWorm(modset)
 
     def reset_reward_vecs(self):
         self.rewards = []
@@ -112,20 +112,25 @@ class Learner():
             self.eval_rewards.append(self._eval_step())
         return self.eval_rewards
 
-    def learn(self,poison_queue=None,learn_limit=1e6):
+    def learn(self,poison_queue=None,learn_limit=None):
         # Learning loop. Has an option for a poison_queue input, which will stop and return the function
         # if a stop signal is received.
         learn_eps = 0
-        if poison_queue is None: poison_queue=[]
-        while len(poison_queue)==0 and learn_eps<learn_limit:
-            if learn_eps%100==0: print(f'Agent {self.label} is on ep {learn_eps}')
+        empty_poison_queue = True
+
+        while empty_poison_queue and (learn_limit is None or learn_eps<learn_limit):
+            if poison_queue is None: 
+                empty_poison_queue = True
+            else: 
+                empty_poison_queue = poison_queue.empty()
+
             for i in range(self.num_steps):
                 self.rewards.append(self._learn_step())
             learn_eps+=1
 
         # After the learner gets a signal to stop, do an eval episode
         self.env.reset()
-        return np.mean(self.eval_ep())
+        return learn_eps, np.mean(self.eval_ep())
         
     def save_agent(self,fname):
         with open(fname,'wb') as f:
@@ -175,6 +180,7 @@ class WormRunner():
         elif len(eps_vector)==1:
             eps_vector = np.zeros(num_eps)+eps_vector
 
+        self.eval_ep(fname[:-4]+'_eval_start.pkl')
         self.traj = {} 
         for ep in range(num_eps):
             self.eps_greedy_ep(eps_vector[ep]) # Background is reset each time this is called
