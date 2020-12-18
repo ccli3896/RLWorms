@@ -15,7 +15,7 @@ class ProcessedWorm(gym.Env):
     """Custom Environment that follows gym interface"""
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, target, ep_len=1200, ht_time=3):
+    def __init__(self, target, ep_len=1200, ht_time=3, bg_time=20):
         
         """
         Initializes the camera, light, worm starting point.
@@ -36,6 +36,7 @@ class ProcessedWorm(gym.Env):
         self.cam, self.task = init_instruments()
         #self.bg = self.make_bgs()[0]
 
+        self.bg_time=bg_time
         self.timer = Timer(ep_len)
         self.ht_timer= Timer(ht_time)
         self.steps = 0
@@ -140,9 +141,9 @@ class ProcessedWorm(gym.Env):
         pass
 
     """ BELOW: UTILITY FUNCTIONS """
-    def make_bgs(self, light_vec=[0], total_time=20):
+    def make_bgs(self, light_vec=[0]):
         """Makes background images and stores in self"""
-        return make_vec_bg(self.cam,self.task,light_vec,total_time=total_time)
+        return make_vec_bg(self.cam,self.task,light_vec,total_time=self.bg_time)
         
     def test_cam(self,bg=None):
         """To check camera is working, with or without background subtraction"""

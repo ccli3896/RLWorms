@@ -4,7 +4,6 @@ import pickle
 import ensemble_mod_env as eme
 import fake_worm as fw
 import worm_env as we
-import tab_agents as tab
 
 '''
 Flow of script:
@@ -33,7 +32,7 @@ class DataHandler():
         for key,val in kwargs.items():
             self.params[key] = val 
         if len(kwargs)==0:
-            print('No kwargs in add_dict_to_df')
+            print('No kwargs')
             kwargs = self.params 
         
         self.df = ut.make_df(fnames, old_frame=self.df, **kwargs)
@@ -114,17 +113,27 @@ class Learner():
             self.eval_rewards.append(self._eval_step())
         return self.eval_rewards
 
-    def learn(self,learn_limit=10000):
-        # Learning loop. 
-        learn_eps = 0
+    def learn(self,poison_queue=None,learn_limit=None):
+        # Learning loop. Has an option for a poison_queue input, which will stop and return the function
+        # if a stop signal is received.
 
-        while learn_eps<learn_limit:
+        # TODO: rewrite poison_queue to use .get() instead of this mess
+        learn_eps = 0
+        empty_poison_queue = True
+
+        while empty_poison_queue and (learn_limit is None or learn_eps<learn_limit):
+            if poison_queue is None: 
+                empty_poison_queue = True
+            else: 
+                empty_poison_queue = poison_queue.empty()
+
             for i in range(self.num_steps):
                 self.rewards.append(self._learn_step())
             learn_eps+=1
 
+        # After the learner gets a signal to stop, do an eval episode
         self.env.reset()
-        return self.agent.Qtab
+        return learn_eps, np.mean(self.eval_ep())
         
     def save_agent(self,fname):
         with open(fname,'wb') as f:
@@ -140,35 +149,33 @@ class WormRunner():
     # Can run multiple types of worm episodes. Each must have the option to return a stop code that plays nice with
     # agent_manager and pool.apply_async(). 
 
-    def __init__(self,agent,worm,act_spacing=3):
+    def __init__(self,agent,worm):
         # Start a worm (worm is the env ProcessedWorm)
         # agent should be an agent class with averaged qtables from a multiprocessed run. 
         self.worm = worm
         self.agent = agent
         self.traj = {}
         self.eval_traj = {}
-        self.act_spacing = act_spacing
 
-    def eval_ep(self,fname,steps=300):
+    def eval_ep(self,fname):
         # Runs an evaluation episode on the worm and returns the total rewards collected.
         self.eval_traj = {}
         obs = self.worm.realobs2obs(self.worm.reset())
-        st = 0
-        while st < steps:
-            if st%self.act_spacing==0:
-                action = self.agent.eval_act(obs)
+        done = False
+        while not done:
+            action = self.agent.eval_act(obs)
             next_obs, rew, done, info = self.worm.step(action, sleep_time=0) 
             self.add_to_traj(self.eval_traj, info)
             obs = self.worm.realobs2obs(next_obs)
-            st+=1
         with open(fname,'wb') as f:
             pickle.dump(self.eval_traj, f)
         return np.mean((self.eval_traj['reward']))
 
-    def full_run(self, num_eps, fname, eps_vector=None):
+    def full_run(self, num_eps, fname='tester.pkl', eps_vector=None, poison_queue=None):
         # Runs a number of episodes of runtype. Saves trajectory at end.
         # eps_vector is a list of epsilon values for each episode. If there's one value [eps], then 
         # every episode uses the same value.
+        # poison_queue is a multiprocessing.Manager.Queue() object
         #
         # Saves traj 
         if eps_vector is None:
@@ -177,36 +184,24 @@ class WormRunner():
             eps_vector = np.zeros(num_eps)+eps_vector
 
         self.eval_ep(fname[:-4]+'_eval_start.pkl')
-        self.worm.task.write(0)
         self.traj = {} 
         for ep in range(num_eps):
             self.eps_greedy_ep(eps_vector[ep]) # Background is reset each time this is called
-            self.worm.task.write(0)
         self.save_traj(fname) 
-        #self.eval_ep(fname[:-4]+'_eval_end.pkl')
+        self.eval_ep(fname[:-4]+'_eval_end.pkl')
+
+        if poison_queue is not None:
+            poison_queue.put('STOP')
 
     def eps_greedy_ep(self,epsilon):
         self.agent.epsilon = epsilon
         obs = self.worm.realobs2obs(self.worm.reset())
         done = False
-        st=0
         while not done:
-            if st%self.act_spacing==0:
-                action = self.agent.act(obs)
+            action = self.agent.act(obs)
             next_obs, rew, done, info = self.worm.step(action, sleep_time=0)
             self.add_to_traj(self.traj, info)
             obs = self.worm.realobs2obs(next_obs) 
-            st+=1
-    
-    def check_if_tired(self,fname,active_for=.25):
-        # Takes a trajectory file and checks if the worm has disappeared or isn't detectable for
-        # more than (1-active_for) of the time.
-        with open(fname,'rb') as f:
-            tired_traj = pickle.load(f)
-        tired_for = tired_traj['reward'].count(0)/len(tired_traj['reward'])
-        if tired_for>(1-active_for):
-            self.close()
-            raise Exception('Worm is tired now.')
 
     def save_traj(self,fname):
         with open(fname,'wb') as f:
@@ -227,26 +222,16 @@ class WormRunner():
             for k in info.keys():
                 trajectory[k] = [info[k]]
 
-def combine_learners(lea_outs):
-    # Just outputs averaged Q tables, so output is shape [144,2]
-
-    # First check that everything was successful
-    learned_qs = []
-    for lea in lea_outs:
-        if not lea.successful():
-            raise InputError('At least one of the learners was unsuccessful.')
-        learned_qs.append(lea.get())
-
-    output_shape = [144,2]
-    averaged = np.zeros(output_shape)
-    for qs in learned_qs:
-        averaged += (1/len(lea_outs))*qs
-    return averaged
-
-def make_learner_list(dh, num_learners, worm_pars={'num_models':1, 'frac':.5}, **agentpars):
-    learners = []
-    for i in range(num_learners):
-        agent = tab.Q_Alpha_Agent(**agentpars)
-        learners.append(Learner(agent, dh, 'a'+str(i), worm_pars=worm_pars))
-    return learners
-
+#############################
+# To dos
+#############################
+'''
+Notes on implementation.
+The learner and worm_runner will be running with pool.apply_async(), and agent_manager will go until worm_runner 
+is done for each episode. That means worm_runner needs a closed data-collection method that can be sent to a process.
+Also means that agent_manager needs a short method that runs a number of training steps, looping for as long as 
+worm_runner goes. Poisonpill method:
+https://stackoverflow.com/questions/29571671/basic-multiprocessing-with-while-loop
+Thinking this with a poison_pill argument for when worm_runner is done could work. As in, run a loop inside the 
+agent_manager and while queue is empty, keep training. When queue receives a poisonpill, close up and exit.
+'''

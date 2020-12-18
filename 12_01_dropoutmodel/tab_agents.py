@@ -48,6 +48,10 @@ class Q_Agent_Base():
         else:
             # Choose a greedy action
             return np.argmax(self.Qtab[obs,:])    
+    
+    def save(self,fname):
+        with open(fname,'wb') as f:
+            pickle.dump(self,f)
 
 class Q_Av_Agent(Q_Agent_Base):
     # Following pseudocode from pp131. 
