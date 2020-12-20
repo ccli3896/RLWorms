@@ -2,7 +2,7 @@ import numpy as np
 import utils as ut 
 import pickle
 import ensemble_mod_env as eme
-import fake_worm as fw
+
 import worm_env as we
 import tab_agents as tab
 from improc import *
@@ -239,7 +239,7 @@ def get_init_traj(fname, worm, episodes, act_rate=3):
         t=0
         while done is False:
             if t%act_rate == 0:
-                action = random.choice([0,1])
+                action = np.random.choice([0,1])
             obs, rew, done, info = worm.step(action,cam,task)
             ut.add_to_traj(trajs, info)
             t+=1
