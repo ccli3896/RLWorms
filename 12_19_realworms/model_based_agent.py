@@ -157,7 +157,7 @@ class WormRunner():
             next_obs, rew, done, info = self.worm.step(action, cam, task, sleep_time=0) 
             if next_obs is False:
                 return False
-            self.add_to_traj(self.eval_traj, info)
+            ut.add_to_traj(self.eval_traj, info)
             obs = self.worm.realobs2obs(next_obs)
             st+=1
         with open(fname,'wb') as f:
@@ -205,7 +205,7 @@ class WormRunner():
             next_obs, rew, done, info = self.worm.step(action, cam, task, sleep_time=0)
             if next_obs is False:
                 return False
-            self.add_to_traj(self.traj, info)
+            ut.add_to_traj(self.traj, info)
             obs = self.worm.realobs2obs(next_obs) 
             st+=1
         return True
@@ -227,17 +227,28 @@ class WormRunner():
     def close(self):
         self.worm.close()
 
-    def add_to_traj(self,trajectory,info):
-        # appends each key in info to the corresponding key in trajectory.
-        # If trajectory is empty, returns trajectory as copy of info but with each element as list
-        # so it can be appended to in the future.
 
-        if trajectory:
-            for k in info.keys():
-                trajectory[k].append(info[k])
-        else:
-            for k in info.keys():
-                trajectory[k] = [info[k]]
+def get_init_traj(fname, worm, episodes, act_rate=3):
+    # act_rate is minimum amt of time passed before actions can change.
+    cam,task = init_instruments()
+    trajs = {}
+
+    for i in range(episodes):
+        worm.reset(cam,task)
+        done = False
+        t=0
+        while done is False:
+            if t%act_rate == 0:
+                action = random.choice([0,1])
+            obs, rew, done, info = worm.step(action,cam,task)
+            ut.add_to_traj(trajs, info)
+            t+=1
+
+    cam.exit()
+    task.write(0)
+    task.close()
+    with open(fname,'wb') as f:
+        pickle.dump(trajs,f)
 
 def combine_learners(lea_outs):
     # Just outputs averaged Q tables, so output is shape [144,2]
