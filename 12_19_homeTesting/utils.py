@@ -107,6 +107,17 @@ def make_dist_dict(df, sm_pars=None,
     }    
     return dist_dict
 
+def add_to_traj(trajectory,info):
+    # appends each key in info to the corresponding key in trajectory.
+    # If trajectory is empty, returns trajectory as copy of info but with each element as list
+    # so it can be appended to in the future.
+
+    if trajectory:
+        for k in info.keys():
+            trajectory[k].append(info[k])
+    else:
+        for k in info.keys():
+            trajectory[k] = [info[k]]
 
 def make_stat_mats(df, cut_reversals=True):
     # This version should have an option to check HT switches so I can test.

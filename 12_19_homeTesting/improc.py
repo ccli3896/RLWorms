@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 import pickle
 import os
 
-import nidaqmx # laser output
-from pyueye import ueye
-from pypyueye import Camera,utils
+#import nidaqmx # laser output
+#from pyueye import ueye
+#from pypyueye import Camera,utils
 import time # delay within program
 from math import *
 
@@ -38,18 +38,6 @@ def proj(x,y):
     else:
         return np.dot(x,y)/np.linalg.norm(y)
 
-def init_cam(pixelclock=90):
-    # Initializes camera
-    cam = Camera(device_id=0,buffer_count=3)
-    cam.init()
-    cam.set_colormode(ueye.IS_CM_MONO8)
-    cam.set_aoi(200,0,2160,1920) # Full range is wxh = (2560,1920)
-    cam.set_pixelclock(pixelclock) # Needs USB 3
-    cam.set_fps(20) # It goes to max allowed
-    cam.set_exposure(10) # Arbitrary, but 20 is probably too high
-
-    return cam
-
 def init_instruments(pixelclock=90):
     # Initializes all instruments
     task = nidaqmx.Task()
@@ -58,7 +46,7 @@ def init_instruments(pixelclock=90):
     cam = Camera(device_id=0,buffer_count=3)
     cam.init()
     cam.set_colormode(ueye.IS_CM_MONO8)
-    cam.set_aoi(200,0,2160,1920) # Full range is wxh = (2560,1920)
+    cam.set_aoi(200,0,2160,1920) # Full range is w x h = (2560,1920)
     cam.set_pixelclock(pixelclock) # Needs USB 3
     cam.set_fps(20) # It goes to max allowed
     cam.set_exposure(10) # Arbitrary, but 20 is probably too high
@@ -88,24 +76,20 @@ def grab_im(cam,bg):
     else:
         return cv2.subtract(imdata,bg)
 
-def make_vec_bg(cam,light_vec,total_time=60,res=1,mask_it=True):
+def make_bg(cam,total_time=60,res=1,mask_it=True):
     # Acquire background by running for a while and averaging.
     # Adds a circle mask for plate if mask_it is True. 
     # Takes vector of light magnitudes
     # total_time is in seconds; res is in seconds. Must be more than flash
     
-    def get_bg(cam,total_time,res,light=0,flash=.2):
+    def get_bg(cam,total_time,res):
         # The base function for getting a background image
-        time.sleep(flash/2)
         bg = grab_im(cam,None).astype('float32')
-        time.sleep(flash/2)
         
         for i in range(int(total_time//res)):
-            time.sleep(res-flash)
+            time.sleep(res)
             print(f'{i} sec \r',end='')
-            time.sleep(flash/2)
             bg = bg - 1/(i+1)*(bg-grab_im(cam,None).astype('float32'))
-            time.sleep(flash/2)
 
         return bg.astype('uint8')
 
@@ -116,13 +100,11 @@ def make_vec_bg(cam,light_vec,total_time=60,res=1,mask_it=True):
         img = cv2.bitwise_not(cv2.circle(img, center, radius, (255,255,255), thickness=-1))
         return img
     
-    bgs = []
-    for light in light_vec:
-        bgs.append(get_bg(cam,total_time,res,light=light))
+    bg = get_bg(cam,total_time,res)
     if mask_it:
-        mask = make_mask(bgs[0])
-        bgs = [cv2.add(mask,bg) for bg in bgs]
-    return bgs
+        mask = make_mask(bg)
+        bg = cv2.add(mask,bg)
+    return bg
 
 def relative_angle(alpha,beta):
     # Returns angle of alpha relative to beta (positive means alpha is CCW)
