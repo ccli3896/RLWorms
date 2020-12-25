@@ -118,6 +118,7 @@ class ModelSet():
         self.model_params['sm_pars'] = sm_pars 
         self.models = []
         for _ in range(self.num_models):
+            print(f'On model {_}')
             if self.frac is not None:
                 samps = handler.df.sample(frac=self.frac)
             elif self.samples is not None:

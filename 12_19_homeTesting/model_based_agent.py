@@ -98,6 +98,10 @@ class Learner():
         next_obs,rew,done,_ = self.env.step(action)
         return rew
     
+    def make_mod_and_env(self,handler):
+        self.modset.make_models(handler,sm_pars={'lambda':.05, 'iters':30})
+        self.env = eme.FakeWorm(self.modset)
+    
     def eval_ep(self):
         self.eval_rewards = []
         for _ in range(self.eval_steps):
@@ -106,8 +110,8 @@ class Learner():
 
     def learn(self,handler,learn_limit=int(1e6),poison_queue=None):
         # Making model set.
-        self.modset.make_models(handler,sm_pars={'lambda':.05, 'iters':30})
-        self.env = eme.FakeWorm(self.modset)
+        #self.modset.make_models(handler,sm_pars={'lambda':.05, 'iters':30})
+        #self.env = eme.FakeWorm(self.modset)
 
         # Learning loop. 
         learn_eps = 0
