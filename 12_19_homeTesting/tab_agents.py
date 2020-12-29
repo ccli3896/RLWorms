@@ -53,6 +53,9 @@ class Q_Agent_Base():
         with open(fname,'wb') as f:
             pickle.dump(self,f)
 
+    def __str__(self):
+        return f'Agent with params:\nGamma {self.gamma}\nEpsilon {self.epsilon}'
+
 class Q_Av_Agent(Q_Agent_Base):
     # Following pseudocode from pp131. 
     # Except using averaging instead of steps, because all these data should be the same.
@@ -105,6 +108,9 @@ class Q_Alpha_Agent(Q_Agent_Base):
     def update(self, obs, action, next_obs, reward):
         self.Qtab[obs,action] = self.Qtab[obs,action] + \
             self.alpha*(reward + self.gamma*np.max(self.Qtab[next_obs,:]) - self.Qtab[obs,action])
+
+    def __str__(self):
+        return f'Agent with params:\nGamma {self.gamma}\nEpsilon {self.epsilon}\nAlpha {self.alpha}'
 
 def learner(agent, env,
             episodes = 20000,
