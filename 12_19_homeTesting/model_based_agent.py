@@ -110,8 +110,8 @@ class Learner():
 
     def learn(self,handler,learn_limit=int(1e6),poison_queue=None):
         # Making model set.
-        #self.modset.make_models(handler,sm_pars={'lambda':.05, 'iters':30})
-        #self.env = eme.FakeWorm(self.modset)
+        self.modset.make_models(handler,sm_pars={'lambda':.05, 'iters':30})
+        self.env = eme.FakeWorm(self.modset)
 
         # Learning loop. 
         learn_eps = 0
