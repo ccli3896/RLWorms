@@ -114,6 +114,7 @@ class ModelSet():
 
     def make_models(self,handler,sm_pars):
         # handler is a DataHandler object from model_based_agent file.
+        # sm_pars: {lambda, iters}
         self.model_params = dict(handler.params) 
         self.model_params['sm_pars'] = sm_pars 
         self.models = []
@@ -124,7 +125,7 @@ class ModelSet():
             elif self.samples is not None:
                 samps = handler.df.sample(n=self.samples)
             else:
-                raise InputError('Samples and frac cannot both be None')
+                raise ValueError('Samples and frac cannot both be None')
 
             self.models.append(ut.make_dist_dict(samps, sm_pars=sm_pars, 
                                 prev_act_window=self.model_params['prev_act_window']))

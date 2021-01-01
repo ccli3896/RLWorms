@@ -193,7 +193,7 @@ def lin_interp_mat(mat,ang,wraparound=True):
         # add 1 because need index for extended matrix
     
     neighbor_lim = 3
-    while nan_inds.size>0:
+    while nan_inds.size>0: 
         candidates = 0
         for ind in nan_inds:
             neighbors = get_neighbors(mat,ind)
@@ -211,7 +211,8 @@ def smoothen(matrix,counts,ang,smooth_par=.05,iters=30,wraparound=True,diagonals
     # counts is [12,12].
     # ang is bool, True if angle matrix
     # Will start with a simple linear weighting/smoothing. 
-    
+    if not np.all(counts):
+        counts+=1
     # So the shapes start out right before looping 
     matrix = make_wraparound(matrix, ang, wraparound=True)
     counts = make_wraparound(counts, False, wraparound=True)
@@ -240,7 +241,6 @@ def smoothen(matrix,counts,ang,smooth_par=.05,iters=30,wraparound=True,diagonals
                 else:
                     del_sm_d = 0
                     Z = np.sum(neigh_counts)
-
                 tempmat[i,j] = tempmat[i,j] + smooth_par*(del_sm/Z+del_sm_d/Z - tempmat[i,j])
                 
         # After tempmat is updated, set reference matrix to be the same
@@ -252,6 +252,60 @@ def smoothen(matrix,counts,ang,smooth_par=.05,iters=30,wraparound=True,diagonals
     
     return wrap_correct(matrix[1:-1,1:-1], buffer=buffer)
 
+def smoothen_dev(matrix,counts,ang,smooth_par=.05,iters=30,wraparound=True,diagonals=True): 
+    # matrix is in form [12,12]
+    # counts is [12,12].
+    # ang is bool, True if angle matrix
+    # Will start with a simple weighted average between nearest neighbors and diagonals.
+    #
+    # Derivation for procedure in CL's nb page 81
+    
+    if not np.all(counts):
+        counts+=1
+    # So the shapes start out right before looping 
+    matrix = make_wraparound(matrix, ang, wraparound=True)
+    counts = make_wraparound(counts, False, wraparound=True)
+    if ang:
+        buffer=180
+    else:
+        buffer=None
+    
+    for it in range(iters):
+        matrix = make_wraparound(matrix[1:-1,1:-1], ang, wraparound=True)
+        tempmat = np.copy(matrix) # Now tempmat and matrix are the same extended size
+        rows,cols = np.array(matrix.shape)-2 
+
+        # Loops through each matrix element and weights changes by counts
+        for i in np.arange(rows)+1:
+            for j in np.arange(cols)+1:
+                neighs = wrap_correct(get_neighbors(matrix,(i,j)), ref=matrix[i,j], buffer=buffer)
+                neigh_counts = get_neighbors(counts,(i,j))
+                prod_nn = np.sum(np.multiply(neigh_counts, neighs))
+                c_nn = np.sum(neigh_counts)
+                
+                if diagonals:
+                    # Diagonal entries (scaled by 1/sqrt(2))
+                    neighs_d = wrap_correct(get_diags(matrix,(i,j)), ref=matrix[i,j], buffer=buffer)
+                    neigh_counts_d = get_diags(counts,(i,j))
+                    prod_d = np.sum(np.multiply(neigh_counts_d, neighs_d))
+                    c_d = np.sum(neigh_counts_d)
+                    
+                    mu = (prod_nn/c_nn + prod_d/(np.sqrt(2)*c_d)) / (1+np.sqrt(2))
+                    alpha = 1/(1+(4*counts[i,j]*(1+np.sqrt(2)))/(c_nn+c_d))
+                    
+                else:
+                    mu = prod_nn/c_nn
+                    alpha = 1/(1+(4*counts[i,j]/c_nn))
+                    
+                tempmat[i,j] = tempmat[i,j] + smooth_par*alpha*(mu - tempmat[i,j])
+            
+                
+        # After tempmat is updated, set reference matrix to be the same
+        # This way updates within one iteration don't get included in the same iteration
+        matrix = np.copy(tempmat)
+        counts = smoothen(counts,counts,False,smooth_par=smooth_par,iters=1)
+    
+    return wrap_correct(matrix[1:-1,1:-1], buffer=buffer)
 
 '''
 Small funcs and utils
