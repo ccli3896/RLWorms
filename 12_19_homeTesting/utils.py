@@ -210,56 +210,15 @@ def smoothen(matrix,counts,ang,smooth_par=.05,iters=30,wraparound=True,diagonals
     # matrix is in form [12,12]
     # counts is [12,12].
     # ang is bool, True if angle matrix
-    # Will start with a simple linear weighting/smoothing. 
-    if not np.all(counts):
-        counts+=1
-    # So the shapes start out right before looping 
-    matrix = make_wraparound(matrix, ang, wraparound=True)
-    counts = make_wraparound(counts, False, wraparound=True)
-    if ang:
-        buffer=180
-    else:
-        buffer=None
-    
-    for it in range(iters):
-        matrix = make_wraparound(matrix[1:-1,1:-1], ang, wraparound=True)
-        tempmat = np.copy(matrix) # Now tempmat and matrix are the same extended size
-        rows,cols = np.array(matrix.shape)-2 
-
-        # Loops through each matrix element and weights changes by counts
-        for i in np.arange(rows)+1:
-            for j in np.arange(cols)+1:
-                neighs = wrap_correct(np.append(get_neighbors(matrix,(i,j)), matrix[i,j]), ref=matrix[i,j], buffer=buffer)
-                neigh_counts = np.append(get_neighbors(counts,(i,j)), counts[i,j])
-                del_sm = np.sum(np.multiply(neigh_counts, neighs))
-                if diagonals:
-                    # Diagonal entries (scaled by 1/sqrt(2))
-                    neighs_d = wrap_correct(np.append(get_diags(matrix,(i,j)), matrix[i,j]), ref=matrix[i,j], buffer=buffer)
-                    neighs_counts_d = np.append(get_diags(counts,(i,j)), counts[i,j])
-                    del_sm_d = (np.sum(np.multiply(neighs_counts_d, neighs_d)))/np.sqrt(2)
-                    Z = np.sum(neigh_counts) + np.sum(neighs_counts_d)/np.sqrt(2)
-                else:
-                    del_sm_d = 0
-                    Z = np.sum(neigh_counts)
-                tempmat[i,j] = tempmat[i,j] + smooth_par*(del_sm/Z+del_sm_d/Z - tempmat[i,j])
-                
-        # After tempmat is updated, set reference matrix to be the same
-        # This way updates within one iteration don't get included in the same iteration
-        matrix = np.copy(tempmat)
-        
-        if it==0:
-            counts+=1
-    
-    return wrap_correct(matrix[1:-1,1:-1], buffer=buffer)
-
-def smoothen_dev(matrix,counts,ang,smooth_par=.05,iters=30,wraparound=True,diagonals=True): 
-    # matrix is in form [12,12]
-    # counts is [12,12].
-    # ang is bool, True if angle matrix
     # Will start with a simple weighted average between nearest neighbors and diagonals.
     #
     # Derivation for procedure in CL's nb page 81
     
+    if np.array_equal(matrix,counts):
+        count_version = True
+    else:
+        count_version = False
+        
     if not np.all(counts):
         counts+=1
     # So the shapes start out right before looping 
@@ -303,9 +262,11 @@ def smoothen_dev(matrix,counts,ang,smooth_par=.05,iters=30,wraparound=True,diago
         # After tempmat is updated, set reference matrix to be the same
         # This way updates within one iteration don't get included in the same iteration
         matrix = np.copy(tempmat)
-        counts = smoothen(counts,counts,False,smooth_par=smooth_par,iters=1)
+        if not count_version:
+            counts = smoothen(counts,counts,False,smooth_par=smooth_par,iters=1)
     
     return wrap_correct(matrix[1:-1,1:-1], buffer=buffer)
+
 
 '''
 Small funcs and utils
