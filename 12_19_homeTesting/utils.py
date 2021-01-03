@@ -86,8 +86,13 @@ def make_dist_dict(df, sm_pars=None,
 
     for i in range(len(all_mats)):
         for j in range(2):
+
+            lambda_factor = 1
+            if i==0 or i==3:
+                lambda_factor = 2 # For rewards, multiply smoothing parameter by this
+
             if j==1 or i==0 or i==3:
-                ang_par = False
+                ang_par = False 
             else:
                 ang_par = True
             all_mats[i][:,:,j] = lin_interp_mat(all_mats[i][:,:,j], ang_par)
@@ -95,7 +100,7 @@ def make_dist_dict(df, sm_pars=None,
             if sm_pars is not None:
                 all_mats[i][:,:,j] = smoothen(all_mats[i][:,:,j], 
                                                 counts[i//3], ang_par, 
-                                                smooth_par=sm_pars['lambda'], iters=sm_pars['iters'])
+                                                smooth_par=sm_pars['lambda']*lambda_factor, iters=sm_pars['iters'])
 
     dist_dict = {
         'body_on': b_on,
