@@ -1,6 +1,7 @@
 '''
 DEVO CHANGES:
 Fix issue: interpolates between variances instead of standard deviations.
+Incorporated smoothing function for reward matrix.
 '''
 
 import pickle
@@ -68,8 +69,9 @@ def make_df(fnames, time_ahead=30,
 
     return df
 
-def make_dist_dict(traj,bin_z=3):
+def make_dist_dict(traj,bin_z=3,smoothenpars=None):
     # Makes a dictionary of distributions using trajectory statistics.
+    # smoothenpars is a dictionary of form {smooth_par: .05, iters: 30}. If none, then no smoothing.
     def interp2(mat, wraparound=True):
         # Returns a matrix that's been through the linear interpolation function.
         # [12,12,2] with dimensions [body,head,mu/sig^2] 
@@ -82,13 +84,31 @@ def make_dist_dict(traj,bin_z=3):
     traj_on = traj.query('action==1 & prev_actions==3')
     traj_off = traj.query('action==0 & prev_actions==0')
 
-    r_on_mat = make_stat_mats(traj_on,'reward')
-    b_on_mat,bin_on = make_obs_mat(traj_on,'b',bin_z=bin_z)
-    h_on_mat,bin_on = make_obs_mat(traj_on,'h',bin_z=bin_z)
+    r_on_mat,r_on_counts= make_stat_mats(traj_on,'reward')
+    r_on_mat = interp2(r_on_mat)
+    b_on_mat,bin_on,b_on_counts = make_obs_mat(traj_on,'b',bin_z=bin_z)
+    h_on_mat,bin_on,h_on_counts = make_obs_mat(traj_on,'h',bin_z=bin_z)
 
-    r_off_mat = make_stat_mats(traj_off,'reward')
-    b_off_mat,bin_off = make_obs_mat(traj_off,'b',bin_z=bin_z)
-    h_off_mat,bin_off = make_obs_mat(traj_off,'h',bin_z=bin_z)
+    r_off_mat,r_off_counts = make_stat_mats(traj_off,'reward')
+    r_off_mat = interp2(r_off_mat)
+    b_off_mat,bin_off,b_off_counts = make_obs_mat(traj_off,'b',bin_z=bin_z)
+    h_off_mat,bin_off,h_off_counts = make_obs_mat(traj_off,'h',bin_z=bin_z)
+
+    # Smoothing function block
+    if smoothenpars is None:
+        # Set some defaults
+        smoothenpars = {'smooth_par': .05, 'iters': 30}
+    mats = [r_on_mat, r_off_mat]
+    mat_counts = [r_on_counts, r_off_counts]
+    # Smooths all matrices
+    for i in range(len(mats)):
+        for j in range(2):
+            if len(mats[i].shape)<3:
+                mats[i] = np.expand_dims(mats[i],axis=1)
+                mat_counts[i] = np.expand_dims(mat_counts[i],axis=1)
+            mats[i][:,:,j] = smoothen(mats[i][:,:,j], mat_counts[i],
+                                        smooth_par=smoothenpars['smooth_par'],
+                                        iters=smoothenpars['iters'])
         
     dist_dict = {
         'obs_on_bins': bin_on,
@@ -97,8 +117,8 @@ def make_dist_dict(traj,bin_z=3):
         'body_off': b_off_mat,
         'head_on': h_on_mat,
         'head_off': h_off_mat,
-        'reward_on': interp2(r_on_mat),
-        'reward_off': interp2(r_off_mat),
+        'reward_on': r_on_mat,
+        'reward_off': r_off_mat,
     }
 
     return dist_dict
@@ -199,13 +219,15 @@ def make_stat_mats(traj,newkey):
             elif sermean>=180:
                 sermean -= 360
                 
-        return sermean,servar
+        return sermean,servar,series.size
 
     stat_mats = np.zeros((12,12,2)) + np.nan 
+    count_mat = np.zeros((12,12))
     for i,theta_b in enumerate(np.arange(-180,180,30)):
         for j,theta_h in enumerate(np.arange(-180,180,30)):
-            stat_mats[i,j,:] = get_stats_angs(traj,[theta_b,theta_h],newkey)
-    return stat_mats
+            sermean,servar,count_mat[i,j] = get_stats_angs(traj,[theta_b,theta_h],newkey)
+            stat_mats[i,j,:] = sermean,servar
+    return stat_mats, count_mat
 
 '''
 End of make_dist_dict() utils
@@ -355,4 +377,43 @@ def make_obs_mat(traj, ang_key, bin_z=3):
             z_counts[less_neigh] = 0
             z_counts = (count-mu_count)/std_count
 
-    return stat_mat_binned, bin_inds
+    return stat_mat_binned, bin_inds, (z_counts*std_count+mu_count).astype(int)
+
+def smoothen(matrix,counts,smooth_par=.05,iters=30,wraparound=True,diagonals=True):
+    # For the reward matrices. 
+    # matrix is in form [12,12]
+    # counts is [12,12].
+    # Will start with a simple linear weighting/smoothing. 
+    
+    # So the shapes start out right before looping 
+    matrix = make_wraparound(matrix, wraparound=True)
+    counts = make_wraparound(counts, wraparound=True)
+    
+    for it in range(iters):
+        matrix = make_wraparound(matrix[1:-1,1:-1], wraparound=True)
+        tempmat = np.copy(matrix) # Now tempmat and matrix are the same extended size
+        rows,cols = np.array(matrix.shape)-2 
+
+        # Loops through each matrix element and weights changes by counts
+        for i in np.arange(rows)+1:
+            for j in np.arange(cols)+1:
+                neighs = np.append(get_neighbors(matrix,(i,j)), matrix[i,j])
+                neigh_counts = np.append(get_neighbors(counts,(i,j)), counts[i,j])
+                del_sm = np.sum(np.multiply(neigh_counts, neighs))
+                if diagonals:
+                    # Diagonal entries (scaled by 1/sqrt(2))
+                    neighs_d = np.append(get_diags(matrix,(i,j)), matrix[i,j])
+                    neighs_counts_d = np.append(get_diags(counts,(i,j)), counts[i,j])
+                    del_sm_d = (np.sum(np.multiply(neighs_counts_d, neighs_d)))/np.sqrt(2)
+                    Z = np.sum(neigh_counts) + np.sum(neighs_counts_d)/np.sqrt(2)
+                else:
+                    del_sm_d = 0
+                    Z = np.sum(neigh_counts)
+
+                tempmat[i,j] = tempmat[i,j] + smooth_par*(del_sm/Z+del_sm_d/Z - tempmat[i,j])
+                
+        # After tempmat is updated, set reference matrix to be the same
+        # This way updates within one iteration don't get included in the same iteration
+        matrix = np.copy(tempmat)
+    
+    return matrix[1:-1,1:-1]

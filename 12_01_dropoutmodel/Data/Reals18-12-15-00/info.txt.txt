@@ -1,0 +1,2 @@
+Pretty decent first run.
+Started off of nogap_traj_df.pkl.
