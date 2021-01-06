@@ -108,9 +108,9 @@ class Learner():
             self.eval_rewards.append(self._eval_step())
         return self.eval_rewards
 
-    def learn(self,handler,learn_limit=int(1e6),poison_queue=None):
+    def learn(self,handler,learn_limit=int(1e6),poison_queue=None,sm_pars={'lambda':.25, 'iters':10}):
         # Making model set.
-        self.modset.make_models(handler,sm_pars={'lambda':.05, 'iters':30})
+        self.modset.make_models(handler,sm_pars=sm_pars)
         self.env = eme.FakeWorm(self.modset)
 
         # Learning loop. 

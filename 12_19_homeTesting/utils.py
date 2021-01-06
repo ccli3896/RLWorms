@@ -254,8 +254,8 @@ def smoothen(matrix,counts,ang,smooth_par=.05,iters=30,wraparound=True,diagonals
                     prod_d = np.sum(np.multiply(neigh_counts_d, neighs_d))
                     c_d = np.sum(neigh_counts_d)
                     
-                    mu = (prod_nn/c_nn + prod_d/(np.sqrt(2)*c_d)) / (1+np.sqrt(2))
-                    alpha = 1/(1+(counts[i,j]*(1+np.sqrt(2)))/(c_nn/4+c_d/(4*np.sqrt(2))))
+                    mu = (prod_nn/c_nn + prod_d/(np.sqrt(2)*c_d)) / (1+1/np.sqrt(2))
+                    alpha = 1/(1+(counts[i,j]*(1+1/np.sqrt(2)))/(c_nn/4+c_d/(4*np.sqrt(2))))
                     
                 else:
                     mu = prod_nn/c_nn
