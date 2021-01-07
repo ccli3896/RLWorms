@@ -104,13 +104,17 @@ class ModelSet():
     # Creates and stores lists of models that sample randomly from saved trajectories.
     # Idea for now: each model is actually a large list of sampled models. The dataframe is only used to sample
     # from at first and isn't stored in this object.
+    # Lp_frac: [0,1]. Models find a number to subtract from light-on matrices, in order for
+    #  this fraction of observations to remain above their corresponding light-off spots.
+    #  Implemented in utils.make_dist_dict.
 
-    def __init__(self,num_models,samples=None,frac=None):
+    def __init__(self,num_models,samples=None,frac=None,lp_frac=0.5):
         self.num_models = num_models
         self.frac = frac 
         self.samples = samples
         self.models = []
         self.model_params = None
+        self.lp_frac=lp_frac
 
     def make_models(self,handler,sm_pars):
         # handler is a DataHandler object from model_based_agent file.
@@ -128,7 +132,8 @@ class ModelSet():
                 raise ValueError('Samples and frac cannot both be None')
 
             self.models.append(ut.make_dist_dict(samps, sm_pars=sm_pars, 
-                                prev_act_window=self.model_params['prev_act_window']))
+                                prev_act_window=self.model_params['prev_act_window'],
+                                lp_frac=self.lp_frac))
     
     def sample(self,inds,action,model_id=None):
         # inds is the list to say which states to sample for. [theta_b,theta_h]
@@ -158,5 +163,3 @@ class ModelSet():
     
     def __str__(self):
         return f'ModelSet contains {len(self.models)} \nFrac {self.frac}, Samples {self.samples}\nParams {self.model_params}'
-
-

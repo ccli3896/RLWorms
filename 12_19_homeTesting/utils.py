@@ -69,11 +69,14 @@ def make_df(fnames,
 
 def make_dist_dict(df, sm_pars=None,
     prev_act_window=3,
-    cut_reversals=True):
+    cut_reversals=True,
+    lp_frac=None):
     # Makes a dictionary of distributions using trajectory statistics.
     # sm_pars is a dict of form {'lambda': .05, 'iters': 30}
     #     If None, then no smoothing.
     # cut_reversals is a boolean
+    # Lp_frac: [0,1]. Models find a number to subtract from light-on matrices, in order for
+    #  this fraction of observations to remain above their corresponding light-off spots.
 
     traj_on = df.query('prev_actions=='+str(prev_act_window))
     traj_off = df.query('prev_actions==0')
@@ -83,6 +86,7 @@ def make_dist_dict(df, sm_pars=None,
 
     all_mats = [r_on,b_on,h_on,r_off,b_off,h_off]
     counts = [count_on,count_off]
+    counts_lp = counts[0]+counts[1]
 
     for i in range(len(all_mats)):
         for j in range(2):
@@ -101,13 +105,23 @@ def make_dist_dict(df, sm_pars=None,
                 all_mats[i][:,:,j] = smoothen(all_mats[i][:,:,j], 
                                                 counts[i//3], ang_par, 
                                                 smooth_par=sm_pars['lambda']*lambda_factor, iters=sm_pars['iters'])
+    
+    # This block is for light penalty implementation. Only applied to r_on.
+    if lp_frac is None:
+        light_penalty = 0
+    else:
+        r_diffs_sorted = np.unravel_index(np.argsort(r_on[:,:,0]-r_off[:,:,0],axis=None), r_on[:,:,0].shape) # Subtract means and gets sorted indices.
+        count_lim = np.sum(counts_lp)/2
+        cs = np.cumsum(counts_lp[r_diffs_sorted]) < count_lim
+        cutoff_ind = np.unravel_index([i for i,x in enumerate(cs) if not x][0] , counts_lp.shape)
+        light_penalty = r_on[:,:,0][cutoff_ind] - r_off[:,:,0][cutoff_ind]
 
     dist_dict = {
         'body_on': b_on,
         'body_off': b_off,
         'head_on': h_on,
         'head_off': h_off,
-        'reward_on': r_on,
+        'reward_on': r_on - light_penalty,
         'reward_off': r_off,
     }    
     return dist_dict

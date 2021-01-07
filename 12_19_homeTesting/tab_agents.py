@@ -27,7 +27,7 @@ class Q_Agent_Base():
     
     def resetq(self, q_checkpoint=None):
         if q_checkpoint is None:
-            self.Qtab = np.random.normal(2,1,size=(self.obs_n, self.act_n)) # Optimistic mean at 2
+            self.Qtab = np.random.normal(1,.5,size=(self.obs_n, self.act_n)) # Optimistic mean at 2
         else:
             self.Qtab = q_checkpoint
     

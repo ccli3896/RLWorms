@@ -66,7 +66,9 @@ class Learner():
     # The agent_manager trains one agent on model_set in separate processes. Means multiple agent_managers need
     # to be spawned to learn in parallel.
 
-    def __init__(self, agent, label, worm_pars={'num_models':10, 'frac':.5}, num_steps=1000,eval_steps=1000):
+    def __init__(self, agent, label, worm_pars={'num_models':10, 'frac':.5}, 
+        num_steps=1000,eval_steps=1000,
+        lp_frac=.5):
         # Stores an agent.
         self.agent = agent 
         self.label = label
@@ -74,9 +76,10 @@ class Learner():
 
         self.num_steps = num_steps
         self.eval_steps = eval_steps
+        self.lp_frac = lp_frac
         
         # Make different sampled group of worms for each Learner object
-        self.modset = eme.ModelSet(worm_pars['num_models'], frac=worm_pars['frac'])
+        self.modset = eme.ModelSet(worm_pars['num_models'], frac=worm_pars['frac'], lp_frac=self.lp_frac)
 
     def reset_reward_vecs(self):
         self.rewards = []
@@ -98,8 +101,8 @@ class Learner():
         next_obs,rew,done,_ = self.env.step(action)
         return rew
     
-    def make_mod_and_env(self,handler):
-        self.modset.make_models(handler,sm_pars={'lambda':.05, 'iters':30})
+    def make_mod_and_env(self,handler,sm_pars):
+        self.modset.make_models(handler,sm_pars=sm_pars)
         self.env = eme.FakeWorm(self.modset)
     
     def eval_ep(self):
@@ -125,7 +128,7 @@ class Learner():
                 no_poison = poison_queue.empty()
 
         self.env.reset()
-        return self.agent.Qtab
+        return  self.agent.Qtab
         
     def save_agent(self,fname):
         with open(fname,'wb') as f:
