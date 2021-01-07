@@ -93,7 +93,7 @@ def make_dist_dict(df, sm_pars=None,
 
             lambda_factor = 1
             if i==0 or i==3:
-                lambda_factor = 2 # For rewards, multiply smoothing parameter by this
+                lambda_factor = 5 # For rewards, multiply smoothing parameter by this
 
             if j==1 or i==0 or i==3:
                 ang_par = False 
