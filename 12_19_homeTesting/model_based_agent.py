@@ -67,7 +67,7 @@ class Learner():
     # to be spawned to learn in parallel.
 
     def __init__(self, agent, label, worm_pars={'num_models':10, 'frac':.5}, 
-        num_steps=1000,eval_steps=1000,
+        num_steps=100,eval_steps=100000,
         lp_frac=.5):
         # Stores an agent.
         self.agent = agent 
@@ -111,7 +111,7 @@ class Learner():
             self.eval_rewards.append(self._eval_step())
         return self.eval_rewards
 
-    def learn(self,handler,learn_limit=int(1e6),poison_queue=None,sm_pars={'lambda':.25, 'iters':10}):
+    def learn(self,handler,learn_limit=int(1e6),poison_queue=None,sm_pars={'lambda':.1, 'iters':10}):
         # Making model set.
         self.modset.make_models(handler,sm_pars=sm_pars)
         self.env = eme.FakeWorm(self.modset)
@@ -119,14 +119,14 @@ class Learner():
         # Learning loop. 
         learn_eps = 0
         no_poison = True
+        ep_lim = learn_limit//self.num_steps
 
-        while learn_eps<learn_limit and no_poison:
+        while learn_eps<ep_lim and no_poison:
             for i in range(self.num_steps):
                 self.rewards.append(self._learn_step())
             learn_eps+=1
             if poison_queue is not None:
                 no_poison = poison_queue.empty()
-
         self.env.reset()
         return  self.agent.Qtab
         

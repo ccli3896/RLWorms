@@ -115,6 +115,7 @@ def make_dist_dict(df, sm_pars=None,
         cs = np.cumsum(counts_lp[r_diffs_sorted]) < count_lim
         cutoff_ind = np.unravel_index([i for i,x in enumerate(cs) if not x][0] , counts_lp.shape)
         light_penalty = r_on[:,:,0][cutoff_ind] - r_off[:,:,0][cutoff_ind]
+        print(light_penalty)
 
     dist_dict = {
         'body_on': b_on,
