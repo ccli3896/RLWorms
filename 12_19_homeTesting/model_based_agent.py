@@ -68,7 +68,7 @@ class Learner():
 
     def __init__(self, agent, label, worm_pars={'num_models':10, 'frac':.5}, 
         num_steps=100,eval_steps=100000,
-        lp_frac=.5):
+        lp_frac=1/3):
         # Stores an agent.
         self.agent = agent 
         self.label = label

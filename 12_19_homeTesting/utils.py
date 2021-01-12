@@ -110,11 +110,14 @@ def make_dist_dict(df, sm_pars=None,
     if lp_frac is None:
         light_penalty = 0
     else:
-        r_diffs_sorted = np.unravel_index(np.argsort(r_on[:,:,0]-r_off[:,:,0],axis=None), r_on[:,:,0].shape) # Subtract means and gets sorted indices.
-        count_lim = np.sum(counts_lp)/2
-        cs = np.cumsum(counts_lp[r_diffs_sorted]) < count_lim
-        cutoff_ind = np.unravel_index([i for i,x in enumerate(cs) if not x][0] , counts_lp.shape)
-        light_penalty = r_on[:,:,0][cutoff_ind] - r_off[:,:,0][cutoff_ind]
+        r_diffs = r_on[:,:,0]-r_off[:,:,0]
+        r_diffs_sorti = np.unravel_index(np.argsort(-r_diffs,axis=None), r_on[:,:,0].shape) # Subtract means and gets sorted indices.
+        r_diffs_sorted = r_diffs[r_diffs_sorti]
+        #counts_lp = np.ones((12,12)) ############
+        count_lim = np.sum(counts_lp)*lp_frac
+        cs = np.cumsum(counts_lp[r_diffs_sorti]) < count_lim
+        cutoff_ind = [i for i,x in enumerate(cs) if not x][0]
+        light_penalty = r_diffs_sorted[cutoff_ind]
         print(f'Penalty {light_penalty}')
 
     dist_dict = {
