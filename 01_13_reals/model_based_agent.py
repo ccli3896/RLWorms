@@ -3,9 +3,9 @@ import utils as ut
 import pickle
 import ensemble_mod_env as eme
 
-#import worm_env as we
+import worm_env as we
 import tab_agents as tab
-#from improc import *
+from improc import *
 
 '''
 This is all written for multiprocessing.
@@ -153,12 +153,13 @@ class WormRunner():
         self.eval_traj = {}
         self.act_spacing = act_spacing
 
-    def eval_ep(self,cam,task,fname,steps=300):
+    def eval_ep(self,cam,task,fname,eval_eps=1):
         # Runs an evaluation episode on the worm and returns the total rewards collected.
         self.eval_traj = {}
         obs = self.worm.realobs2obs(self.worm.reset(cam,task))
-        st = 0
-        while st < steps:
+        done = False
+        st,ep = 0,0
+        while ep < eval_eps:
             if st%self.act_spacing==0:
                 action = self.agent.eval_act(obs)
             next_obs, rew, done, info = self.worm.step(action, cam, task, sleep_time=0) 
@@ -167,6 +168,11 @@ class WormRunner():
             ut.add_to_traj(self.eval_traj, info)
             obs = self.worm.realobs2obs(next_obs)
             st+=1
+
+            if done:
+                ep+=1
+                obs = self.worm.realobs2obs(self.worm.reset(cam,task))
+            
         with open(fname,'wb') as f:
             pickle.dump(self.eval_traj, f)
         return True

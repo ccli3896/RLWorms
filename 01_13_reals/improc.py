@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 import pickle
 import os
 
-#import nidaqmx # laser output
-#from pyueye import ueye
-#from pypyueye import Camera,utils
+import nidaqmx # laser output
+from pyueye import ueye
+from pypyueye import Camera,utils
 import time # delay within program
 from math import *
 
@@ -19,9 +19,9 @@ DEG_INCR = 30
 def load_templates():
     templates = [[],[]]
     for i in np.arange(0,360,DEG_INCR):
-        templates[0].append(cv2.imread('Templates/template'+str(i)+'.jpg')[:,:,0])  
+        templates[0].append(cv2.imread('../Templates/template'+str(i)+'.jpg')[:,:,0])  
     for i in np.arange(0,180,DEG_INCR):
-        templates[1].append(cv2.imread('Templates/body'+str(i)+'.jpg')[:,:,0])
+        templates[1].append(cv2.imread('../Templates/body'+str(i)+'.jpg')[:,:,0])
     for i in range(2):
         templates[i] = np.array(templates[i])
     return templates
@@ -88,7 +88,7 @@ def make_bg(cam,total_time=60,res=1,mask_it=True):
         
         for i in range(int(total_time//res)):
             time.sleep(res)
-            print(f'{i} sec \r',end='')
+            print(f'{i} sec \t\t\r',end='')
             bg = bg - 1/(i+1)*(bg-grab_im(cam,None).astype('float32'))
 
         return bg.astype('uint8')

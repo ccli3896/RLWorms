@@ -15,7 +15,7 @@ class ProcessedWorm(gym.Env):
     """Custom Environment that follows gym interface"""
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, target, ep_len=1200, ht_time=3, bg_time=20):
+    def __init__(self, target, ep_len=1200, ht_time=5, bg_time=20):
         
         """
         Initializes the camera, light, worm starting point.
@@ -56,7 +56,7 @@ class ProcessedWorm(gym.Env):
         worms = find_worms(img, self.templates, self.bodies, ref_pts=[self.head], num_worms=1)
 
         # Timer checks: episode end and HT
-        if self.steps > self.ep_len:
+        if self.timer.check():
             self.finished = True
         self.timer.update()
         self.ht_timer.update()
@@ -115,7 +115,7 @@ class ProcessedWorm(gym.Env):
             self.target = (self.target+90)%360
         self.head, self.old_loc = [0,0],[1,1]
         self.last_loc = self.old_loc
-
+        task.write(0)
         self.bg = self.make_bgs(cam)
 
         self.timer.reset()
