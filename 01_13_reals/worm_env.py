@@ -39,6 +39,7 @@ class ProcessedWorm(gym.Env):
         self.ht_timer= Timer(ht_time)
         self.steps = 0
         self.finished = False
+        self.no_worm_flag = True
 
 
     def step(self, action, cam, task, sleep_time=0):
@@ -69,7 +70,13 @@ class ProcessedWorm(gym.Env):
         if worms is None:
             # Returns zeros if worm isn't found or something went wrong.
             task.write(0)
-            print(f'No worm \t\t\r',end='')
+            self.no_worm_flag = not self.no_worm_flag
+            if self.no_worm_flag:
+                # This adds some jitter to the print statement so I can tell
+                # if the worm is gone or just popped out for a bit
+                print(f'No worm \t\t\r',end='')
+            else:
+                print(f' No worm\t\t\r',end='')
             return np.zeros(2), 0, self.finished, {
                 #'img': None,
                 'loc': np.zeros(2),
