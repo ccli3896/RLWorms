@@ -1,0 +1,12 @@
+Init from data in Run15-01-13-55/. 
+Run in nb RewardDiff using command 
+
+reward_diff_method(    
+    collection_eps = 3,
+    frac_on = 1/2,
+    eval_on_list = [1/2,1/3,1/4],
+    collection_ep_time = 600, # in seconds. Must be a multiple of worm_ep_len
+    eval_ep_time = 120, # 0 in seconds. Also must be multiple of worm_ep_len
+    worm_ep_len = 120, #00 in seconds
+    init_df = './Data/Run15-01-13-55/totaldf.pkl',
+)
