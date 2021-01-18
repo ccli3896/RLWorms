@@ -373,6 +373,7 @@ def ht_quick(worm,old_loc):
     if p1 > p0:
         head = worm['endpts'][:,1]
         SWITCH = True
+        print('HT switched',head)
     
     return head, SWITCH
 

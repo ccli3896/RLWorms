@@ -3,9 +3,9 @@ import utils as ut
 import pickle
 import ensemble_mod_env as eme
 
-import worm_env as we
+#import worm_env as we
 import tab_agents as tab
-from improc import *
+#from improc import *
 
 '''
 This is all written for multiprocessing.
