@@ -15,7 +15,7 @@ class ProcessedWorm(gym.Env):
     """Custom Environment that follows gym interface"""
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, target, ep_len=1200, ht_time=5, bg_time=20):
+    def __init__(self, target, ep_len=1200, ht_time=3, bg_time=20):
         
         """
         Initializes the camera, light, worm starting point.
@@ -85,7 +85,8 @@ class ProcessedWorm(gym.Env):
                 'obs': np.zeros(2),
                 'reward': 0,
                 'target': self.target,
-                'action': action
+                'action': action,
+                'angs': np.zeros(2)
                 }
         
         # Find state 
@@ -109,7 +110,8 @@ class ProcessedWorm(gym.Env):
             'obs': obs,
             'reward': reward,
             'target': self.target,
-            'action': action
+            'action': action,
+            'angs': self.worm['angs']/180,
         }
 
         
