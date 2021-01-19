@@ -93,6 +93,7 @@ class ProcessedWorm(gym.Env):
         self.worm = worms[0]
         body_dir = relative_angle(self.worm['body'], self.target)
         head_body = relative_angle(self.worm['angs'][0], self.worm['body'])
+        head_body2 = relative_angle(self.worm['angs'][1], self.worm['body'])
         obs = np.array([body_dir, head_body])/180.
         
         # Find reward and then update last_loc variable
@@ -103,7 +104,7 @@ class ProcessedWorm(gym.Env):
         
         # return obs, reward, done (boolean), info (dict)
         return obs, reward, self.finished, {
-            #'img': self.worm['img'],
+            'img': self.worm['img'],
             'loc': self.worm['loc'],
             't': self.timer.t,
             'endpts': self.worm['endpts'],
@@ -111,7 +112,7 @@ class ProcessedWorm(gym.Env):
             'reward': reward,
             'target': self.target,
             'action': action,
-            'angs': self.worm['angs']/180,
+            'angs': np.array([head_body,head_body2])/180,
         }
 
         
