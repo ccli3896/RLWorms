@@ -240,6 +240,72 @@ def make_dist_dict(df, sm_pars=None,
     }    
     return dist_dict
 
+def make_dist_dict2(df, sm_pars=None,
+    prev_act_window=3,
+    lp_frac=None):
+    # This version doesn't smooth reward matrices. First subtracts them and then smooths the resulting matrix.
+    # Stores difference in r_on and adds variances; sets r_off to 0's. 
+    # Makes a dictionary of distributions using trajectory statistics.
+    # sm_pars is a dict of form {'lambda': .05, 'iters': 30}
+    #     If None, then no smoothing.
+    # Lp_frac: [0,1]. Models find a number to subtract from light-on matrices, in order for
+    #  this fraction of observations to remain above their corresponding light-off spots.
+
+    traj_on = df.query('prev_actions=='+str(prev_act_window))
+    traj_off = df.query('prev_actions==0')
+
+    r_on, b_on, h_on, count_on = make_stat_mats(traj_on)
+    r_off, b_off, h_off, count_off = make_stat_mats(traj_off)
+
+    all_mats = [r_on,b_on,h_on,r_off,b_off,h_off]
+    counts = [count_on,count_off]
+    counts_lp = counts[0]+counts[1]
+
+    for i in [1,2,4,5]:
+        for j in range(2):
+            if j==1:
+                ang_par = False 
+            else:
+                ang_par = True
+            all_mats[i][:,:,j] = lin_interp_mat(all_mats[i][:,:,j], ang_par)
+            
+            if sm_pars is not None:
+                all_mats[i][:,:,j] = smoothen(all_mats[i][:,:,j], 
+                                                counts[i//3], ang_par, 
+                                                smooth_par=sm_pars['lambda'], iters=sm_pars['iters'])
+                
+    # Turns r_on and r_off matrices into their differences stored in r_on. (r_off is now set to 0)
+    r_on[:,:,0] = r_on[:,:,0]-r_off[:,:,0]
+    r_on[:,:,1] = r_on[:,:,1]+r_off[:,:,1]
+    for i in range(2):
+        r_on[:,:,i] = lin_interp_mat(r_on[:,:,i], False)
+    r_on[:,:,0] = smoothen(r_on[:,:,0], counts_lp, False, smooth_par=sm_pars['lambda']*5, iters=sm_pars['iters'])
+    r_off = np.zeros(r_off.shape)
+    
+    # This block is for light penalty implementation. Only applied to r_on.
+    if lp_frac is None:
+        light_penalty = 0
+    else:
+        r_diffs = r_on[:,:,0]-r_off[:,:,0]
+        r_diffs_sorti = np.unravel_index(np.argsort(-r_diffs,axis=None), r_on[:,:,0].shape) # Subtract means and gets sorted indices.
+        r_diffs_sorted = r_diffs[r_diffs_sorti]
+        #counts_lp = np.ones((12,12)) ############
+        count_lim = np.sum(counts_lp)*lp_frac
+        cs = np.cumsum(counts_lp[r_diffs_sorti]) < count_lim
+        cutoff_ind = [i for i,x in enumerate(cs) if not x][0]
+        light_penalty = r_diffs_sorted[cutoff_ind]
+        print(f'Penalty {light_penalty}')
+
+    dist_dict = {
+        'body_on': b_on,
+        'body_off': b_off,
+        'head_on': h_on,
+        'head_off': h_off,
+        'reward_on': r_on - light_penalty,
+        'reward_off': r_off,
+    }    
+    return dist_dict
+
 def add_to_traj(trajectory,info):
     # appends each key in info to the corresponding key in trajectory.
     # If trajectory is empty, returns trajectory as copy of info but with each element as list

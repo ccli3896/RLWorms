@@ -131,7 +131,7 @@ class ModelSet():
             else:
                 raise ValueError('Samples and frac cannot both be None')
 
-            self.models.append(ut.make_dist_dict(samps, sm_pars=sm_pars, 
+            self.models.append(ut.make_dist_dict2(samps, sm_pars=sm_pars, 
                                 prev_act_window=self.model_params['prev_act_window'],
                                 lp_frac=self.lp_frac))
     
