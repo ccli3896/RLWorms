@@ -321,3 +321,15 @@ def find_worms(im, templates, bodies, ref_pts=None,num_worms=1,brightness=2000):
         worms[wrm]['body'] = find_body(worms[wrm],bodies)
     return worms
 
+def ht_quick(worm,old_loc):
+    # Returns probable head endpoint based on movement projections onto angles obtained from find_angs.
+    p0 = proj(worm['loc']-old_loc, [np.cos(pi/180*worm['angs'][0]),-np.sin(pi/180*worm['angs'][0])])
+    p1 = proj(worm['loc']-old_loc, [np.cos(pi/180*worm['angs'][1]),-np.sin(pi/180*worm['angs'][1])])
+    #print(round(p0,2),round(p1,2))
+    SWITCH = False
+    head = worm['endpts'][:,0]
+    if p1 > p0:
+        head = worm['endpts'][:,1]
+        SWITCH = True
+    
+    return head, SWITCH
