@@ -8,6 +8,7 @@ import time
 # This is a version where observations are normalized to [-1,1] WITHIN this environment.
 # Did it because the normalized box wrapper seemed buggy and wasn't normalizing
 # the first observation for each epoch.
+# No more HT checks in this script. Will be done post-processing.
 ##########################
 
 
@@ -15,7 +16,7 @@ class ProcessedWorm(gym.Env):
     """Custom Environment that follows gym interface"""
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, target, ep_len=1200, ht_time=3, bg_time=20):
+    def __init__(self, target, ep_len=1200, bg_time=20):
         
         """
         Initializes the camera, light, worm starting point.
@@ -28,7 +29,7 @@ class ProcessedWorm(gym.Env):
         # They must be gym.spaces objects
 
         self.action_space = spaces.Discrete(2)
-        self.observation_space = spaces.Box(low=np.array([-1,-1]), high=np.array([1,1]), dtype=np.uint8)
+        self.observation_space = spaces.Box(low=np.array([-1]), high=np.array([1]), dtype=np.uint8)
 
         self.target = target
         self.ep_len = ep_len
@@ -36,7 +37,6 @@ class ProcessedWorm(gym.Env):
 
         self.bg_time=bg_time
         self.timer = Timer(ep_len)
-        self.ht_timer= Timer(ht_time)
         self.steps = 0
         self.finished = False
         self.no_worm_flag = True
@@ -60,12 +60,6 @@ class ProcessedWorm(gym.Env):
         if self.timer.check():
             self.finished = True
         self.timer.update()
-        self.ht_timer.update()
-        if self.ht_timer.check():
-            try:
-                SWITCHED = self.check_ht()
-            except AttributeError:
-                return False,False,False,False
 
         if worms is None:
             # Returns zeros if worm isn't found or something went wrong.
@@ -82,7 +76,7 @@ class ProcessedWorm(gym.Env):
                 'loc': np.zeros(2),
                 't': self.timer.t,
                 'endpts': np.zeros((2,2))-1,
-                'obs': np.zeros(2),
+                'obs': 0,
                 'reward': 0,
                 'target': self.target,
                 'action': action,
@@ -92,9 +86,9 @@ class ProcessedWorm(gym.Env):
         # Find state 
         self.worm = worms[0]
         body_dir = relative_angle(self.worm['body'], self.target)
-        head_body = relative_angle(self.worm['angs'][0], self.worm['body'])
-        head_body2 = relative_angle(self.worm['angs'][1], self.worm['body'])
-        obs = np.array([body_dir, head_body])/180.
+        # head_body = relative_angle(self.worm['angs'][0], self.worm['body'])
+        # head_body2 = relative_angle(self.worm['angs'][1], self.worm['body'])
+        obs = body_dir/180.
         
         # Find reward and then update last_loc variable
         reward = proj(self.worm['loc']-self.last_loc, [np.cos(self.target*pi/180),-np.sin(self.target*pi/180)])
@@ -104,7 +98,7 @@ class ProcessedWorm(gym.Env):
         
         # return obs, reward, done (boolean), info (dict)
         return obs, reward, self.finished, {
-            'img': self.worm['img'],
+            #'img': self.worm['img'],
             'loc': self.worm['loc'],
             't': self.timer.t,
             'endpts': self.worm['endpts'],
@@ -112,7 +106,7 @@ class ProcessedWorm(gym.Env):
             'reward': reward,
             'target': self.target,
             'action': action,
-            'angs': np.array([head_body,head_body2])/180,
+            'angs': self.worm['angs'] #np.array([head_body,head_body2])/180,
         }
 
         
@@ -129,7 +123,6 @@ class ProcessedWorm(gym.Env):
         self.bg = self.make_bgs(cam)
 
         self.timer.reset()
-        self.ht_timer.reset()
         self.finished = False
         self.steps = 0
         
@@ -144,14 +137,6 @@ class ProcessedWorm(gym.Env):
         """Makes background images and stores in self"""
         return make_bg(cam,total_time=self.bg_time)
     
-    def check_ht(self):
-        """
-        Run this function every few seconds to make sure HT orientation is correct
-        Returns True if switched.
-        """
-        self.head, SWITCH = ht_quick(self.worm, self.old_loc)
-        self.old_loc = self.worm['loc']
-        return SWITCH
     
     def realobs2obs(self,realobs):
         # Takes angle measurements from -1 to 1 [theta_b, theta_h] and maps to obs [0,143]

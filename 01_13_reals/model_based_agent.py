@@ -30,6 +30,12 @@ class DataHandler():
         
         self.df = ut.make_df(fnames, old_frame=self.df, **kwargs)
 
+    #def add_dict_to_df_HT(self,fnames,**kwargs):
+        # Difference between this and above fn is that post-processing is done on HT angles
+        # to ensure continuity. Trajectory must have keys 't', 'obs_b', 'angs', 'prev_actions', 'reward', 'loc',
+        # 'target
+        # TODO 
+
     def add_df_to_df(self,fnames):
         # Takes fnames as list
         for fname in fnames:

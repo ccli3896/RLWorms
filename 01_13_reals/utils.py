@@ -1,8 +1,120 @@
 import pickle
 import numpy as np
 import pandas as pd 
+from improc import *
 
 # Interaction should be mainly with these functions
+
+def make_df_HT(fname, 
+    window=30,
+    old_frame=None, 
+    reward_ahead=10, 
+    timestep_gap=1, 
+    prev_act_window=3, 
+    jump_limit=100,
+    ):
+
+    '''
+    Takes a file and turns it into a trajectory dataframe.
+    Can add to old data.
+    Inputs:
+                   window: number of timesteps around a point to determine angle of movement.
+                           For HT fixing.
+                old_frame: old df
+             reward_ahead: how many steps ahead to sum reward, for each table entry
+             timestep_gap: how data are sampled (e.g. =5 means only every fifth datapoint is kept)
+          prev_act_window: how many steps to look back to make sure all actions were 'on' or 'off'
+               jump_limit: data are processed to remove faulty points where worm loc has jumped really far.
+                           This is the maximum jump distance allowed before points are tossed.
+                     disc: discretization of angles
+
+    Output:
+        dataframe object with keys:
+            't', 'obs_b', 'angs', 'prev_actions', 'reward', 'loc', 'target'
+            
+    This version only cleans jump points.
+    '''
+    def add_ind_to_df(traj,df,i, reward_ahead, prev_act_window):
+        # Assumes data for angle observations go from -1 to 1. 
+        # This was because of use w/ normalized box wrapper with actual worm env
+        ANG_BOUND = 180
+        return df.append({
+            't'           : traj['t'][i],
+            'obs_b'       : int(traj['obs'][i]*ANG_BOUND),
+            'angs'        : traj['angs'][i],
+            'prev_actions': sum(traj['action'][i-prev_act_window:i]), # Note does not include current action
+            'reward'      : sum(traj['reward'][i:i+reward_ahead]),
+            'loc'         : traj['loc'][i],
+            'target'      : traj['target'][i],
+        }, ignore_index=True)
+
+    def correct_ht(df,window=30):
+        # Takes a dataframe and fixes HT switches. 
+        # df must have keys ['t', 'obs_b', 'angs', 'prev_actions', 'reward', 'loc', 'target']
+        # Returns a dataframe with 'obs_h', 'next_obs_b', and 'next_obs_h'
+        
+        # Make a location array
+        locs = np.zeros((len(df),2)) 
+        obs_b = np.zeros((len(df)))
+        for i,loc in enumerate(df['loc']):
+            locs[i,:] = loc
+            obs_b[i] = df['obs_b'][i]
+            
+        # Use location array to make direction of travel
+        angs = []
+        for i in np.arange(window//2,len(locs)-window//2):
+            mvt = np.sum(locs[i-window//2:i+window//2,:]-locs[i-window//2,:],axis=0)
+            angs.append(np.arctan2(-mvt[1],mvt[0])*180/pi - df['target'][i])   # flip y as usual 
+            
+        angs = np.hstack([np.zeros(window//2)+angs[0],angs,np.zeros(window//2)+angs[-1]])
+        
+        # Fixes observation by 180 deg. If it has to switch something, also switches angle.
+        ob_fix = wrap_correct(obs_b.copy(),ref=angs)
+        for i,ang in enumerate(angs):
+            if abs(ob_fix[i]-ang) > 90:
+                ob_fix[i] += 180
+                df['angs'][i] = np.flip(df['angs'][i])
+        ob_fix = wrap_correct(ob_fix).astype(int)
+        
+        # Edits dataframe to reflect changes
+        df['obs_b'] = ob_fix
+        if 'obs_h' not in df.columns:
+            df.insert(len(df.columns),'obs_h',np.zeros((len(df))))
+            df.insert(len(df.columns),'next_obs_b',np.zeros((len(df))))
+            df.insert(len(df.columns),'next_obs_h',np.zeros((len(df))))
+        for i in range(len(df)):
+            df.loc[i,'obs_h'] = int(wrap_correct(df['angs'][i][0]-df['obs_b'][i]-df['target'][i]))
+        for i in range(len(df)-1):
+            df.loc[i,'next_obs_b'] = df['obs_b'][i+1]
+            df.loc[i,'next_obs_h'] = df['obs_h'][i+1]
+        df.loc[len(df)-1,'next_obs_b'] = df['obs_b'][len(df)-1]
+        df.loc[len(df)-1,'next_obs_h'] = df['obs_h'][len(df)-1]
+        
+        return angs,df
+
+    if old_frame is None:
+        df = pd.DataFrame(columns = ['t', 'obs_b', 'angs', 'prev_actions', 'reward', 'loc', 'target'])
+    else:
+        df = old_frame
+
+    # Loop through and remove problem points.
+    newf = True
+    with open(fname, 'rb') as f:
+        traj = pickle.load(f)
+
+    for i in np.arange(prev_act_window,len(traj['t'])-reward_ahead,timestep_gap):
+        # For every timestep, check if the jump is reasonable and add to dataframe.
+        if newf:
+            if sum(traj['loc'][i])!=0:
+                df = add_ind_to_df(traj,df,i,reward_ahead,prev_act_window)
+                newf = False
+        elif np.sqrt(np.sum(np.square(df['loc'].iloc[-1]-traj['loc'][i]))) < jump_limit:
+            df = add_ind_to_df(traj,df,i,reward_ahead,prev_act_window)
+            
+    angs, df = correct_ht(df,window=30)
+    angs = wrap_correct(angs)
+
+    return angs,df
 
 def make_df(fnames, 
     old_frame=None, 
@@ -69,20 +181,18 @@ def make_df(fnames,
 
 def make_dist_dict(df, sm_pars=None,
     prev_act_window=3,
-    cut_reversals=True,
     lp_frac=None):
     # Makes a dictionary of distributions using trajectory statistics.
     # sm_pars is a dict of form {'lambda': .05, 'iters': 30}
     #     If None, then no smoothing.
-    # cut_reversals is a boolean
     # Lp_frac: [0,1]. Models find a number to subtract from light-on matrices, in order for
     #  this fraction of observations to remain above their corresponding light-off spots.
 
     traj_on = df.query('prev_actions=='+str(prev_act_window))
     traj_off = df.query('prev_actions==0')
 
-    r_on, b_on, h_on, count_on = make_stat_mats(traj_on, cut_reversals=cut_reversals)
-    r_off, b_off, h_off, count_off = make_stat_mats(traj_off, cut_reversals=cut_reversals)
+    r_on, b_on, h_on, count_on = make_stat_mats(traj_on)
+    r_off, b_off, h_off, count_off = make_stat_mats(traj_off)
 
     all_mats = [r_on,b_on,h_on,r_off,b_off,h_off]
     counts = [count_on,count_off]
@@ -142,29 +252,17 @@ def add_to_traj(trajectory,info):
         for k in info.keys():
             trajectory[k] = [info[k]]
 
-def make_stat_mats(df, cut_reversals=True):
-    # This version should have an option to check HT switches so I can test.
+def make_stat_mats(df):
     # Inner func does most of the work querying for each obs.
-    # cut_reversals is True if body angle switches happen. Note that it does cut both incorrect
-    #   switches and correct ones.
     # Returns everything at once: 
     #   r_mat[12,12,2], b_mat[12,12,2], h_mat[12,12,2], counts[12,12].
 
-    def get_stats_angs(df, obs, cut_reversals=True):
+    def get_stats_angs(df, obs):
         # Gets mean and var of df values that match obs, centered on obs
-        # Remove points where HT orientation switched
         # Returns r_stats, b_stats, h_stats, count. The first three are tuples [mu,var].
 
-        if cut_reversals:
-            backwards = obs[0]-180
-            if backwards < -180:
-                backwards += 360
-        else:
-            backwards = 1e5
-
         df_d = dict(zip(df.columns,range(len(df.columns))))
-        series = df.query('obs_b=='+str(obs[0])+'& obs_h=='+str(obs[1])+
-            '& next_obs_b!='+str(backwards)).copy()
+        series = df.query('obs_b=='+str(obs[0])+'& obs_h=='+str(obs[1])).copy()
         series.iloc[:,df_d['next_obs_b']] = wrap_correct(series['next_obs_b'].to_numpy(),ref=series['obs_b'].to_numpy(),buffer=180)
         series.iloc[:,df_d['next_obs_h']] = wrap_correct(series['next_obs_h'].to_numpy(),ref=series['obs_h'].to_numpy(),buffer=180)
 
