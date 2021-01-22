@@ -3,12 +3,14 @@ from gym import spaces
 from improc import *
 import numpy as np
 import time
+from math import *
+import utils as ut
 
 ##########################
 # This is a version where observations are normalized to [-1,1] WITHIN this environment.
 # Did it because the normalized box wrapper seemed buggy and wasn't normalizing
 # the first observation for each epoch.
-# No more HT checks in this script. Will be done post-processing.
+# Real-time HT fix with continuous direction checking.
 ##########################
 
 
@@ -29,7 +31,7 @@ class ProcessedWorm(gym.Env):
         # They must be gym.spaces objects
 
         self.action_space = spaces.Discrete(2)
-        self.observation_space = spaces.Box(low=np.array([-1]), high=np.array([1]), dtype=np.uint8)
+        self.observation_space = spaces.Box(low=np.array([-1,-1]), high=np.array([1,1]), dtype=np.uint8)
 
         self.target = target
         self.ep_len = ep_len
@@ -41,6 +43,7 @@ class ProcessedWorm(gym.Env):
         self.finished = False
         self.no_worm_flag = True
         self.recent_locs = np.zeros((window,2))
+        self.window = window
 
 
     def step(self, action, cam, task, sleep_time=0):
@@ -55,14 +58,27 @@ class ProcessedWorm(gym.Env):
 
         # Get data
         img = grab_im(cam, self.bg)
-        worms = find_worms(img, self.templates, self.bodies, ref_pts=[self.head], num_worms=1)
+        worms = find_worms(img, self.templates, self.bodies, ref_pts=self.head, num_worms=1)
 
         # Timer checks: episode end
         if self.timer.check():
             self.finished = True
         self.timer.update()
 
-        if worms is None:
+        if worms is not None:
+            # Find current direction of motion.
+            # If the current point is a jump from all others in the array, return same as if worms is None.
+            jump_limit = 100
+            self.recent_locs = np.append(self.recent_locs[1:], [worms[0]['loc']], axis=0)
+            direction = None
+            for i in range(self.window):
+                if pt_dist(self.recent_locs[-1],self.recent_locs[i]) < jump_limit:
+                    # Set direction
+                    direction = np.arctan2(-(self.recent_locs[-1,1]-self.recent_locs[i,1]), 
+                        self.recent_locs[-1,0]-self.recent_locs[i,0]) *180/pi
+                    break    
+
+        if worms is None or direction is None:
             # Returns zeros if worm isn't found or something went wrong.
             task.write(0)
             self.no_worm_flag = not self.no_worm_flag
@@ -73,41 +89,43 @@ class ProcessedWorm(gym.Env):
             else:
                 print(f' No worm\t\t\r',end='')
             return np.zeros(2), 0, self.finished, {
-                #'img': None,
                 'loc': np.zeros(2),
                 't': self.timer.t,
                 'endpts': np.zeros((2,2))-1,
-                'obs': 0,
+                'obs': np.zeros(2),
                 'reward': 0,
                 'target': self.target,
                 'action': action,
-                'angs': np.zeros(2)
                 }
-        
+                
         # Find state 
-        self.worm = worms[0]
-        body_dir = relative_angle(self.worm['body'], self.target)
-        # head_body = relative_angle(self.worm['angs'][0], self.worm['body'])
-        # head_body2 = relative_angle(self.worm['angs'][1], self.worm['body'])
-        obs = body_dir/180.
+        body_dir = relative_angle(worms[0]['body'], self.target)
+        if abs(relative_angle(body_dir,direction-self.target)) > 90:
+            body_dir = ut.wrap_correct(body_dir+180)
+            head_body = relative_angle(worms[0]['angs'][1], worms[0]['body'])
+            worms[0]['endpts'] = np.fliplr(worms[0]['endpts'])
+        else:
+            head_body = relative_angle(worms[0]['angs'][0], worms[0]['body'])
+
+        obs = np.array([body_dir,head_body])/180.
         
         # Find reward and then update last_loc variable
-        reward = proj(self.worm['loc']-self.last_loc, [np.cos(self.target*pi/180),-np.sin(self.target*pi/180)])
-        self.last_loc = self.worm['loc']
+        reward = proj(worms[0]['loc']-self.last_loc, [np.cos(self.target*pi/180),-np.sin(self.target*pi/180)])
+        self.last_loc = worms[0]['loc']
         if np.isnan(reward) or np.abs(reward)>10:
             reward = 0
         
+        self.head = worms[0]['endpts'][:,0] # for endpoint reference at next step
         # return obs, reward, done (boolean), info (dict)
         return obs, reward, self.finished, {
-            #'img': self.worm['img'],
-            'loc': self.worm['loc'],
+            #'img': worms[0]['img'],
+            'loc': worms[0]['loc'],
             't': self.timer.t,
-            'endpts': self.worm['endpts'],
+            'endpts': worms[0]['endpts'],
             'obs': obs,
             'reward': reward,
             'target': self.target,
             'action': action,
-            'angs': self.worm['angs'] #np.array([head_body,head_body2])/180,
         }
 
         
@@ -121,15 +139,24 @@ class ProcessedWorm(gym.Env):
         task.write(0)
         self.bg = self.make_bgs(cam)
 
+        # Get [window] locations to start proper HT tracking
+        for i in range(self.window):
+            img = grab_im(cam, self.bg)
+            worms = find_worms(img, self.templates, self.bodies, ref_pts=[0,0], num_worms=1)
+            if worms is None:
+                self.recent_locs[i,:] = np.zeros((1,2))
+            else:
+                self.recent_locs[i,:] = worms[0]['loc']
+
         self.timer.reset()
         self.finished = False
         self.steps = 0
         
         # Takes one step and returns the observation
+        self.head = self.recent_locs[-1,:] # doesn't have to be accurate; is just a starting point
+        self.last_loc = self.recent_locs[-1,:]
         obs,reward,self.finished,info = self.step(0,cam,task)
-        self.head = info['endpts'][:,0]
-        self.last_loc = info['loc']
-        self.recent_locs += info['loc']
+        print('Done resetting\t')
         return obs
     
     def render(self, mode='human', close=False):
