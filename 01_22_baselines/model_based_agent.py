@@ -187,6 +187,32 @@ class WormRunner():
         task.write(0)
         return rews
 
+    def eval_ep_fake(self,fname,eval_eps=1):
+        # Runs an evaluation episode on the worm and returns the total rewards collected.
+        self.eval_traj = {}
+        obs = self.worm.realobs2obs(self.worm.reset())
+        done = False
+        st,ep = 0,0
+        rews = []
+        while ep < eval_eps:
+            if st%self.act_spacing==0:
+                action = self.agent.eval_act(obs)
+            next_obs, rew, done, info = self.worm.step(action,sleep_time=0) 
+            rews.append(rew)
+            if next_obs is False:
+                return False
+            ut.add_to_traj(self.eval_traj, info)
+            obs = self.worm.realobs2obs(next_obs)
+            st+=1
+            if done: 
+                ep+=1
+                if ep<eval_eps:
+                    obs = self.worm.realobs2obs(self.worm.reset())
+            
+        with open(fname,'wb') as f:
+            pickle.dump(self.eval_traj, f)
+        return rews
+
     def full_run(self, num_eps, fname, eps_vector=None,eval_len=300,poison_queue=None):
         # Runs a number of episodes of runtype. Saves trajectory at end.
         # eps_vector is a list of epsilon values for each episode. If there's one value [eps], then 
