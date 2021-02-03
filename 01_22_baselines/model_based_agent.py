@@ -27,8 +27,8 @@ class DataHandler():
         if len(kwargs)==0:
             #print('No kwargs in add_dict_to_df')
             kwargs = self.params 
-        
-        self.df = ut.make_df(fnames, old_frame=self.df, **kwargs)
+        for fname in fnames:
+            self.df = ut.make_df_HT(fname, old_frame=self.df, **kwargs)
 
     #def add_dict_to_df_HT(self,fnames,**kwargs):
         # Difference between this and above fn is that post-processing is done on HT angles

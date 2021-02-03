@@ -68,6 +68,117 @@ def make_df(fnames,
 
     return df
 
+def make_df_HT(fname, 
+    window=30,
+    old_frame=None, 
+    reward_ahead=10, 
+    timestep_gap=1, 
+    prev_act_window=3, 
+    jump_limit=100,
+    ):
+
+    '''
+    Takes a file and turns it into a trajectory dataframe.
+    Can add to old data.
+    Inputs:
+                   window: number of timesteps around a point to determine angle of movement.
+                           For HT fixing.
+                old_frame: old df
+             reward_ahead: how many steps ahead to sum reward, for each table entry
+             timestep_gap: how data are sampled (e.g. =5 means only every fifth datapoint is kept)
+          prev_act_window: how many steps to look back to make sure all actions were 'on' or 'off'
+               jump_limit: data are processed to remove faulty points where worm loc has jumped really far.
+                           This is the maximum jump distance allowed before points are tossed.
+                     disc: discretization of angles
+
+    Output:
+        dataframe object with keys:
+            't', 'obs_b', 'angs', 'prev_actions', 'reward', 'loc', 'target'
+            
+    This version only cleans jump points.
+    '''
+    def add_ind_to_df(traj,df,i, reward_ahead, prev_act_window):
+        # Assumes data for angle observations go from -1 to 1. 
+        # This was because of use w/ normalized box wrapper with actual worm env
+        ANG_BOUND = 180
+        return df.append({
+            't'           : traj['t'][i],
+            'obs_b'       : int(traj['obs'][i]*ANG_BOUND),
+            'angs'        : traj['angs'][i],
+            'prev_actions': sum(traj['action'][i-prev_act_window:i]), # Note does not include current action
+            'reward'      : sum(traj['reward'][i:i+reward_ahead]),
+            'loc'         : traj['loc'][i],
+            'target'      : traj['target'][i],
+        }, ignore_index=True)
+
+    def correct_ht(df,window=30):
+        # Takes a dataframe and fixes HT switches. 
+        # df must have keys ['t', 'obs_b', 'angs', 'prev_actions', 'reward', 'loc', 'target']
+        # Returns a dataframe with 'obs_h', 'next_obs_b', and 'next_obs_h'
+        
+        # Make a location array
+        locs = np.zeros((len(df),2)) 
+        obs_b = np.zeros((len(df)))
+        for i,loc in enumerate(df['loc']):
+            locs[i,:] = loc
+            obs_b[i] = df['obs_b'][i]
+            
+        # Use location array to make direction of travel
+        angs = []
+        for i in np.arange(window//2,len(locs)-window//2):
+            mvt = np.sum(locs[i-window//2:i+window//2,:]-locs[i-window//2,:],axis=0)
+            angs.append(np.arctan2(-mvt[1],mvt[0])*180/pi - df['target'][i])   # flip y as usual 
+            
+        angs = np.hstack([np.zeros(window//2)+angs[0],angs,np.zeros(window//2)+angs[-1]])
+        
+        # Fixes observation by 180 deg. If it has to switch something, also switches angle.
+        ob_fix = wrap_correct(obs_b.copy(),ref=angs)
+        for i,ang in enumerate(angs):
+            if abs(ob_fix[i]-ang) > 90:
+                ob_fix[i] += 180
+                df['angs'][i] = np.flip(df['angs'][i])
+        ob_fix = wrap_correct(ob_fix).astype(int)
+        
+        # Edits dataframe to reflect changes
+        df['obs_b'] = ob_fix
+        if 'obs_h' not in df.columns:
+            df.insert(len(df.columns),'obs_h',np.zeros((len(df))))
+            df.insert(len(df.columns),'next_obs_b',np.zeros((len(df))))
+            df.insert(len(df.columns),'next_obs_h',np.zeros((len(df))))
+        for i in range(len(df)):
+            df.loc[i,'obs_h'] = int(wrap_correct(df['angs'][i][0]-df['obs_b'][i]-df['target'][i]))
+        for i in range(len(df)-1):
+            df.loc[i,'next_obs_b'] = df['obs_b'][i+1]
+            df.loc[i,'next_obs_h'] = df['obs_h'][i+1]
+        df.loc[len(df)-1,'next_obs_b'] = df['obs_b'][len(df)-1]
+        df.loc[len(df)-1,'next_obs_h'] = df['obs_h'][len(df)-1]
+        
+        return angs,df
+
+    if old_frame is None:
+        df = pd.DataFrame(columns = ['t', 'obs_b', 'angs', 'prev_actions', 'reward', 'loc', 'target'])
+    else:
+        df = old_frame
+
+    # Loop through and remove problem points.
+    newf = True
+    with open(fname, 'rb') as f:
+        traj = pickle.load(f)
+
+    for i in np.arange(prev_act_window,len(traj['t'])-reward_ahead,timestep_gap):
+        # For every timestep, check if the jump is reasonable and add to dataframe.
+        if newf:
+            if sum(traj['loc'][i])!=0:
+                df = add_ind_to_df(traj,df,i,reward_ahead,prev_act_window)
+                newf = False
+        elif np.sqrt(np.sum(np.square(df['loc'].iloc[-1]-traj['loc'][i]))) < jump_limit:
+            df = add_ind_to_df(traj,df,i,reward_ahead,prev_act_window)
+            
+    angs, df = correct_ht(df,window=30)
+    angs = wrap_correct(angs)
+
+    return df
+
 def make_dist_dict2(df, sm_pars=None,
     prev_act_window=3,
     lp_frac=None):
