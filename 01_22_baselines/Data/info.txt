@@ -1,0 +1,3 @@
+All data before 2.2 are trash and based on faulty worm_env.
+
+2.2 onward should be okay

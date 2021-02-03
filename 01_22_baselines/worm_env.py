@@ -102,7 +102,7 @@ class ProcessedWorm(gym.Env):
         body_dir = relative_angle(worms[0]['body'], self.target)
         if abs(relative_angle(body_dir,direction-self.target)) > 90:
             body_dir = ut.wrap_correct(body_dir+180)
-            head_body = relative_angle(worms[0]['angs'][1], worms[0]['body'])
+            head_body = relative_angle(worms[0]['angs'][1], worms[0]['body']+180)
             worms[0]['endpts'] = np.fliplr(worms[0]['endpts'])
         else:
             head_body = relative_angle(worms[0]['angs'][0], worms[0]['body'])
