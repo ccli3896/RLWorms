@@ -28,7 +28,7 @@ class DataHandler():
             #print('No kwargs in add_dict_to_df')
             kwargs = self.params 
         for fname in fnames:
-            self.df = ut.make_df_HT(fname, old_frame=self.df, **kwargs)
+            self.df = ut.make_df(fname, old_frame=self.df, **kwargs)
 
     #def add_dict_to_df_HT(self,fnames,**kwargs):
         # Difference between this and above fn is that post-processing is done on HT angles
@@ -283,7 +283,7 @@ def get_init_traj(fname, worm, episodes, act_rate=3, rand_probs=[.5,.5]):
         worm.reset(cam,task)
         done = False
         t=0
-        while done is False:
+        while done is False: 
             if t%act_rate == 0:
                 action = np.random.choice([0,1],p=rand_probs)
             obs, rew, done, info = worm.step(action,cam,task)
