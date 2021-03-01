@@ -108,7 +108,8 @@ def make_dist_dict2(df, sm_pars=None,
     r_on[:,:,1] = r_on[:,:,1]+r_off[:,:,1]
     for i in range(2):
         r_on[:,:,i] = lin_interp_mat(r_on[:,:,i], False)
-    r_on[:,:,0] = smoothen(r_on[:,:,0], counts_lp, False, smooth_par=sm_pars['lambda']*5, iters=sm_pars['iters'])
+    if sm_pars is not None:
+        r_on[:,:,0] = smoothen(r_on[:,:,0], counts_lp, False, smooth_par=sm_pars['lambda']*5, iters=sm_pars['iters'])
     r_off = np.zeros(r_off.shape)
     
     # This block is for light penalty implementation. Only applied to r_on.
@@ -133,7 +134,7 @@ def make_dist_dict2(df, sm_pars=None,
         'reward_on': r_on - light_penalty,
         'reward_off': r_off,
     }    
-    return dist_dict
+    return dist_dict, counts_lp
 
 def add_to_traj(trajectory,info):
     # appends each key in info to the corresponding key in trajectory.
@@ -171,7 +172,7 @@ def make_stat_mats(df):
                 r_sts[1],b_sts[1],h_sts[1] = series['reward'].var(), \
                                                 series['next_obs_b'].var(), \
                                                 series['next_obs_h'].var()
-        return r_sts,b_sts,h_sts,series.size
+        return r_sts,b_sts,h_sts,len(series)
 
 
     r_mat = np.zeros((12,12,2)) + np.nan 
