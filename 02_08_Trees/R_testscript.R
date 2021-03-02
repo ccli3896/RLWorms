@@ -1,7 +1,7 @@
 library(reticulate)
 library(tidyverse)
 library(BART)
-setwd("Research/R_RamanathanLab/20_09_07_Repo/RLWorms/02_08_Trees/")
+setwd("Research/20_09_07_NewPC/RLWorms/02_08_Trees/")
 source("./worm-sampling/worm-sampling/utils.R")
 
 
@@ -52,8 +52,11 @@ np$save("rcheckpreds200.npy",preds)
 ##################
 library(pacman)
 pacman::p_load(devtools,RcppArmadillo)
+ #devtools::install_github("theodds/SoftBART", type="source")
 library(SoftBart)
+
+new_imp_dims = 1:n_dim
 fit <- softbart(X=m_bart, Y=d_bart$obs, X_test=m_pred,
-                hypers = Hypers(m_bart, d_bart$obs, num_tree=50, temperature=1),
-                opts = Opts(num_burn=200, num_save=500, update_tau=T))
-np$save("softbart.npy",fit$y_hat_test)
+                hypers = Hypers(m_bart, d_bart$obs, num_tree=50, temperature=2),
+                opts = Opts(num_burn=300, num_save=500, update_tau=T))
+np$save("softbartT2.npy",fit$y_hat_test)

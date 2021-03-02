@@ -6,7 +6,6 @@ import pandas as pd
 
 from improc import *
 import utils as ut 
-import worm_env as we 
 
 class DataHandler():
     # Takes output of worm trials and formats/stores for model and agent use.
@@ -59,21 +58,57 @@ class DataHandler():
             return f'No dataframe\nParams are {self.params}'
         return f'Len of dataframe is {len(self.df)}\nParams are {self.params}'
 
-def get_mod_and_policy(df, sm_pars=None, lp_frac=None):
-    # Returns a model and policy.
-    # The policy is in the form of probabilities for every state. A higher prob means
-    # more preference to sample.
-    mod, counts = ut.make_dist_dict2(df, sm_pars=sm_pars, lp_frac=lp_frac)
-    counts = ut.smoothen(counts,counts,False,smooth_par=.1,iters=15)
+'''
+Utilities for dataframes
+'''
+def change_reward_ahead(df,reward_ahead,jump_limit=100):
+    # Takes a dataframe where reward_ahead setting was 1.
+    # Rewrites reward column using new reward_ahead
+    # Returns dataframe at the end.
+    start_inds = [0]
+    for i in range(len(df)-1):
+        if pt_dist(df['loc'][i],df['loc'][i+1]) > 10:
+            start_inds.append(i+1)
 
-    policy = np.exp(-np.abs(mod['reward_on'][:,:,0])/np.sqrt(mod['reward_on'][:,:,1]/counts))
-    return mod, counts, policy
+    new_df = pd.DataFrame(columns=df.columns)
+    for i in range(len(start_inds)-1):
+        new_sec = df.iloc[start_inds[i]:start_inds[i+1]-reward_ahead].copy()
+        new_r = [np.sum(dh.df['reward'][start_inds[i]+j:start_inds[i]+j+reward_ahead]) 
+                     for j in range(len(new_sec))]
+        new_sec['reward'] = new_r
+        new_df = new_df.append(new_sec)
+    return new_df
 
-def transform_policy(policy, counts, threshold):
-    # Taking a policy from the softmax of CoV and transforming it into something practical based on
-    # worm state distributions.
+'''
+R interaction functions
+'''
 
+def save_for_R(df,fname):
+    ang2r = lambda x: x/30+7
+
+    obs_b_on = ang2r(df[df['prev_actions']==3]['obs_b'].to_numpy())
+    obs_b_off = ang2r(df[df['prev_actions']==0]['obs_b'].to_numpy())
+    obs_h_on = ang2r(df[df['prev_actions']==3]['obs_h'].to_numpy())
+    obs_h_off = ang2r(df[df['prev_actions']==0]['obs_h'].to_numpy())
+    rew_on = df[df['prev_actions']==3]['reward'].to_numpy()
+    rew_off = df[df['prev_actions']==0]['reward'].to_numpy()
+
+    ons = [obs_b_on,obs_h_on,rew_on]
+    offs = [obs_b_off,obs_h_off,rew_off]
+
+    ons = [np.expand_dims(on,1) for on in ons]
+    offs = [np.expand_dims(off,1) for off in offs]
+    ons = np.concatenate(ons,axis=1)
+    offs = np.concatenate(offs,axis=1)
+
+    alls = np.concatenate([ons,offs],axis=0)
+    acts = np.zeros((alls.shape[0],1))
+    acts[:ons.shape[0]] += 1
+    alls = np.concatenate([alls,acts],axis=1)
+    alls = alls.astype(float)
     
+    np.save(fname, alls, allow_pickle=True)
+    print("Saved as numpy for R")
 
 '''
 Worm functions

@@ -126,6 +126,7 @@ class Timer:
     def update(self):
         self.t = time.monotonic() - self.chkpt
     def check(self):
+        # Why isn't update in here # TODO
         if self.t > self.interval:
             self.chkpt = time.monotonic()
             self.t = 0
