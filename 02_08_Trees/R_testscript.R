@@ -7,7 +7,7 @@ source("./worm-sampling/worm-sampling/utils.R")
 
 # PARAMETERS
 n = 12
-n_dim = 3
+n_dim = 2
 error_scale = 20 # rough scale of observation error (sd for specific value)
 dim_regularization = 3 # higher values -> more smoothness & sparsity
 thomps_cutoff = 0.1 # reward for sampling 'on' when true surface is within this value of 0
@@ -46,3 +46,14 @@ preds_diff = preds[,d_pred$which==1] - preds[,d_pred$which==0]
 # Save to return to Python
 np$save("rcheckdiff200.npy",preds_diff)
 np$save("rcheckpreds200.npy",preds)
+
+##################
+# SoftBART
+##################
+library(pacman)
+pacman::p_load(devtools,RcppArmadillo)
+library(SoftBart)
+fit <- softbart(X=m_bart, Y=d_bart$obs, X_test=m_pred,
+                hypers = Hypers(m_bart, d_bart$obs, num_tree=50, temperature=1),
+                opts = Opts(num_burn=200, num_save=500, update_tau=T))
+np$save("softbart.npy",fit$y_hat_test)
