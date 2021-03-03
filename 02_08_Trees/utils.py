@@ -20,7 +20,7 @@ def make_df(fnames,
                 old_frame: old df
              reward_ahead: how many steps ahead to sum reward, for each table entry
              timestep_gap: how data are sampled (e.g. =5 means only every fifth datapoint is kept)
-          prev_act_window: how many steps to look back to make sure all actions were 'on' or 'off'
+          prev_act_window: how many steps to look AHEAD to make sure all actions are 'on' or 'off' # naming is poor
                jump_limit: data are processed to remove faulty points where worm loc has jumped really far.
                            This is the maximum jump distance allowed before points are tossed.
                      disc: discretization of angles
@@ -37,7 +37,7 @@ def make_df(fnames,
             't'           : traj['t'][i],
             'obs_b'       : int(traj['obs'][i][0]*ANG_BOUND),
             'obs_h'       : int(traj['obs'][i][1]*ANG_BOUND),
-            'prev_actions': sum(traj['action'][i-prev_act_window:i]), # Note does not include current action
+            'prev_actions': sum(traj['action'][i+1:i+prev_act_window+1]), # Note does not include current action
             'next_obs_b'  : int(traj['obs'][i+1][0]*ANG_BOUND),
             'next_obs_h'  : int(traj['obs'][i+1][1]*ANG_BOUND),
             'reward'      : sum(traj['reward'][i:i+reward_ahead]),
@@ -57,7 +57,7 @@ def make_df(fnames,
         with open(fname, 'rb') as f:
             traj = pickle.load(f)
 
-        for i in np.arange(prev_act_window,len(traj['t'])-reward_ahead,timestep_gap):
+        for i in np.arange(0,len(traj['t'])-np.max([reward_ahead,prev_act_window+1]),timestep_gap):
             # For every timestep, check if the jump is reasonable and add to dataframe.
             if newf:
                 if sum(traj['loc'][i])!=0:
