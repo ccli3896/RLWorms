@@ -3,6 +3,7 @@ Compilation of functions needed for policy learning where the policy is informin
 '''
 import numpy as np
 import pandas as pd
+from scipy.stats import norm
 
 from improc import *
 import utils as ut 
@@ -24,8 +25,7 @@ class DataHandler():
         if len(kwargs)==0:
             #print('No kwargs in add_dict_to_df')
             kwargs = self.params 
-        for fname in fnames:
-            self.df = ut.make_df(fname, old_frame=self.df, **kwargs)
+        self.df = ut.make_df(fnames, old_frame=self.df, **kwargs)
 
     def add_df_to_df(self,fnames):
         # Takes fnames as list
@@ -69,12 +69,13 @@ def change_reward_ahead(df,reward_ahead,jump_limit=100):
     for i in range(len(df)-1):
         if pt_dist(df['loc'][i],df['loc'][i+1]) > 10:
             start_inds.append(i+1)
+    start_inds.append(len(df))
 
     new_df = pd.DataFrame(columns=df.columns)
     for i in range(len(start_inds)-1):
         new_sec = df.iloc[start_inds[i]:start_inds[i+1]-reward_ahead].copy()
-        new_r = [np.sum(dh.df['reward'][start_inds[i]+j:start_inds[i]+j+reward_ahead]) 
-                     for j in range(len(new_sec))]
+        new_r = [np.sum(df['reward'][start_inds[i]+j:start_inds[i]+j+reward_ahead]) 
+                    for j in range(len(new_sec))]
         new_sec['reward'] = new_r
         new_df = new_df.append(new_sec)
     return new_df
@@ -114,19 +115,25 @@ def get_counts(df):
     return counts
 
 def make_sprobs_cutoff(ents,alpha,counts,baseline):
-    # Takes the entropies and returns a matrix of 1s and 0s where 1 is sample always and otherwise sample at baseline.
+    # Takes the entropies and returns a matrix of action probabilities for a=1 (light on).
+    # 
+    # ents is the matrix of entropies.
+    # alpha is the sampling limit. Goes from 0 to 1. A 1 means light is on 50% of time.
+    # counts is how many times each state was visited.
+    # baseline is the minimum sampling rate for all states. 
+
     dist = counts/np.sum(counts)
-    
+
     # Index the distribution by sorted entropies. Then find the number of terms whose cumulative sum
     # is just less than alpha.
-    top_n = np.sum(np.cumsum(dist.ravel()[np.argsort(-ents.ravel())])<=((alpha-baseline)/(1-baseline)))
+    top_n = np.sum(np.cumsum(dist.ravel()[np.argsort(-ents.ravel())])<=((alpha-baseline)/(1-baseline+1e-6)))
     samp_inds = np.dstack(np.unravel_index(np.argsort(-ents.ravel())[:top_n], ents.shape)).reshape(-1,2)
     
     # Construct the sampling probability matrix
     sprobs = np.zeros(dist.shape)+baseline
     for s in samp_inds:
         sprobs[s[0],s[1]] = 1
-    return sprobs
+    return sprobs*.5
 
 '''
 R interaction functions
@@ -162,27 +169,6 @@ def save_for_R(df,fname):
 '''
 Worm functions
 '''
-def get_init_traj(fname, worm, episodes, act_rate=3, rand_probs=[.5,.5]):
-    # act_rate is minimum amt of time passed before actions can change.
-    cam,task = init_instruments()
-    trajs = {}
-
-    for i in range(episodes):
-        worm.reset(cam,task)
-        done = False
-        t=0
-        while done is False: 
-            if t%act_rate == 0:
-                action = np.random.choice([0,1],p=rand_probs)
-            obs, rew, done, info = worm.step(action,cam,task)
-            ut.add_to_traj(trajs, info)
-            t+=1
-
-    cam.exit()
-    task.write(0)
-    task.close()
-    with open(fname,'wb') as f:
-        pickle.dump(trajs,f)
 
 def do_sampling_traj(probs, fname, worm, episodes, act_rate=3):
     # probs is the probability that each state will be sampled.
@@ -210,16 +196,13 @@ def do_sampling_traj(probs, fname, worm, episodes, act_rate=3):
             if np.sum(info['endpts'])==-4:
                 # No worm found
                 action = 0
-            elif action:
-                t-=1
-                if t==0:
-                    action=0
-            else:
+            elif t%act_rate == 0:
                 # Get prob of sampling. Light on prob will be half of this.
-                prob = 0.5*probs[obs2ind(obs)]
+                ind = obs2ind(obs)
+                prob = 0.5*probs[ind[0],ind[1]]
                 action = np.random.choice([0,1],p=[1-prob, prob])
-                if action:
-                    t=act_rate
+            
+            t+=1
 
     cam.exit()
     task.write(0)

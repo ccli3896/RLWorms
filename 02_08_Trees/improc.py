@@ -192,7 +192,7 @@ def find_worm_boxes(im,buffer=30,brightness=2000):
     for i,worm in enumerate(p_worms):
         if sum(worm.flatten())>brightness: 
             # Saves centers as COM in found box
-            sumx,sumy = np.sum(t_worms[i],axis=0),np.sum(t_worms[i],axis=1)
+            sumx,sumy = np.sum(t_worms[i],axis=0)+1e-6,np.sum(t_worms[i],axis=1)+1e-6
             im_sz = buffer*2+1
             centers.append(np.array([np.sum(np.arange(im_sz)*sumx) / np.sum(sumx), np.sum(np.arange(im_sz)*sumy) / np.sum(sumy)]))
             peak_centers.append(np.array([peaks_x[i//len(peaks_y)],peaks_y[i%len(peaks_y)]]))

@@ -8,10 +8,11 @@ source("./worm-sampling/worm-sampling/utils.R")
 
 
 # PARAMETERS
-episodes = 1
-num_save = 5
-num_tree = 5
-temp = 1
+episodes = 5
+start_ep = 25
+num_save = 500
+num_tree = 100
+temp = 1 # temperature
 # Fixed params
 n = 12
 n_dim = 2
@@ -19,12 +20,12 @@ imp_dims = 1:n_dim
 
 # Start by formatting for R.
 np <- import("numpy")
-folder = "./Data/Pol03_02_0/"
+folder = "./Data/03_08_0/" #######################
 fbase = paste(folder,"traj",sep="")
 
 # For each worm episode, wait until episode trajectory file exists.
 # In the form of numpy array
-for (ind in c(0:episodes-1)) {
+for (ind in c(start_ep:(start_ep+episodes-1))) {
   fname <- paste(fbase,ind,".npy",sep="")
   print(paste("Waiting for",fname))
   while (!file.exists(fname)) {

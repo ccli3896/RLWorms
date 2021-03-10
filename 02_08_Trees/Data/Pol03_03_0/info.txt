@@ -1,0 +1,15 @@
+    folder, #'./Data/Pol03_03_0/'
+    worm_ep_len=300,
+    init_episodes=1,
+    tot_eps=5,
+    base_sampling=.1, # All states will have a base sampling rate of 10% (5% light on)
+    samp_states_decay=10, # tau such that perc light will be on is 1/2*[(1-base)e^(-ep/tau)+base]
+    ):
+    
+    # Fixed parameters
+    params = {
+        'reward_ahead': 30,
+        'timestep_gap': 1,
+        'prev_act_window': 3,
+        'jump_limit': 100,
+    }
