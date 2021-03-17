@@ -53,5 +53,5 @@ for (ind in c(start_ep:(start_ep+episodes-1))) {
   fit <- softbart(X=m_bart, Y=d_bart$obs, X_test=m_pred,
                   hypers = Hypers(m_bart, d_bart$obs, num_tree=num_tree, temperature=temp),
                   opts = Opts(num_burn=200, num_save=num_save, update_tau=T))
-  np$save(paste(folder,"sbart",ind,".npy",sep=""),fit$y_hat_test)
+  #np$save(paste(folder,"sbart",ind,".npy",sep=""),fit$y_hat_test)
 }
