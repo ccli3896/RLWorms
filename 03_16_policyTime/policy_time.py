@@ -39,14 +39,17 @@ class DataHandler():
         with open(fname[:-4]+'_params.pkl','rb') as f:
             self.params = pickle.load(f) 
         
-    def clear_df(self):
-        self.df = None 
-        self.params = {
-            'reward_ahead': None,
-            'timestep_gap': None,
-            'prev_act_window': None,
-            'jump_limit': None,
-        }
+    def clear_df(self,params=None):
+        self.df = pd.DataFrame()
+        if params is None:
+            self.params = {
+                'reward_ahead': None,
+                'timestep_gap': None,
+                'prev_act_window': None,
+                'jump_limit': None,
+            }
+        else:
+            self.params = params
 
     def save_dfs(self,fname):
         self.df.to_pickle(fname) 
@@ -54,20 +57,20 @@ class DataHandler():
             pickle.dump(self.params, f)
     
     def __str__(self):
-        if self.df is None:
+        if len(self.df)==0:
             return f'No dataframe\nParams are {self.params}'
         return f'Len of dataframe is {len(self.df)}\nParams are {self.params}'
 
 '''
 Utilities for dataframes
 '''
-def change_reward_ahead(df,reward_ahead,jump_limit=100):
+def change_reward_ahead(df,reward_ahead,jump_limit=20):
     # Takes a dataframe where reward_ahead setting was 1.
     # Rewrites reward column using new reward_ahead
     # Returns dataframe at the end.
     start_inds = [0]
     for i in range(len(df)-1):
-        if pt_dist(df['loc'][i],df['loc'][i+1]) > 10:
+        if pt_dist(df['loc'][i],df['loc'][i+1]) > jump_limit:
             start_inds.append(i+1)
     start_inds.append(len(df))
 
@@ -83,25 +86,26 @@ def change_reward_ahead(df,reward_ahead,jump_limit=100):
 '''
 Policy construction
 '''
-def bart2pols(posterior):
+entropy = lambda probs: -probs*np.log(probs+1e-6)-(1-probs)*np.log(1-probs+1e-6)
+
+def bart2pols(posterior,posterior_sig):
     # Takes posterior sampling from BART in R (size [n_samples,288]) where
     # actions alternate every entry. Then second variable ascends fastest.
-    # Returns 
-    #    1. the array of P(Q_delta(state)>0) for each state
-    #    2. the array of H(state), entropies of P(Q_delta(state)>0)
+    # posterior_sig is also returned from BART and is [n_samples].
+    # Returns the array of P(Q_delta(state)>0) samples for each state based on posterior and posterior_sig.
+    # Also returns those probabilities turned to entropies (can be used in TS directly).
+    # Both shapes are [n,144]
     
-    def POver0(mu,sig):
+    POver0 = lambda mu,sig: 1-norm.cdf(-mu/sig)
         # Returns the probability that the RV is above 0
-         return 1-norm.cdf(-mu/sig)
-    def entropy(probs):
-        return -probs*np.log(probs+1e-6)-(1-probs)*np.log(1-probs+1e-6)
+        # Lambda function returns elementwise
     
     post_diff = posterior[:,1::2] - posterior[:,::2]
-    mu = np.mean(post_diff,axis=0)
-    sig = np.std(post_diff,axis=0)
-    probs = POver0(mu,sig).reshape(12,12)
-    ent = entropy(probs).reshape(12,12)
-    return probs, ent
+    post_sig = np.repeat(posterior_sig.reshape(-1,1),144,axis=1)
+    # Now post_diff is shaped like [n,144] where n is posterior sample num
+    probs = POver0(post_diff,post_sig)
+    ents = entropy(probs)
+    return ents,probs
 
 def get_counts(df):
     # Gets counts for each entry
@@ -114,8 +118,50 @@ def get_counts(df):
                 counts[i,j] = df_view[(df_view['obs_b']==ob)&(df_view['obs_h']==oh)]['count']
     return counts
 
+def thompson_sampling(entropies, counts, light_limit):
+    # Takes entropies and ranks them for Thompson sampling. They are in shape [n,144].
+    # Form sampling probability matrix, adjusting for light_limit and counts 
+    #   (prob of being in each state)
+    # Returns PROBABILITY LIGHT IS ON, NOT SAMPLING PROBABILITY 
+    # as in, p_light_on = .5*p_sample
+
+    # Get sorted entropies 
+    counts = counts.flatten()/np.sum(counts) # get counts in same format as ents
+    sts = len(counts) # number of states
+
+    # Make p:
+    # The first row is the proportion each state came in first;
+    # the second row is the proportion it came in second, etc.
+    # Each column is the proportions for that state.
+    p = np.zeros((sts,sts)) 
+    for i in range(sts):
+        p[i,:], _ = np.histogram(np.argsort(entropies,axis=1)[:,i],
+            bins=range(sts+1),density=True)
+
+    pol = np.zeros(sts)
+    rank = 0
+    for i in range(sts):
+
+        # If all states in first row are used up but light isn't yet
+        while np.sum(p[rank,:])==0:
+            rank+=1
+        best = np.argmax(p[rank,:])
+        pol[best] = p[rank,best]/np.sum(p[rank,:])*light_limit 
+
+        # Check if policy exceeds state occupancy
+        if pol[best] > counts[best]:
+            pol[best] = counts[best]
+        
+        light_limit -= pol[best]
+        p[:,best] = 0
+
+    pol /= (counts*2)
+
+    return pol
+
 def make_sprobs_cutoff(ents,alpha,counts,baseline):
     # Takes the entropies and returns a matrix of action probabilities for a=1 (light on).
+    # This is the case where we only sample top and randomly sample otherwise (greedy). 
     # 
     # ents is the matrix of entropies.
     # alpha is the sampling limit. Goes from 0 to 1. A 1 means light is on 50% of time.
@@ -171,8 +217,8 @@ Worm functions
 '''
 
 def do_sampling_traj(probs, fname, worm, episodes, act_rate=3):
-    # probs is the probability that each state will be sampled.
-    #   max is 1, min is 0.
+    # probs is the probability that the light will be on in a state.
+    # min 0, max .5. 
     # fname is the file the trajectory will be saved in, a pkl.
     # worm is worm object as usual
     # episodes is number of worm obj episodes to run
@@ -189,7 +235,7 @@ def do_sampling_traj(probs, fname, worm, episodes, act_rate=3):
         done = False
         t,action = 0,0
         while done is False:
-            obs, rew, done, info = worm.step(action,cam,task)
+            obs, rew, done, info = worm.step(action,cam,task) 
             ut.add_to_traj(trajs, info)
 
             # Choose action based on probabilities
@@ -197,9 +243,9 @@ def do_sampling_traj(probs, fname, worm, episodes, act_rate=3):
                 # No worm found
                 action = 0
             elif t%act_rate == 0:
-                # Get prob of sampling. Light on prob will be half of this.
+                # Get prob of light on.
                 ind = obs2ind(obs)
-                prob = 0.5*probs[ind[0],ind[1]]
+                prob = probs[ind[0],ind[1]]
                 action = np.random.choice([0,1],p=[1-prob, prob])
             
             t+=1

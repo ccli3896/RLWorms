@@ -19,7 +19,6 @@ n_dim = 2
 imp_dims = 1:n_dim
 error_scale = 20 # rough scale of observation error (sd for specific value)
 dim_regularization = 3 # higher values -> more smoothness & sparsity
-#num_train_set = 15000
 
 # Start by formatting for R.
 np <- import("numpy")
@@ -44,8 +43,6 @@ for (ind in c(start_ep:(start_ep+episodes-1))) {
   bart_form = obs ~ 0 + which + . 
   m_bart = model.matrix(bart_form, data=d_bart)
   
-  #d_train = m_bart[c(1:num_train_set),]
-  #d_train_obs = d_bart$obs[c(1:num_train_set)]
   
   # Making test data
   other_locs = rep(floor(n/2), n_dim - length(imp_dims))
@@ -61,5 +58,5 @@ for (ind in c(start_ep:(start_ep+episodes-1))) {
             ntree=num_tree, usequants=T, ndpost=num_save,
             power=dim_regularization, sigest=error_scale, sigquant=0.1,
             nkeeptest=500)
-  np$save(paste(folder,"dbart_50trees",ind,".npy",sep=""),fitx$yhat.test)
+  np$save(paste(folder,"bart",ind,".npy",sep=""),fitx$yhat.test)
 }

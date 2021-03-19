@@ -20,7 +20,7 @@ def make_df(fnames,
                 old_frame: old df
              reward_ahead: how many steps ahead to sum reward, for each table entry
              timestep_gap: how data are sampled (e.g. =5 means only every fifth datapoint is kept)
-          prev_act_window: how many steps to look AHEAD to make sure all actions are 'on' or 'off' # naming is poor
+          prev_act_window: how many steps to look AHEAD to make sure all actions are 'on' or 'off' # naming is poor #TODO
                jump_limit: data are processed to remove faulty points where worm loc has jumped really far.
                            This is the maximum jump distance allowed before points are tossed.
                      disc: discretization of angles
