@@ -3,26 +3,26 @@ library(tidyverse)
 library(pacman)
 pacman::p_load(devtools,RcppArmadillo)
 library(BART)
-setwd("Research/R_RamanathanLab/RLWorms/02_08_Trees/")
-#setwd("Research/20_09_07_NewPC/RLWorms/02_08_Trees/")
-source("./worm-sampling/worm-sampling/utils.R")
+#setwd("Research/R_RamanathanLab/RLWorms/02_08_Trees/")
+#setwd("Research/20_09_07_NewPC/RLWorms/03_16_policyTime/")
+source("./utils.R")
 
 
 # PARAMETERS
-episodes = 1
-start_ep = 29
+episodes = 10
+start_ep = 30
 num_save = 500
-num_tree = 200
-n_skip = 200
+num_tree = 100
+nskip = 200
 # Fixed params
 n = 12
 n_dim = 2
 imp_dims = 1:n_dim
-error_scale = 10 # rough scale of observation error (sd for specific value)
+error_scale = 5 # rough scale of observation error (sd for specific value)
 
 # Start by formatting for R.
 np <- import("numpy")
-folder = "./Data/03_08_0/" #######################
+folder = "./Data/03_23_0/" #######################
 fbase = paste(folder,"traj",sep="")
 
 # Making test data

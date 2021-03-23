@@ -1,0 +1,16 @@
+# PARAMETERS
+episodes = 10
+start_ep = 0
+num_save = 500
+num_tree = 100
+nskip = 200
+# Fixed params
+n = 12
+n_dim = 2
+imp_dims = 1:n_dim
+error_scale = 5
+
+folder = './Data/03_23_0/'
+run_pol.gen_pol_collection(0,folder,episodes=10,ep_len=3*60,light_limit=.2)
+
+446, green light (pan arch)

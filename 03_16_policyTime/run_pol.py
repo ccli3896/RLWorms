@@ -38,7 +38,7 @@ def gen_pol_collection(
     trajnames = []   
 
     for ep in np.arange(episodes)+worm_id*episodes:
-
+        print(f'Ep{ep}\n')
         # If we're still in the inits
         if (worm_id==0) and (ep in range(init_eps)):
             sampling_probs = np.zeros(state_space_shape) + light_limit
@@ -57,7 +57,7 @@ def gen_pol_collection(
         dh.save_dfs(f'{folder}fulltraj.pkl')
 
         # Send to BART and wait til it gets back to me
-        pt.save_for_R(dh,f'{folder}traj{ep}.npy')
+        pt.save_for_R(dh.df,f'{folder}traj{ep}.npy')
         bart_f = f'{folder}bart{ep}.npy'
         bart_f_s = f'{folder}bartsig{ep}.npy'
         while not os.path.exists(bart_f) or not os.path.exists(bart_f_s):
@@ -68,10 +68,8 @@ def gen_pol_collection(
         post = np.load(bart_f, allow_pickle=True)
         postsig = np.load(bart_f_s, allow_pickle=True)
         ents, probs = pt.bart2pols(post,postsig)
-        with open(f'{folder}probs{ep}.pkl','wb') as f:
-            pickle.dump(probs,f)
-        with open(f'{folder}ents{ep}.pkl','wb') as f:
-            pickle.dump(ents,f)
+        np.save(f'{folder}probs{ep}.npy',probs)
+        np.save(f'{folder}ents{ep}.npy',ents)
 
         # Get counts 
         counts = pt.get_counts(dh.df)

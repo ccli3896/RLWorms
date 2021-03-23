@@ -1,0 +1,13 @@
+run_pol.gen_pol_collection(0,folder,episodes=10,ep_len=3*60,light_limit=.2)
+num_save = 500
+num_tree = 200
+nskip = 200
+# Fixed params
+n = 12
+n_dim = 2
+imp_dims = 1:n_dim
+error_scale = 10
+
+  fitx <-  wbart(m_bart, d_bart$obs, x.test=m_pred,
+            sparse=T, a=0.5*(1+1/length(imp_dims)), nskip=nskip,
+            ntree=num_tree, usequ

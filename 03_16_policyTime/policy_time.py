@@ -86,7 +86,12 @@ def change_reward_ahead(df,reward_ahead,jump_limit=20):
 '''
 Policy construction
 '''
-entropy = lambda probs: -probs*np.log(probs+1e-6)-(1-probs)*np.log(1-probs+1e-6)
+def entropy(probs):
+    return -probs*np.log(probs+1e-6)-(1-probs)*np.log(1-probs+1e-6)
+def POver0(mu,sig):
+    # Returns the probability that the RV is above 0
+    # Lambda function returns elementwise
+    return 1-norm.cdf(-mu/sig)
 
 def bart2pols(posterior,posterior_sig):
     # Takes posterior sampling from BART in R (size [n_samples,288]) where
@@ -96,12 +101,9 @@ def bart2pols(posterior,posterior_sig):
     # Also returns those probabilities turned to entropies (can be used in TS directly).
     # Both shapes are [n,144]
     
-    POver0 = lambda mu,sig: 1-norm.cdf(-mu/sig)
-        # Returns the probability that the RV is above 0
-        # Lambda function returns elementwise
-    
     post_diff = posterior[:,1::2] - posterior[:,::2]
     post_sig = np.repeat(posterior_sig.reshape(-1,1),144,axis=1)
+    post_sig = np.sqrt(np.square(post_sig)*2)
     # Now post_diff is shaped like [n,144] where n is posterior sample num
     probs = POver0(post_diff,post_sig)
     ents = entropy(probs)
@@ -126,7 +128,7 @@ def thompson_sampling(entropies, counts, light_limit):
     # as in, p_light_on = .5*p_sample
 
     # Get sorted entropies 
-    counts = counts.flatten()/np.sum(counts) # get counts in same format as ents
+    counts = counts.flatten()/np.sum(counts) + 1e-6 # get counts in same format as ents
     sts = len(counts) # number of states
 
     # Make p:
@@ -135,7 +137,7 @@ def thompson_sampling(entropies, counts, light_limit):
     # Each column is the proportions for that state.
     p = np.zeros((sts,sts)) 
     for i in range(sts):
-        p[i,:], _ = np.histogram(np.argsort(entropies,axis=1)[:,i],
+        p[i,:], _ = np.histogram(np.argsort(-entropies,axis=1)[:,i],
             bins=range(sts+1),density=True)
 
     pol = np.zeros(sts)
@@ -156,8 +158,9 @@ def thompson_sampling(entropies, counts, light_limit):
         p[:,best] = 0
 
     pol /= (counts*2)
+    pol = np.minimum(pol,.5)
 
-    return pol
+    return pol.reshape(12,12)
 
 def make_sprobs_cutoff(ents,alpha,counts,baseline):
     # Takes the entropies and returns a matrix of action probabilities for a=1 (light on).
