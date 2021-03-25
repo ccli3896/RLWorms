@@ -4,13 +4,13 @@ library(pacman)
 pacman::p_load(devtools,RcppArmadillo)
 library(BART)
 #setwd("Research/R_RamanathanLab/RLWorms/02_08_Trees/")
-#setwd("Research/20_09_07_NewPC/RLWorms/03_16_policyTime/")
+#setwd("Research/20_09_07_NewPC/RLWorms/03_24_fixImgs/")
 source("./utils.R")
 
 
 # PARAMETERS
 episodes = 10
-start_ep = 30
+start_ep = 0
 num_save = 500
 num_tree = 100
 nskip = 200
@@ -22,7 +22,7 @@ error_scale = 5 # rough scale of observation error (sd for specific value)
 
 # Start by formatting for R.
 np <- import("numpy")
-folder = "./Data/03_23_0/" #######################
+folder = "./Data/03_24_2/" #######################
 fbase = paste(folder,"traj",sep="")
 
 # Making test data

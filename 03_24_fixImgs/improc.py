@@ -48,7 +48,7 @@ def init_instruments(pixelclock=90):
     cam.set_colormode(ueye.IS_CM_MONO8)
     cam.set_aoi(200,0,2160,1920) # Full range is w x h = (2560,1920)
     cam.set_pixelclock(pixelclock) # Needs USB 3
-    cam.set_fps(20) # It goes to max allowed
+    cam.set_fps(10) # It goes to max allowed
     cam.set_exposure(10) # Arbitrary, but 20 is probably too high
 
     return cam, task
@@ -263,30 +263,36 @@ def find_angs(img,loc,ref_pt,templates,buffer=30,th_ind=-80):
     best_matches = np.around(best_matches,1).astype(int)
     return best_matches
 
-def find_body(worm,bodies,threshold=20):
+def find_body(worm,bodies,threshold=20,last=0):
     # Finds body orientation in degrees. Uses endpoints to figure out direction after template matching.
     def get_vec(deg):
         return [np.cos(deg),np.sin(deg)]
     def myround(x, base=30):
-        return base * round(x/base)
+        return base * np.round(x/base)
 
-    _,thresh = cv2.threshold(worm['img'],threshold,255,cv2.THRESH_BINARY)
-    con, hierarchy = cv2.findContours(thresh,  
-        cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-    con = np.array(con[0]).reshape(-1,2)
-    vx,vy,x,y = cv2.fitLine(con, cv2.DIST_L2,0,0.01,0.01)
-    deg = myround(np.arctan2(-vy,vx)*180/np.pi)
-
-    # Fixing based on endpoints
     end_ang = np.arctan2(-(worm['endpts'][1,0] - worm['endpts'][1,1]), worm['endpts'][0,0] - worm['endpts'][0,1])
                             # y1 - y0, x1 - x0
     end_vec = get_vec(end_ang)
+
+    _,thresh = cv2.threshold(worm['img'],threshold,255,cv2.THRESH_BINARY)
+    con, hierarchy = cv2.findContours(thresh, 
+        cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    if len(con) > 1:
+        con = con[0]
+    con = np.array(con).reshape(-1,2)
+    if con.shape[0]==0:
+        return myround(end_ang)
+    vx,vy,x,y = cv2.fitLine(con, cv2.DIST_L2,0,0.01,0.01)
+    deg = myround(np.arctan2(-vy,vx)*180/np.pi)*(np.pi/180)
+
+    # Fixing based on endpoints
+
     deg_vec0 = get_vec(deg)
     deg_vec1 = get_vec(deg+pi)
 
     # Returns 0 if original template is best. Returns 1 if need to add 180 deg
     better_deg = np.argmax([proj(end_vec,deg_vec0),proj(end_vec,deg_vec1)])
-    return round(deg*180/pi + 180*better_deg)
+    return np.round(deg*180/pi + 180*better_deg)[0]
 
 def find_worms(im, templates, bodies, ref_pts=None,num_worms=1,brightness=2000):
     # Returns worms, list of dictionaries with worm traits.
