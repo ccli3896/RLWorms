@@ -22,7 +22,7 @@ error_scale = 5 # rough scale of observation error (sd for specific value)
 
 # Start by formatting for R.
 np <- import("numpy")
-folder = "./Data/03_24_2/" #######################
+folder = "./Data/03_28_0/" #######################
 fbase = paste(folder,"traj",sep="")
 
 # Making test data

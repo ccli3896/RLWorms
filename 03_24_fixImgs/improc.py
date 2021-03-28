@@ -48,7 +48,7 @@ def init_instruments(pixelclock=90):
     cam.set_colormode(ueye.IS_CM_MONO8)
     cam.set_aoi(200,0,2160,1920) # Full range is w x h = (2560,1920)
     cam.set_pixelclock(pixelclock) # Needs USB 3
-    cam.set_fps(10) # It goes to max allowed
+    cam.set_fps(20) # It goes to max allowed
     cam.set_exposure(10) # Arbitrary, but 20 is probably too high
 
     return cam, task
