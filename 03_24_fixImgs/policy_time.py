@@ -188,14 +188,14 @@ def make_sprobs_cutoff(ents,alpha,counts,baseline):
 R interaction functions
 '''
 
-def save_for_R(df,fname):
+def save_for_R(df,fname,prev_act=3):
     ang2r = lambda x: x/30+7
 
-    obs_b_on = ang2r(df[df['prev_actions']==3]['obs_b'].to_numpy())
+    obs_b_on = ang2r(df[df['prev_actions']==prev_act]['obs_b'].to_numpy())
     obs_b_off = ang2r(df[df['prev_actions']==0]['obs_b'].to_numpy())
-    obs_h_on = ang2r(df[df['prev_actions']==3]['obs_h'].to_numpy())
+    obs_h_on = ang2r(df[df['prev_actions']==prev_act]['obs_h'].to_numpy())
     obs_h_off = ang2r(df[df['prev_actions']==0]['obs_h'].to_numpy())
-    rew_on = df[df['prev_actions']==3]['reward'].to_numpy()
+    rew_on = df[df['prev_actions']==prev_act]['reward'].to_numpy()
     rew_off = df[df['prev_actions']==0]['reward'].to_numpy()
 
     ons = [obs_b_on,obs_h_on,rew_on]

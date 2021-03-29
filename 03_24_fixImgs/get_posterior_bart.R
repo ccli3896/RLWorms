@@ -12,7 +12,7 @@ source("./utils.R")
 episodes = 10
 start_ep = 0
 num_save = 500
-num_tree = 100
+num_tree = 50
 nskip = 200
 # Fixed params
 n = 12
@@ -22,7 +22,7 @@ error_scale = 5 # rough scale of observation error (sd for specific value)
 
 # Start by formatting for R.
 np <- import("numpy")
-folder = "./Data/03_28_0/" #######################
+folder = "./Data/03_29_3/" #######################
 fbase = paste(folder,"traj",sep="")
 
 # Making test data
@@ -56,9 +56,11 @@ for (ind in c(start_ep:(start_ep+episodes-1))) {
   
   # Making tree and saving
   fitx <-  wbart(m_bart, d_bart$obs, x.test=m_pred,
+            base=.95,power=2,
             sparse=T, a=0.5*(1+1/length(imp_dims)), nskip=nskip,
             ntree=num_tree, usequants=T, ndpost=num_save, sigquant=0.9,
             nkeeptrain=0)
+  print(fitx$varprob.mean)
   np$save(paste(folder,"bart",ind,".npy",sep=""),fitx$yhat.test) # nx288
   np$save(paste(folder,"bartsig",ind,".npy",sep=""),fitx$sigma[-c(1:nskip)]) # n samples
 }

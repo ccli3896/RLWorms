@@ -1,0 +1,45 @@
+run_pol.gen_pol_collection(0,folder,episodes=10,ep_len=3*60,light_limit=.2) 
+
+num_save = 500
+num_tree = 50
+nskip = 200
+# Fixed params
+n = 12
+n_dim = 2
+imp_dims = 1:n_dim
+error_scale = 5 # rough scale of observation error (sd for specific value)
+
+  fitx <-  wbart(m_bart, d_bart$obs, x.test=m_pred,
+            base=.95,power=2,
+            sparse=T, a=0.5*(1+1/length(imp_dims)), nskip=nskip,
+            ntree=num_tree, usequants=T, ndpost=num_save, sigquant=0.9,
+            nkeeptrain=0)
+
+    params = {
+        'reward_ahead': 30,
+        'timestep_gap': 1, 
+        'prev_act_window': 3,
+        'jump_limit': 100,
+    }
+
+OUTPUT:
+    which     pos_1     pos_2 
+0.0760626 0.8007254 0.1232120 
+     which      pos_1      pos_2 
+0.03950637 0.73403097 0.22646266 
+     which      pos_1      pos_2 
+0.02794029 0.70856799 0.26349173 
+     which      pos_1      pos_2 
+0.06681464 0.67959950 0.25358586
+     which      pos_1      pos_2 
+0.09408135 0.59970736 0.30621129 
+    which     pos_1     pos_2 
+0.1185039 0.6052768 0.2762193 
+    which     pos_1     pos_2 
+0.1040186 0.6103571 0.2856243
+    which     pos_1     pos_2 
+0.1098154 0.5597758 0.3304088 
+    which     pos_1     pos_2 
+0.1115956 0.5215856 0.3668188 
+    which     pos_1     pos_2 
+0.1006999 0.5887375 0.3105626 

@@ -263,7 +263,7 @@ def find_angs(img,loc,ref_pt,templates,buffer=30,th_ind=-80):
     best_matches = np.around(best_matches,1).astype(int)
     return best_matches
 
-def find_body(worm,bodies,threshold=20,last=0):
+def find_body(worm,bodies,threshold=20):
     # Finds body orientation in degrees. Uses endpoints to figure out direction after template matching.
     def get_vec(deg):
         return [np.cos(deg),np.sin(deg)]

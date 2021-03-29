@@ -29,7 +29,7 @@ def gen_pol_collection(
         'reward_ahead': 30,
         'timestep_gap': 1, 
         'prev_act_window': 3,
-        'jump_limit': 20,
+        'jump_limit': 100,
     }
      
     # Initialize objects 
@@ -49,11 +49,11 @@ def gen_pol_collection(
 
         # Get new sample 
         trajname = f'{folder}traj{ep}.pkl' # dict form
-        pt.do_sampling_traj(sampling_probs, trajname, worm, 1)
+        pt.do_sampling_traj(sampling_probs, trajname, worm, 1, act_rate=params['prev_act_window'])
 
         # Update dataframe and save
         dh.add_dict_to_df([trajname])
-        dh.df = dh.df[dh.df['prev_actions'].isin([0,3])] # Only keep usable points
+        dh.df = dh.df[dh.df['prev_actions'].isin([0,params['prev_act_window']])] # Only keep usable points
         dh.save_dfs(f'{folder}fulltraj.pkl')
 
         # Send to BART and wait til it gets back to me

@@ -1,0 +1,42 @@
+  params = {
+        'reward_ahead': 30,
+        'timestep_gap': 1, 
+        'prev_act_window': 15,
+        'jump_limit': 100,
+    }
+folder = './Data/03_29_1/'
+run_pol.gen_pol_collection(0,folder,episodes=10,ep_len=3*60,light_limit=.2) 
+
+num_save = 500
+num_tree = 50
+nskip = 200
+# Fixed params
+n = 12
+n_dim = 2
+imp_dims = 1:n_dim
+error_scale = 5 # rough scale of observation error (sd for specific value)
+
+  fitx <-  wbart(m_bart, d_bart$obs, x.test=m_pred,
+            base=.95,power=2,
+            sparse=T, a=0.5*(1+1/length(imp_dims)), nskip=nskip,
+            ntree=num_tree, usequants=T, ndpost=num_save, sigquant=0.9,
+            nkeeptrain=0)
+
+AIY arch, 280, blue light
+
+OUTPUT
+BART varprob.mean
+pos_1 0.9840543
+pos_2 0.0159457
+
+pos_1 0.91349733
+pos_2 0.08650267
+
+     pos_1      pos_2 
+0.93896705 0.06103295 
+
+    pos_1     pos_2 
+0.8250622 0.1749378 
+
+    pos_1     pos_2 
+0.7575651 0.2424349 
