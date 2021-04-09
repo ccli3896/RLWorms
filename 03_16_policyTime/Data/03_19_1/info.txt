@@ -12,4 +12,5 @@ error_scale = 15
             ntree=num_tree, usequants=T, ndpost=num_save, sigquant=0.9,
             nkeeptrain=0)
 
+AIY channel 
 run_pol.gen_pol_collection(0,folder,episodes=10,ep_len=3*60,light_limit=.2)

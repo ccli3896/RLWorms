@@ -3,14 +3,14 @@ library(tidyverse)
 library(pacman)
 pacman::p_load(devtools,RcppArmadillo)
 library(BART)
-#setwd("Research/R_RamanathanLab/RLWorms/02_08_Trees/")
+setwd("Research/R_RamanathanLab/RLWorms/03_24_fixImgs/")
 #setwd("Research/20_09_07_NewPC/RLWorms/03_24_fixImgs/")
 source("./utils.R")
 
 
 # PARAMETERS
-episodes = 10
-start_ep = 0
+episodes = 1
+start_ep = 9
 num_save = 500
 num_tree = 50
 nskip = 200
@@ -22,7 +22,7 @@ error_scale = 5 # rough scale of observation error (sd for specific value)
 
 # Start by formatting for R.
 np <- import("numpy")
-folder = "./Data/03_29_3/" #######################
+folder = "./Data/03_29_0/" #######################
 fbase = paste(folder,"traj",sep="")
 
 # Making test data
@@ -60,7 +60,8 @@ for (ind in c(start_ep:(start_ep+episodes-1))) {
             sparse=T, a=0.5*(1+1/length(imp_dims)), nskip=nskip,
             ntree=num_tree, usequants=T, ndpost=num_save, sigquant=0.9,
             nkeeptrain=0)
+  
   print(fitx$varprob.mean)
-  np$save(paste(folder,"bart",ind,".npy",sep=""),fitx$yhat.test) # nx288
-  np$save(paste(folder,"bartsig",ind,".npy",sep=""),fitx$sigma[-c(1:nskip)]) # n samples
+  np$save(paste(folder,"bartcomb",ind,".npy",sep=""),fitx$yhat.test) # nx288
+  np$save(paste(folder,"bartcombsig",ind,".npy",sep=""),fitx$sigma[-c(1:nskip)]) # n samples
 }
