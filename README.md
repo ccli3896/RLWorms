@@ -14,7 +14,7 @@ Due to hardware compatibility issues, data collection and evaluation on live ani
 A conda environment with the required dependencies for agent training can be built from `./Training scripts/rlworms-env.yml`. The time required is the time to install Pytorch and its dependencies.
 
 # Demo
-Clone the repo and run the following to train two agents on the same dataset:
+Clone the repo and run the following to train two agents on the same dataset, collected from animals with channelrhodopsin expressed in AWC(ON):
       
       python ./Tutorials/train_agents_main.py 0 301
       python ./Tutorials/train_agents_main.py 1 301
