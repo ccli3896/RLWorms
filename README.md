@@ -1,3 +1,16 @@
+# RLWorms
+Setting up C elegans as an RL environment. To accompany paper [Improving animal behaviors through a neural interface with deep reinforcement learning](https://www.biorxiv.org/content/10.1101/2022.09.19.508590v2.article-metrics) by Li, Kreiman, and Ramanathan (2023). 
+
+# System requirements
+Training can be completed on any machine with Pytorch (tested on torch==2.0.1). The demo has been tested on a 2020 MacBook Pro with an Apple M1 chip running Ventura 13.4.1. For the manuscript, the computations were run on the FASRC Cannon cluster supported by the FAS Division of Science Research Computing Group at Harvard University. GPU types available to us are in [this list.](https://docs.rc.fas.harvard.edu/kb/running-jobs/#Using_GPUs)
+Training completed in under an hour with these resources and a memory pool of 10gb for all cores during an array of training jobs of 20-30 agents.
+
+For the hardware setup in the manuscript (Figure 1), we used an Edmund Optics 5012 LE Monochrome USB 3.0 camera or a ThorLabs DCC1545M with [pypyueye](https://github.com/galaunay/pypyueye.git). 
+Lights for optogenetic illumination were Kessil PR160L LEDs at wavelengths of 467 nm for blue and 525 nm for green. LEDs were controlled by National Instruments DAQmx devices with the [nidaqmx library](https://nidaqmx-python.readthedocs.io/en/latest/).
+
+Due to hardware compatibility issues, data collection and evaluation on live animals must be completed on a Windows machine (all live animal data collected using Windows 10 and 11 OS).
+
+# Installation guide
 A conda environment with the required dependencies for agent training can be built from `./Training scripts/rlworms-env.yml`. The time required is the time to install Pytorch and its dependencies.
 
 # Demo
@@ -10,15 +23,15 @@ This will create a new folder named 'models' that contains saved soft actor-crit
 
 
 
-| Line | Expression                                      | Code label|
-|------|--------------------------------------------------|----------------------------------------|
-| 1    | AIY                                              | 281                                    |
-| 2    | AWC(ON), [ASI]*                                  | 301                                    |
-| 3    | SIA; SIB; RIC; AVA; RMD; AIY; AVK; BAG           | 352                                    |
-| 4    | All neurons                                      | 446                                    |
-| 5    | Cholinergic ventral cord motor neurons           | 336                                    |
-| 6    | IL1; PQR                                         | 437                                    |
-| WT   | None                                            | 73 |
+| Line | Effect      | Expression                                      | Code Label |
+|------|-------------|-------------------------------------------------|------------|
+| 1    | Excitatory  | AIY                                             | 281        |
+| 2    | Excitatory  | AWC(ON), [ASI]*                                 | 301        |
+| 3    | Inhibitory  | SIA; SIB; RIC; AVA; RMD; AIY; AVK; BAG          | 352        |
+| 4    | Inhibitory  | All neurons                                     | 446        |
+| 5    | Excitatory  | Cholinergic ventral cord motor neurons          | 336        |
+| 6    | Excitatory  | IL1; PQR                                        | 437        |
+| WT   | N/A         | None                                            | 73         |
 
 
 On a 2020 MacBook Pro with an Apple M1 chip running Ventura 13.4.1, it takes roughly 40 min to train one agent for twenty epochs.
