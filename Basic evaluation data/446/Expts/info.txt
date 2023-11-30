@@ -1,0 +1,46 @@
+RIG 1
+1080,-960 center.
+1080,-50 up
+1080,-1850 down
+250,-960 left
+1980,-960 right
+
+RIG 2
+1080,-860 center.
+1080,-170 up
+1080,-1550 down
+360,-860 left
+1740,-860 right
+
+All 20 min episodes. Rig 2 seems to do much better, possibly to do with light intensity.
+
+2023-02-02_11-37-23: rig 2, right (close-ish)
+2023-02-02_11-59-23: rig 1, left (not really)
+2023-02-02_12-12-34: rig 2, down (hit target)
+
+2023-02-02_12-53-30: rig 1, up (ok but plate was a little high so move target lower)
+2023-02-02_13-07-45: rig 2, right (hit target)
+
+2023-02-02_13-18-39: rig 1 CONTROL, up
+
+2023-02-02_13-36-39: rig 2, left (close-ish)
+
+2023-02-02_13-42-05: rig 1 CONTROL, down
+2023-02-02_14-08-58: rig 1 CONTROL, left
+
+2023-02-02_14-10-17: rig 2, up (good)
+
+2023-02-02_14-34-29: rig 1 CONTROL, right
+2023-02-02_14-57-08: rig 1 CONTROL, up
+
+2023-02-03_15-46-09: rig 1 CONTROL, down
+2023-02-03_16-09-57: rig 1 CONTROL, left
+2023-02-03_16-33-31: rig 1 CONTROL, right
+
+2023-02-03_16-44-01: rig 2, down (good)
+
+2023-02-03_16-57-07: rig 1 CONTROL, up
+2023-02-03_17-20-21: rig 1 CONTROL, right
+
+2023-02-03_17-44-31: rig 1, down (hit target)
+2023-02-03_18-05-59: rig 2, right (eh)

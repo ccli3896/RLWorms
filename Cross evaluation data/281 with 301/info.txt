@@ -1,0 +1,31 @@
+down: 1080,-1720
+left: 200,-960
+up: 1080,-200
+right: 1960,-960
+
+Animals get sleepy or tired after about 3 trials.
+
+2022-02-23_14-41-00: 281 with 301 agent, down
+2022-02-23_14-56-17: 281 with 301 agent, left
+2022-02-23_15-13-51: 281 with 301 agent, up
+2022-02-23_15-29-57: 281 with 301 agent, right
+2022-02-23_15-58-28: 281 with 301 agent, up
+
+2022-02-23_16-32-13: 281 with 301 agent, down
+2022-02-23_16-47-09: 281 with 301 agent, left
+2022-02-23_17-01-43: 281 with 301 agent, up
+2022-02-23_17-17-26: 281 with 301 agent, right
+2022-02-23_17-32-05: 281 with 301 agent, down
+
+2022-02-24_10-53-54: 281 with 352 agent, left rig 2
+2022-02-24_10-54-01: 281 with 352 agent, down rig 1
+2022-02-24_11-09-36: 281 with 352 agent, up rig 1
+2022-02-24_11-10-28: 281 with 352 agent, right rig 2
+2022-02-24_11-24-35: 281 with 352 agent, right rig 1
+
+2022-02-24_11-26-21: 281 with 352 agent, left rig 2
+2022-02-24_11-39-26: 281 with 352 agent, down rig 1
+2022-02-24_11-42-17: 281 with 352 agent, right rig 2
+2022-02-24_11-54-40: 281 with 352 agent, up rig 1
+2022-02-24_11-58-28: 281 with 352 agent, left rig 2
+

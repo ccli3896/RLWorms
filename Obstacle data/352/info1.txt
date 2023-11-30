@@ -1,0 +1,18 @@
+352 confetti 
+1/6 agent
+0/7 control
+
+2022-06-15_15-55-22: rig 1 (no)
+2022-06-15_16-26-09: rig 1 (yes)
+2022-06-15_16-58-00: rig 1 (no)
+2022-06-15_17-24-31: rig 1 (no)
+2022-06-15_17-54-15: rig 1 (no)
+2022-06-15_18-21-06: rig 1 (no)
+
+2022-06-15_15-54-29: rig 2, control (no)
+2022-06-15_16-21-30: rig 2, control (no)
+2022-06-15_16-48-07: rig 2, control (no)
+2022-06-15_17-15-43: rig 2, control (no)
+2022-06-15_17-43-11: rig 2, control (no)
+2022-06-15_18-08-49: rig 2, control (no) (pretty interesting)
+2022-06-15_18-37-57: rig 2, control (no)

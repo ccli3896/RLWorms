@@ -1,0 +1,91 @@
+down: 1080,-1720
+left: 200,-960
+up: 1080,-200
+right: 1960,-960
+
+2022-02-24_12-32-11: 301 with 281 agent right rig 1
+2022-02-24_12-39-22: 301 with 281 agent down rig 2
+2022-02-24_12-50-19: 301 with 281 agent up rig 1
+2022-02-24_12-54-12: 301 with 281 agent left rig 2
+2022-02-24_13-38-20: 301 with 281 agent left rig 2
+
+
+2022-02-24_14-04-14: 281 obstacle control, 20 min rig 2
+2022-02-24_14-12-46: 281 obstacle control, 20 min rig 1
+2022-02-24_14-30-17: 281 obstacle control, 20 min rig 2
+2022-02-24_14-37-04: 281 obstacle control, 20 min rig 1
+2022-02-24_14-56-24: 281 obstacle control, 20 min rig 2
+
+2022-02-24_15-01-07: 281 obstacle control, 20 min rig 1 (made it)
+2022-02-24_15-23-55: 281 obstacle control, 20 min rig 2
+2022-02-24_15-24-47: 281 obstacle control, 20 min rig 1
+2022-02-24_15-47-54: 281 obstacle control, 20 min rig 1
+2022-02-24_15-48-47: 281 obstacle control, 20 min rig 2
+
+2022-02-24_16-12-26: 352 obstacle control, 20 min rig 1 (made it)
+2022-02-24_16-14-17: 352 obstacle control, 20 min rig 2
+2022-02-24_16-36-42: 352 obstacle control, 20 min rig 1
+2022-02-24_16-37-30: 352 obstacle control, 20 min rig 2
+
+2022-03-04_12-07-45: 301 with 281 agent up rig 1
+2022-03-04_12-16-06: 301 with 281 agent left rig 2
+2022-03-04_12-29-05: 301 with 281 agent down rig 1
+2022-03-04_12-37-47: 301 with 281 agent right rig 2
+2022-03-04_12-43-59: 301 with 281 agent left rig 1
+
+2022-03-04_12-59-05: 301 with 352 agent left rig 1
+
+2022-03-06_11-41-40: 301 obstacle control, 20 min rig 1
+2022-03-06_11-43-26: 301 obstacle control, 20 min rig 2
+2022-03-06_12-04-59: 301 obstacle control, 20 min rig 1
+2022-03-06_12-09-31: 301 obstacle control, 20 min rig 2
+2022-03-06_12-28-05: 301 obstacle control, 20 min rig 1
+2022-03-06_12-33-19: 301 obstacle control, 20 min rig 2
+2022-03-06_12-53-39: 301 obstacle control, 20 min rig 1
+2022-03-06_12-57-14: 301 obstacle control, 20 min rig 2
+2022-03-06_13-18-05: 301 obstacle control, 20 min rig 1
+2022-03-06_13-21-38: 301 obstacle control, 20 min rig 2
+
+2022-03-06_14-00-12: 352 obstacle control, 20 min rig 1
+2022-03-06_14-01-26: 352 obstacle control, 20 min rig 2
+2022-03-06_14-24-55: 352 obstacle control, 20 min rig 1
+2022-03-06_14-25-57: 352 obstacle control, 20 min rig 2
+2022-03-06_14-50-37: 352 obstacle control, 20 min rig 2
+2022-03-06_15-15-16: 352 obstacle control, 20 min rig 2
+
+2022-03-06_15-58-42: 301 obstacle, pt 1 rig 2
+2022-03-06_16-12-11: 301 obstacle, pt 2 rig 2
+2022-03-06_16-33-50: 301 obstacle, pt 1 rig 2
+2022-03-06_16-47-34: 301 obstacle, pt 2 rig 2
+2022-03-06_17-02-33: 301 obstacle, pt 1 rig 2
+2022-03-06_17-15-49: 301 obstacle, pt 2 rig 2
+2022-03-06_17-50-19: 301 obstacle, pt 1 rig 2
+2022-03-06_18-04-08: 301 obstacle, pt 2 rig 2
+
+2022-03-06_16-00-41: 301 with 352 agent up rig 1
+2022-03-06_16-16-01: 301 with 352 agent down rig 1
+2022-03-06_16-35-44: 301 with 352 agent left rig 1
+2022-03-06_16-55-48: 301 with 352 agent right rig 1
+2022-03-06_17-09-49: 301 with 352 agent right rig 1
+2022-03-06_17-24-52: 301 with 352 agent up rig 1
+2022-03-06_17-39-21: 301 with 352 agent down rig 1
+2022-03-06_17-54-55: 301 with 352 agent left rig 1
+2022-03-06_18-10-30: 301 with 352 agent right rig 1
+
+2022-03-07_10-53-59: 281 obstacle, rig 1 pt 1
+2022-03-07_11-07-31: 281 obstacle, rig 1 pt 2 (didn't make it)
+2022-03-07_11-25-03: 281 obstacle, rig 1 pt 1
+2022-03-07_11-38-50: 281 obstacle, rig 1 pt 2 (didn't make it)
+2022-03-07_13-20-46: 281 obstacle, rig 1 pt 1
+2022-03-07_13-32-50: 281 obstacle, rig 1 pt 2 (didn't make it)
+
+
+2022-03-07_10-50-30: 281 obstacle, rig 2 pt 1
+2022-03-07_11-04-10: 281 obstacle, rig 2 pt 2 (made it)
+2022-03-07_11-23-29: 281 obstacle, rig 2 pt 1 (made it)
+2022-03-07_11-38-41: 281 obstacle, rig 2 pt 1
+2022-03-07_12-01-53: 281 obstacle, rig 2 pt 2 (didn't make it)
+2022-03-07_13-22-14: 281 obstacle, rig 2 pt 1
+2022-03-07_13-34-58: 281 obstacle, rig 2 pt 2 (didn't make it)
+
+2022-04-15_16-45-23: 301 with 352 last eval, left
