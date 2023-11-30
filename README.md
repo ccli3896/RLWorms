@@ -10,10 +10,30 @@ Lights for optogenetic illumination were Kessil PR160L LEDs at wavelengths of 46
 
 Due to hardware compatibility issues, data collection and evaluation on live animals must be completed on a Windows machine (all live animal data collected using Windows 10 and 11 OS).
 
+# Contents
+1. Agents: Trained agents used in evaluations, separated by genetic line.
+2. Animal scripts: Code used to interact with animals, including collecting training data and evaluating agents on live animals.
+3. Basic evaluation data: Agents were trained and tested on each of 6 optogenetically modified animal lines, labeled as in the table below (Agent Training and Visualization). Control and experimental tracks; Figures 2-4.
+4. Cross evaluation data: Animal track data used in Figure 5.
+5. Foodsearch data: Tracking data used in Figure 6B-G.
+6. Obstacle data: Tracking data used in Figure 6I-K.
+7. Training data: Datasets used to train agents. Concatenations of 20 min episodes of randomly flashing light data, with animals switched out at the end of every episode. See Figure 1 and Methods in manuscript for details.
+8. Training scripts: Code to train soft actor-critic agents on animal data.
+9. Tutorials: Folder containing tutorials that do not require animals.
+
 # Installation guide
 A conda environment with the required dependencies for agent training can be built from `./Training scripts/rlworms-env.yml`. The time required is the time to install Pytorch and its dependencies.
 
-# Demo
+# Tutorials
+Here we list two tutorials that can be run from the repo alone (without hardware installation or animals).
+## Processing images
+Clone the repo and run the following to process a set of 500 images (at 3 fps, so 2.78 minutes) into tracks. This sample dataset is from an evaluation episode with trained agents on line 301. Images are stored in `./Tutorials/Worm image data/imgs/`. Track data is saved in a `.pkl` file and two JPG images: one colored by time and the other colored by agent actions, read from `./Tutorials/Worm image data/actions2021-11-02_13-40-29.pkl`.
+
+      python ./Tutorials/check_data_tutorial.py
+
+Raw image datasets are very large so have not been uploaded in their entirety. They are available upon request. 
+
+## Agent training and visualization
 Clone the repo and run the following to train two agents on the same dataset, collected from animals with channelrhodopsin expressed in AWC(ON):
       
       python ./Tutorials/train_agents_main.py 0 301
@@ -32,7 +52,7 @@ This will create a new folder named 'models' that contains saved soft actor-crit
 | 5    | Excitatory  | Cholinergic ventral cord motor neurons          | 336        |
 | 6    | Excitatory  | IL1; PQR                                        | 437        |
 | WT   | N/A         | None                                            | 73         |
-
+* Weak or unstable expression, see manuscript
 
 On a 2020 MacBook Pro with an Apple M1 chip running Ventura 13.4.1, it takes roughly 40 min to train one agent for twenty epochs.
 
@@ -52,8 +72,8 @@ OR
 
 These commands will save JPG images of the policy for an "ensemble" of two agents as a demo, averaging their policies to form the ensemble.
 
-# Instructions for use
-Scripts that interact with the animals are in the `Evaluation scripts/` folder.
+# Instructions for use with animals
+Scripts that interact with the animals are in the `Evaluation scripts/` folder. See manuscript for experimental setup and details.
 
 1. We used `collect.py` to collect training data by running the command:
 
