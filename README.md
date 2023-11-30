@@ -22,7 +22,7 @@ Due to hardware compatibility issues, data collection and evaluation on live ani
 9. Tutorials: Folder containing tutorials that do not require animals.
 
 # Installation guide
-A conda environment with the required dependencies for agent training can be built from `./Training scripts/rlworms-env.yml`. The time required is the time to install Pytorch and its dependencies.
+A conda environment with the required dependencies for agent training can be built from `./Tutorials/rlwormsdemo_environment.yml`. The time required is the time to install Pytorch and its dependencies.
 
 # Tutorials
 Here we list two tutorials that can be run from the repo alone (without hardware installation or animals).
@@ -31,7 +31,7 @@ Clone the repo and run the following to process a set of 500 images (at 3 fps, s
 
       python ./Tutorials/check_data_tutorial.py
 
-This sample dataset is from an evaluation episode with trained agents on line 301. Images are stored in `./Tutorials/Worm image data/imgs/`. Track data is saved in a `.pkl` file and two JPG images: one colored by time and the other colored by agent actions, read from `./Tutorials/Worm image data/actions2021-11-02_13-40-29.pkl`. Raw image datasets are very large so have not been uploaded in their entirety. They are available upon request. 
+This sample dataset is from an evaluation episode with trained agents on line 301. Images are stored in `./Tutorials/Worm image data/imgs/`. Track data is a dictionary saved in a `.pkl` file. Two JPG images are saved: one colored by time and the other colored by agent actions. Actions are read from `./Tutorials/Worm image data/actions2021-11-02_13-40-29.pkl`. Raw image datasets are very large so have not been uploaded in their entirety. They are available upon request. 
 
 ## Agent training and visualization
 Clone the repo and run the following to train two agents on the same dataset, collected from animals with channelrhodopsin expressed in AWC(ON):
