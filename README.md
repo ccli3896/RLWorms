@@ -8,7 +8,7 @@ Training completed in under an hour with these resources and a memory pool of 10
 For the hardware setup in the manuscript (Figure 1), we used an Edmund Optics 5012 LE Monochrome USB 3.0 camera or a ThorLabs DCC1545M with [pypyueye](https://github.com/galaunay/pypyueye.git). 
 Lights for optogenetic illumination were Kessil PR160L LEDs at wavelengths of 467 nm for blue and 525 nm for green. LEDs were controlled by National Instruments DAQmx devices with the [nidaqmx library](https://nidaqmx-python.readthedocs.io/en/latest/).
 
-Due to hardware compatibility issues, data collection and evaluation on live animals must be completed on a Windows machine (all live animal data collected using Windows 10 and 11 OS).
+Due to hardware compatibility issues, data collection and evaluation on live animals must be completed on a Windows machine (all live animal data collected using Windows 10 and 11).
 
 # Contents
 1. Agents: Trained agents used in evaluations, separated by genetic line.
@@ -27,11 +27,11 @@ A conda environment with the required dependencies for agent training can be bui
 # Tutorials
 Here we list two tutorials that can be run from the repo alone (without hardware installation or animals).
 ## Processing images
-Clone the repo and run the following to process a set of 500 images (at 3 fps, so 2.78 minutes) into tracks. This sample dataset is from an evaluation episode with trained agents on line 301. Images are stored in `./Tutorials/Worm image data/imgs/`. Track data is saved in a `.pkl` file and two JPG images: one colored by time and the other colored by agent actions, read from `./Tutorials/Worm image data/actions2021-11-02_13-40-29.pkl`.
+Clone the repo and run the following to process a set of 500 images (at 3 fps, so 2.78 minutes) into tracks. 
 
       python ./Tutorials/check_data_tutorial.py
 
-Raw image datasets are very large so have not been uploaded in their entirety. They are available upon request. 
+This sample dataset is from an evaluation episode with trained agents on line 301. Images are stored in `./Tutorials/Worm image data/imgs/`. Track data is saved in a `.pkl` file and two JPG images: one colored by time and the other colored by agent actions, read from `./Tutorials/Worm image data/actions2021-11-02_13-40-29.pkl`. Raw image datasets are very large so have not been uploaded in their entirety. They are available upon request. 
 
 ## Agent training and visualization
 Clone the repo and run the following to train two agents on the same dataset, collected from animals with channelrhodopsin expressed in AWC(ON):
