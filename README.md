@@ -9,7 +9,7 @@ Guiding or improving animal behavior directly through the nervous system has bee
 </p>
 
 
-Here we addressed this challenge using deep reinforcement learning (RL). In an RL setting, an agent collects rewards through interactions with its environment. We present a flexible framework that can, given only a reward signal, observations, and a set of relevant actions, learn different ways of achieving a goal behavior that adapt to the chosen interface. We tested our ideas on the nematode C. elegans, interfacing an RL agent with its nervous system using optogenetic tools [24,27]. This animal has small and accessible nervous system and yet still possesses a rich behavioral repertoire [46]. In a natural setting, C. elegans must navigate variable environments to avoid danger or find targets like food. Therefore, we aimed to build an RL agent that could learn how to interface with neurons to assist C. elegans in target-finding and food search. We tested the agent by connecting it to different sets of neurons with distinct roles in behavior. The agents could not only couple with different sets of neurons to perform a target-finding task, but could also generalize the task to improve food search across novel environments in a zero-shot fashion, that is, without any prior training. 
+Here we addressed this challenge using deep reinforcement learning (RL). In an RL setting, an agent collects rewards through interactions with its environment. We present a flexible framework that can, given only a reward signal, observations, and a set of relevant actions, learn different ways of achieving a goal behavior that adapt to the chosen interface. We tested our ideas on the nematode C. elegans, interfacing an RL agent with its nervous system using optogenetic tools [24,27]. This animal has small and accessible nervous system and yet still possesses a rich behavioral repertoire [31]. In a natural setting, C. elegans must navigate variable environments to avoid danger or find targets like food. Therefore, we aimed to build an RL agent that could learn how to interface with neurons to assist C. elegans in target-finding and food search. We tested the agent by connecting it to different sets of neurons with distinct roles in behavior. The agents could not only couple with different sets of neurons to perform a target-finding task, but could also generalize the task to improve food search across novel environments in a zero-shot fashion, that is, without any prior training. 
 
 # Contents of repository
             1. Agents: Trained agents used in evaluations, separated by genetic line.
@@ -106,7 +106,42 @@ Scripts that interact with the animals are in the `Evaluation scripts/` folder. 
 
       This script saves images of the animal tracks and a `.pkl` file containing animal coordinates on the plate, head angle, and body angle. These files can be compiled with other tracks to train agents as in the demo.
 
-3. To run evaluation episodes as in Figures 2-3, 5-6, one can run `eval.py` after agents have been trained.
+
+# References
+1.	Romano, D., Donati, E., Benelli, G. & Stefanini, C. A review on animal–robot interaction: from bio-hybrid organisms to mixed societies. Biol. Cybern. 113, 201–225 (2019).
+2.	Tankus, A., Fried, I. & Shoham, S. Cognitive-motor brain–machine interfaces. J. Physiol. Paris 108, 38–44 (2014).
+3.	Bostrom, N. & Sandberg, A. Cognitive Enhancement: Methods, Ethics, Regulatory Challenges. Sci. Eng. Ethics 15, 311–341 (2009).
+4.	Afraz, S.-R., Kiani, R. & Esteky, H. Microstimulation of inferotemporal cortex influences face categorization. Nature 442, 692–695 (2006).
+5.	Bonizzato, M. & Martinez, M. An intracortical neuroprosthesis immediately alleviates walking deficits and improves recovery of leg control after spinal cord injury. Sci. Transl. Med. 13, eabb4422 (2021).
+6.	Enriquez-Geppert, S., Huster, R. J. & Herrmann, C. S. Boosting brain functions: Improving executive functions with behavioral training, neurostimulation, and neurofeedback. Int. J. Psychophysiol. 88, 1–16 (2013).
+7.	Iturrate, I., Pereira, M. & Millán, J. del R. Closed-loop electrical neurostimulation: Challenges and opportunities. Curr. Opin. Biomed. Eng. 8, 28–37 (2018).
+8.	Lafer-Sousa, R. et al. Behavioral detectability of optogenetic stimulation of inferior temporal cortex varies with the size of concurrently viewed objects. Curr. Res. Neurobiol. 4, 100063 (2023).
+9.	Lu, Y. et al. Optogenetically induced spatiotemporal gamma oscillations and neuronal spiking activity in primate motor cortex. J. Neurophysiol. 113, 3574–3587 (2015).
+10.	Salzman, D., C., Britten, K. H. & Newsome, W. T. Cortical microstimulation influences perceptual judgements of motion direction. Nature 346, 174–177 (1990).
+11.	Schild, L. C. & Glauser, D. A. Dual Color Neural Activation and Behavior Control with Chrimson and CoChR in Caenorhabditis elegans. Genetics 200, 1029–1034 (2015).
+12.	Xu, J. et al. Thalamic Stimulation Improves Postictal Cortical Arousal and Behavior. J. Neurosci. 40, 7343–7354 (2020).
+13.	Park, S.-G. et al. Medial preoptic circuit induces hunting-like actions to target objects and prey. Nat. Neurosci. 21, 364–372 (2018).
+14.	Yang, J., Huai, R., Wang, H., Lv, C. & Su, X. A robo-pigeon based on an innovative multi-mode telestimulation system. Biomed. Mater. Eng. 26 Suppl 1, S357-363 (2015).
+15.	Holzer, R. & Shimoyama, I. Locomotion control of a bio-robotic system via electric stimulation. in Proceedings of the 1997 IEEE/RSJ International Conference on Intelligent Robot and Systems. Innovative Robotics for Real-World Applications. IROS ’97 vol. 3 1514–1519 vol.3 (1997).
+16.	Talwar, S. K. et al. Rat navigation guided by remote control. Nature 417, 37–38 (2002).
+17.	Sato, H. et al. A cyborg beetle: Insect flight control through an implantable, tetherless microsystem. in 2008 IEEE 21st International Conference on Micro Electro Mechanical Systems 164–167 (2008). doi:10.1109/MEMSYS.2008.4443618.
+18.	Peckham, P. H. & Knutson, J. S. Functional electrical stimulation for neuromuscular applications. Annu. Rev. Biomed. Eng. 7, 327–360 (2005).
+19.	Kashin, S. M., Feldman, A. G. & Orlovsky, G. N. Locomotion of fish evoked by electrical stimulation of the brain. Brain Res. 82, 41–47 (1974).
+20.	Hinterwirth, A. J. et al. Wireless Stimulation of Antennal Muscles in Freely Flying Hawkmoths Leads to Flight Path Changes. PLOS ONE 7, e52725 (2012).
+21.	Sanchez, C. J. et al. Locomotion control of hybrid cockroach robots. J. R. Soc. Interface 12, 20141363 (2015).
+22.	Bergmann, E., Gofman, X., Kavushansky, A. & Kahn, I. Individual variability in functional connectivity architecture of the mouse brain. Commun. Biol. 3, 1–10 (2020).
+23.	Mueller, S. et al. Individual Variability in Functional Connectivity Architecture of the Human Brain. Neuron 77, 586–595 (2013).
+24.	Husson, S. J., Gottschalk, A. & Leifer, A. M. Optogenetic manipulation of neural activity in C. elegans: from synapse to circuits and behaviour. Biol. Cell 105, 235–250 (2013).
+25.	Nagel, G. et al. Channelrhodopsin-2, a directly light-gated cation-selective membrane channel. PNAS 100, 13940–13945 (2003).
+26.	Kocabas, A., Shen, C.-H., Guo, Z. V. & Ramanathan, S. Controlling interneuron activity in Caenorhabditis elegans to evoke chemotactic behaviour. Nature 490, 273–277 (2012).
+27.	Leifer, A. M., Fang-Yen, C., Gershow, M., Alkema, M. J. & Samuel, A. D. T. Optogenetic manipulation of neural activity in freely moving Caenorhabditis elegans. Nat. Methods 8, 147–152 (2011).
+28.	Wen, Q. et al. Proprioceptive Coupling within Motor Neurons Drives C. elegans Forward Locomotion. Neuron 76, 750–761 (2012).
+29.	Hernandez-Nunez, L. et al. Reverse-correlation analysis of navigation dynamics in Drosophila larva using optogenetics. eLife 4, e06225 (2015).
+30.	Donnelly, J. L. et al. Monoaminergic Orchestration of Motor Programs in a Complex C. elegans Behavior. PLOS Biol. 11, (2013).
+31.	Haarnoja, T. et al. Soft actor-critic algorithms and applications. ArXiv Prepr. ArXiv181205905 (2018).
+
+
+4. To run evaluation episodes as in Figures 2-3, 5-6, one can run `eval.py` after agents have been trained.
 
         python eval.py [camera_id] [animal line number] [target coordinates] --eptime=600
 
