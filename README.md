@@ -106,7 +106,15 @@ Scripts that interact with the animals are in the `Evaluation scripts/` folder. 
 
       This script saves images of the animal tracks and a `.pkl` file containing animal coordinates on the plate, head angle, and body angle. These files can be compiled with other tracks to train agents as in the demo.
 
+3. To run evaluation episodes as in Figures 2-3, 5-6, one can run `eval.py` after agents have been trained.
 
+4. To run evaluation episodes as in Figures 2-3, 5-6, one can run `eval.py` after agents have been trained.
+
+        python eval.py [camera_id] [animal line number] [target coordinates] --eptime=600
+
+   The `--eptime` input is in seconds and denotes length of the evaluation episode.
+
+<small>
 # References
 1.	Romano, D., Donati, E., Benelli, G. & Stefanini, C. A review on animal–robot interaction: from bio-hybrid organisms to mixed societies. Biol. Cybern. 113, 201–225 (2019).
 2.	Tankus, A., Fried, I. & Shoham, S. Cognitive-motor brain–machine interfaces. J. Physiol. Paris 108, 38–44 (2014).
@@ -139,10 +147,4 @@ Scripts that interact with the animals are in the `Evaluation scripts/` folder. 
 29.	Hernandez-Nunez, L. et al. Reverse-correlation analysis of navigation dynamics in Drosophila larva using optogenetics. eLife 4, e06225 (2015).
 30.	Donnelly, J. L. et al. Monoaminergic Orchestration of Motor Programs in a Complex C. elegans Behavior. PLOS Biol. 11, (2013).
 31.	Haarnoja, T. et al. Soft actor-critic algorithms and applications. ArXiv Prepr. ArXiv181205905 (2018).
-
-
-4. To run evaluation episodes as in Figures 2-3, 5-6, one can run `eval.py` after agents have been trained.
-
-        python eval.py [camera_id] [animal line number] [target coordinates] --eptime=600
-
-   The `--eptime` input is in seconds and denotes length of the evaluation episode.
+</small>
