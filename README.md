@@ -114,7 +114,6 @@ Scripts that interact with the animals are in the `Evaluation scripts/` folder. 
 
    The `--eptime` input is in seconds and denotes length of the evaluation episode.
 
-<small>
 # References
 1.	Romano, D., Donati, E., Benelli, G. & Stefanini, C. A review on animal–robot interaction: from bio-hybrid organisms to mixed societies. Biol. Cybern. 113, 201–225 (2019).
 2.	Tankus, A., Fried, I. & Shoham, S. Cognitive-motor brain–machine interfaces. J. Physiol. Paris 108, 38–44 (2014).
@@ -147,4 +146,3 @@ Scripts that interact with the animals are in the `Evaluation scripts/` folder. 
 29.	Hernandez-Nunez, L. et al. Reverse-correlation analysis of navigation dynamics in Drosophila larva using optogenetics. eLife 4, e06225 (2015).
 30.	Donnelly, J. L. et al. Monoaminergic Orchestration of Motor Programs in a Complex C. elegans Behavior. PLOS Biol. 11, (2013).
 31.	Haarnoja, T. et al. Soft actor-critic algorithms and applications. ArXiv Prepr. ArXiv181205905 (2018).
-</small>
