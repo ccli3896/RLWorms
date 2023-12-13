@@ -1,7 +1,16 @@
 # RLWorms
 This repository contains code and data used to set up the nematode C elegans as an RL environment. To accompany paper [Improving animal behaviors through a neural interface with deep reinforcement learning](https://www.biorxiv.org/content/10.1101/2022.09.19.508590v2.article-metrics) by Li, Kreiman, and Ramanathan (2023). 
 
-## Introduction
+# Contents
+1. Introduction
+2. Repository folders and descriptions
+3. Video demos
+4. System requirements and installation
+5. Tutorials
+6. Instructions for use with animals
+7. References
+
+# Introduction
 Guiding or improving animal behavior directly through the nervous system has been a common goal for neuroscience and robotics researchers alike [1-3]. Previous works in brain interfaces and animal robotics have attempted to use direct interventions to affect behavior on a variety of tasks, relying on manual specification for stimulation frequencies, locations, dynamics, and patterns [4–21]. A central difficulty with these approaches is that manual tuning has limited applicability, as it relies on knowledge of the neural circuits or mechanisms involved. For direct neural stimulation, effective patterns can vary depending on which neurons are targeted and on the animal itself [22,23], and thus, even though technologies for precise neuronal modulation exist [24,25], there still lies the challenge of how to design and choose an algorithm that can systematically and automatically learn strategies to activate a set of neurons to improve a particular behavior [26–30]. 
 
 <p align="center">
@@ -11,27 +20,40 @@ Guiding or improving animal behavior directly through the nervous system has bee
 
 Here we addressed this challenge using deep reinforcement learning (RL). In an RL setting, an agent collects rewards through interactions with its environment. We present a flexible framework that can, given only a reward signal, observations, and a set of relevant actions, learn different ways of achieving a goal behavior that adapt to the chosen interface. We tested our ideas on the nematode C. elegans, interfacing an RL agent with its nervous system using optogenetic tools [24,27]. This animal has small and accessible nervous system and yet still possesses a rich behavioral repertoire [31]. In a natural setting, C. elegans must navigate variable environments to avoid danger or find targets like food. Therefore, we aimed to build an RL agent that could learn how to interface with neurons to assist C. elegans in target-finding and food search. We tested the agent by connecting it to different sets of neurons with distinct roles in behavior. The agents could not only couple with different sets of neurons to perform a target-finding task, but could also generalize the task to improve food search across novel environments in a zero-shot fashion, that is, without any prior training. 
 
-# Contents of repository
-            1. Agents: Trained agents used in evaluations, separated by genetic line.
-            2. Animal scripts: Code used to interact with animals, including collecting training data and evaluating agents on live animals.
-            3. Basic evaluation data: Agents were trained and tested on each of 6 optogenetically modified animal lines, labeled as in the table below (Agent Training and Visualization). Control and experimental tracks; Figures 2-4.
-            4. Cross evaluation data: Animal track data used in Figure 5.
-            5. Foodsearch data: Tracking data used in Figure 6B-G.
-            6. Obstacle data: Tracking data used in Figure 6I-K.
-            7. Training data: Datasets used to train agents. Concatenations of 20 min episodes of randomly flashing light data, with animals switched out at the end of every episode. See Figure 1 and Methods in manuscript for details.
-            8. Training scripts: Code to train soft actor-critic agents on animal data.
-            9. Tutorials: Folder containing tutorials that do not require animals.
+# Repository
+- Agents
+  - Trained agents used in evaluations, separated by genetic line.
+- Animal scripts
+  - Code used to interact with animals, including collecting training data and evaluating agents on live animals.
+- Basic evaluation data
+  - Agents were trained and tested on each of 6 optogenetically modified animal lines, labeled as in the table below (Agent Training and Visualization).
+  - Control and experimental tracks; Figures 2-4.
+- Cross evaluation data
+  - Animal track data used in Figure 5.
+- Foodsearch data
+  - Tracking data used in Figure 6B-G.
+- Obstacle data
+  - Tracking data used in Figure 6I-K.
+- Training data
+  - Datasets used to train agents.
+  - Concatenations of 20 min episodes of randomly flashing light data, with animals switched out at the end of every episode.
+  - See Figure 1 and Methods in the manuscript for details.
+- Training scripts
+  - Code to train soft actor-critic agents on animal data.
+- Tutorials
+  - Folder containing tutorials that do not require animals.
 
-### Video demos
+
+# Video demos
 In the two videos below, the blue frame represents agent decisions and the red circle represents a virtual target. Videos are 8x speed and animals are roughly 1 mm in length. Plates are 4 cm in diameter.
 
-#### Random actions
+## Random actions
 https://github.com/ccli3896/RLWorms/assets/33879208/bc5858d8-7dbe-4766-a7da-616ecec953f1
 
-#### After training
+## After training
 https://github.com/ccli3896/RLWorms/assets/33879208/5d229fe1-37bb-485c-b822-879f566f575a
 
-# System requirements
+# System requirements and installation
 Training can be completed on any machine with Pytorch (tested on torch==2.0.1). The demo has been tested on a 2020 MacBook Pro with an Apple M1 chip running Ventura 13.4.1. For the manuscript, the computations were run on the FASRC Cannon cluster supported by the FAS Division of Science Research Computing Group at Harvard University. GPU types available to us are in [this list.](https://docs.rc.fas.harvard.edu/kb/running-jobs/#Using_GPUs)
 Training completed in under an hour with these resources and a memory pool of 10gb for all cores during an array of training jobs of 20-30 agents.
 
@@ -40,7 +62,6 @@ Lights for optogenetic illumination were Kessil PR160L LEDs at wavelengths of 46
 
 Due to hardware compatibility issues, data collection and evaluation on live animals must be completed on a Windows machine (all live animal data collected using Windows 10 and 11).
 
-# Installation guide
 A conda environment with the required dependencies for agent training can be built from `./Tutorials/rlwormsdemo_environment.yml`. The time required is the time to install Pytorch and its dependencies.
 
 # Tutorials
