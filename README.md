@@ -13,14 +13,8 @@ Here we addressed this challenge using deep reinforcement learning (RL), assessi
 We tested our ideas on the nematode C. elegans, interfacing an RL agent with its nervous system using optogenetic tools [24,27]. This animal has small and accessible nervous system and yet still possesses a rich behavioral repertoire [46]. In a natural setting, C. elegans must navigate variable environments to avoid danger or find targets like food. Therefore, we aimed to build an RL agent that could learn how to interface with neurons to assist C. elegans in target-finding and food search. We tested the agent by connecting it to different sets of neurons with distinct roles in behavior. The agents could not only couple with different sets of neurons to perform a target-finding task, but could also generalize the task to improve food search across novel environments in a zero-shot fashion, that is, without any prior training. 
 
 
-# System requirements
-Training can be completed on any machine with Pytorch (tested on torch==2.0.1). The demo has been tested on a 2020 MacBook Pro with an Apple M1 chip running Ventura 13.4.1. For the manuscript, the computations were run on the FASRC Cannon cluster supported by the FAS Division of Science Research Computing Group at Harvard University. GPU types available to us are in [this list.](https://docs.rc.fas.harvard.edu/kb/running-jobs/#Using_GPUs)
-Training completed in under an hour with these resources and a memory pool of 10gb for all cores during an array of training jobs of 20-30 agents.
+https://github.com/ccli3896/RLWorms/assets/33879208/5d229fe1-37bb-485c-b822-879f566f575a
 
-For the hardware setup in the manuscript (Figure 1), we used an Edmund Optics 5012 LE Monochrome USB 3.0 camera or a ThorLabs DCC1545M with [pypyueye](https://github.com/galaunay/pypyueye.git). 
-Lights for optogenetic illumination were Kessil PR160L LEDs at wavelengths of 467 nm for blue and 525 nm for green. LEDs were controlled by National Instruments DAQmx devices with the [nidaqmx library](https://nidaqmx-python.readthedocs.io/en/latest/).
-
-Due to hardware compatibility issues, data collection and evaluation on live animals must be completed on a Windows machine (all live animal data collected using Windows 10 and 11).
 
 # Contents
             1. Agents: Trained agents used in evaluations, separated by genetic line.
@@ -32,6 +26,15 @@ Due to hardware compatibility issues, data collection and evaluation on live ani
             7. Training data: Datasets used to train agents. Concatenations of 20 min episodes of randomly flashing light data, with animals switched out at the end of every episode. See Figure 1 and Methods in manuscript for details.
             8. Training scripts: Code to train soft actor-critic agents on animal data.
             9. Tutorials: Folder containing tutorials that do not require animals.
+
+# System requirements
+Training can be completed on any machine with Pytorch (tested on torch==2.0.1). The demo has been tested on a 2020 MacBook Pro with an Apple M1 chip running Ventura 13.4.1. For the manuscript, the computations were run on the FASRC Cannon cluster supported by the FAS Division of Science Research Computing Group at Harvard University. GPU types available to us are in [this list.](https://docs.rc.fas.harvard.edu/kb/running-jobs/#Using_GPUs)
+Training completed in under an hour with these resources and a memory pool of 10gb for all cores during an array of training jobs of 20-30 agents.
+
+For the hardware setup in the manuscript (Figure 1), we used an Edmund Optics 5012 LE Monochrome USB 3.0 camera or a ThorLabs DCC1545M with [pypyueye](https://github.com/galaunay/pypyueye.git). 
+Lights for optogenetic illumination were Kessil PR160L LEDs at wavelengths of 467 nm for blue and 525 nm for green. LEDs were controlled by National Instruments DAQmx devices with the [nidaqmx library](https://nidaqmx-python.readthedocs.io/en/latest/).
+
+Due to hardware compatibility issues, data collection and evaluation on live animals must be completed on a Windows machine (all live animal data collected using Windows 10 and 11).
 
 # Installation guide
 A conda environment with the required dependencies for agent training can be built from `./Tutorials/rlwormsdemo_environment.yml`. The time required is the time to install Pytorch and its dependencies.
