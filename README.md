@@ -12,7 +12,13 @@ Here we addressed this challenge using deep reinforcement learning (RL), assessi
 
 We tested our ideas on the nematode C. elegans, interfacing an RL agent with its nervous system using optogenetic tools [24,27]. This animal has small and accessible nervous system and yet still possesses a rich behavioral repertoire [46]. In a natural setting, C. elegans must navigate variable environments to avoid danger or find targets like food. Therefore, we aimed to build an RL agent that could learn how to interface with neurons to assist C. elegans in target-finding and food search. We tested the agent by connecting it to different sets of neurons with distinct roles in behavior. The agents could not only couple with different sets of neurons to perform a target-finding task, but could also generalize the task to improve food search across novel environments in a zero-shot fashion, that is, without any prior training. 
 
+### Video demos
+In the two videos below, the blue frame represents agent decisions and the red circle represents a virtual target. Videos are 8x speed and animals are roughly 1 mm in length. Plates are 4 cm in diameter.
 
+### Random actions
+https://github.com/ccli3896/RLWorms/assets/33879208/bc5858d8-7dbe-4766-a7da-616ecec953f1
+
+### After training
 https://github.com/ccli3896/RLWorms/assets/33879208/5d229fe1-37bb-485c-b822-879f566f575a
 
 
