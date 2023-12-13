@@ -7,6 +7,9 @@ Guiding or improving animal behavior directly through the nervous system has bee
 <p align="center"> 
 <img width="300" alt="Screenshot 2023-12-13 at 9 34 25 PM" src="https://github.com/ccli3896/RLWorms/assets/33879208/ddd465d3-4136-446c-9beb-4a38ca4842bc">
 </p>
+<img width="400" alt="Screenshot 2023-12-13 at 9 48 23 PM" src="https://github.com/ccli3896/RLWorms/assets/33879208/8934d13d-9449-4192-bf9d-c1324d39afe6">
+
+
 
 Here we addressed this challenge using deep reinforcement learning (RL). In an RL setting, an agent collects rewards through interactions with its environment. We present a flexible framework that can, given only a reward signal, observations, and a set of relevant actions, learn different ways of achieving a goal behavior that adapt to the chosen interface. We tested our ideas on the nematode C. elegans, interfacing an RL agent with its nervous system using optogenetic tools [24,27]. This animal has small and accessible nervous system and yet still possesses a rich behavioral repertoire [46]. In a natural setting, C. elegans must navigate variable environments to avoid danger or find targets like food. Therefore, we aimed to build an RL agent that could learn how to interface with neurons to assist C. elegans in target-finding and food search. We tested the agent by connecting it to different sets of neurons with distinct roles in behavior. The agents could not only couple with different sets of neurons to perform a target-finding task, but could also generalize the task to improve food search across novel environments in a zero-shot fashion, that is, without any prior training. 
 
