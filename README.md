@@ -4,10 +4,7 @@ This repository contains code and data used to set up the nematode C elegans as 
 ## Introduction
 Guiding or improving animal behavior directly through the nervous system has been a common goal for neuroscience and robotics researchers alike [1-3]. Previous works in brain interfaces and animal robotics have attempted to use direct interventions to affect behavior on a variety of tasks, relying on manual specification for stimulation frequencies, locations, dynamics, and patterns [4–21]. A central difficulty with these approaches is that manual tuning has limited applicability, as it relies on knowledge of the neural circuits or mechanisms involved. For direct neural stimulation, effective patterns can vary depending on which neurons are targeted and on the animal itself [22,23], and thus, even though technologies for precise neuronal modulation exist [24,25], there still lies the challenge of how to design and choose an algorithm that can systematically and automatically learn strategies to activate a set of neurons to improve a particular behavior [26–30]. 
 
-<p align="center"> 
-<img width="300" alt="Screenshot 2023-12-13 at 9 34 25 PM" src="https://github.com/ccli3896/RLWorms/assets/33879208/ddd465d3-4136-446c-9beb-4a38ca4842bc">
-</p>
-<img width="400" alt="Screenshot 2023-12-13 at 9 48 23 PM" src="https://github.com/ccli3896/RLWorms/assets/33879208/8934d13d-9449-4192-bf9d-c1324d39afe6">
+<img width="300" alt="Screenshot 2023-12-13 at 9 34 25 PM" src="https://github.com/ccli3896/RLWorms/assets/33879208/ddd465d3-4136-446c-9beb-4a38ca4842bc"> <img width="400" alt="Screenshot 2023-12-13 at 9 48 23 PM" src="https://github.com/ccli3896/RLWorms/assets/33879208/8934d13d-9449-4192-bf9d-c1324d39afe6">
 
 
 
