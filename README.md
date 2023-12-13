@@ -11,15 +11,15 @@ Lights for optogenetic illumination were Kessil PR160L LEDs at wavelengths of 46
 Due to hardware compatibility issues, data collection and evaluation on live animals must be completed on a Windows machine (all live animal data collected using Windows 10 and 11).
 
 # Contents
-1. Agents: Trained agents used in evaluations, separated by genetic line.
-2. Animal scripts: Code used to interact with animals, including collecting training data and evaluating agents on live animals.
-3. Basic evaluation data: Agents were trained and tested on each of 6 optogenetically modified animal lines, labeled as in the table below (Agent Training and Visualization). Control and experimental tracks; Figures 2-4.
-4. Cross evaluation data: Animal track data used in Figure 5.
-5. Foodsearch data: Tracking data used in Figure 6B-G.
-6. Obstacle data: Tracking data used in Figure 6I-K.
-7. Training data: Datasets used to train agents. Concatenations of 20 min episodes of randomly flashing light data, with animals switched out at the end of every episode. See Figure 1 and Methods in manuscript for details.
-8. Training scripts: Code to train soft actor-critic agents on animal data.
-9. Tutorials: Folder containing tutorials that do not require animals.
+            1. Agents: Trained agents used in evaluations, separated by genetic line.
+            2. Animal scripts: Code used to interact with animals, including collecting training data and evaluating agents on live animals.
+            3. Basic evaluation data: Agents were trained and tested on each of 6 optogenetically modified animal lines, labeled as in the table below (Agent Training and Visualization). Control and experimental tracks; Figures 2-4.
+            4. Cross evaluation data: Animal track data used in Figure 5.
+            5. Foodsearch data: Tracking data used in Figure 6B-G.
+            6. Obstacle data: Tracking data used in Figure 6I-K.
+            7. Training data: Datasets used to train agents. Concatenations of 20 min episodes of randomly flashing light data, with animals switched out at the end of every episode. See Figure 1 and Methods in manuscript for details.
+            8. Training scripts: Code to train soft actor-critic agents on animal data.
+            9. Tutorials: Folder containing tutorials that do not require animals.
 
 # Installation guide
 A conda environment with the required dependencies for agent training can be built from `./Tutorials/rlwormsdemo_environment.yml`. The time required is the time to install Pytorch and its dependencies.
