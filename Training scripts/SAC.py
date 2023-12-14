@@ -41,6 +41,8 @@ class DSAC(object):
             q_weight_decay=1e-5,
             q_dropout=0.0,
             ):
+
+        # Hyperparameter definitions
         torch.autograd.set_detect_anomaly(True)
         self.gamma = gamma
         self.tau = tau
@@ -67,6 +69,7 @@ class DSAC(object):
         self.policy_optim = Adam(self.policy.parameters(), lr=lr, weight_decay=pol_weight_decay)
 
     def select_action(self, state, eval=False):
+        # Chooses an action with the policy network.
         state = torch.FloatTensor(state).to(self.device).unsqueeze(0)
         if eval == False:
             action = self.policy.sample(state)
@@ -75,6 +78,8 @@ class DSAC(object):
         return action.detach().cpu().numpy()[0]
 
     def update_parameters(self, memory, batch_size, updates):
+        # Updates parameters using a batch pulled from memory.
+
         # Sample a batch from memory
         # state_batch, action_batch, reward_batch, next_state_batch, mask_batch = memory.sample(batch_size=batch_size)
         state_batch, action_batch, reward_batch, next_state_batch, mask_batch = memory
@@ -109,15 +114,18 @@ class DSAC(object):
 
         policy_loss = (probs * (self.alpha.detach() * log_probs - min_qf_pi)).sum(-1).mean()
 
+
+        # Take an optimization step for actor network
         self.policy_optim.zero_grad()
         policy_loss.backward()
         self.policy_optim.step()
 
+        # Take an optimization step for critic network
         self.critic_optim.zero_grad()
         (qf1_loss+qf2_loss).backward()
         self.critic_optim.step()
 
-        # Automatic entropy tuning
+        # Automatic entropy tuning optimization
         log_probs = (probs * log_probs).sum(-1)
         alpha_loss = -(self.log_alpha * (log_probs + self.target_entropy).detach()).mean()
 
@@ -128,6 +136,7 @@ class DSAC(object):
         self.alpha = self.log_alpha.exp()
 
 
+        # For moving the target network at the set interval
         if updates % self.target_update_interval == 0:
             soft_update(self.critic_target, self.critic, self.tau)
 
@@ -138,7 +147,7 @@ class DSAC(object):
         self.policy.eval()
         self.critic.eval()
 
-    # Save model parameters
+    # Save model parameters, actor and critic as separate files within models/ folder
     def save_model(self, env_name, suffix="", actor_path=None, critic_path=None):
         if not os.path.exists('models/'):
             os.makedirs('models/')
@@ -169,17 +178,22 @@ class DSAC(object):
 
 
 class DiscretePolicy(nn.Module):
+    # Policy network definition
     def __init__(self, num_inputs, num_actions, hidden_dim, dropout=0.0):
         super(DiscretePolicy, self).__init__()
-        
+
+        # Two dense layers followed by optional dropout
         self.linear1 = nn.Linear(num_inputs, hidden_dim)
         self.linear2 = nn.Linear(hidden_dim, hidden_dim)
         self.do = nn.Dropout(dropout)
 
+        # Make probability
         self.logits = nn.Linear(hidden_dim,num_actions)
         self.apply(weights_init_)
 
     def forward(self, state):
+        # Returns probabilities of actions given state input
+        # Uses relu activation functions between layers
         x = F.relu(self.linear1(state))
         x = self.do(x)
         x = F.relu(self.linear2(x))
@@ -190,6 +204,7 @@ class DiscretePolicy(nn.Module):
         return Categorical(probs), probs+z
 
     def sample(self, state, greedy=False):
+        # Sample from probability distribution if not greedy; otherwise do max
         self.eval()
         with torch.no_grad():
             dist, p = self.forward(state)
@@ -204,6 +219,7 @@ class DiscretePolicy(nn.Module):
         return super(DiscretePolicy, self).to(device)
     
 class DiscreteQNetwork(nn.Module):
+    # Double Q-network definition
     def __init__(self, num_inputs, num_actions, hidden_dim, dropout=0.0):
         super(DiscreteQNetwork, self).__init__()
 
@@ -221,7 +237,7 @@ class DiscreteQNetwork(nn.Module):
         self.apply(weights_init_)
 
     def forward(self, state):
-        
+        # Send state through both networks and return estimated Q-values
         x1 = F.relu(self.linear1(state))
         x1 = self.do(x1)
         x1 = F.relu(self.linear2(x1))
@@ -240,18 +256,21 @@ MEMORY FUNCTIONS
 '''##########################################################################
 
 class ReplayMemory:
+    # Replay buffer structure
     def __init__(self, capacity):
         self.capacity = capacity
         self.buffer = []
         self.position = 0
 
     def push(self, state, action, reward, next_state, done):
+        # Push a collected memory to the buffer
         if len(self.buffer) < self.capacity:
             self.buffer.append(None)
         self.buffer[self.position] = (state, action, reward, next_state, done)
         self.position = (self.position + 1) % self.capacity
 
     def push_batch(self, batch):
+        # Push a batch to the buffer
         if len(self.buffer) < self.capacity:
             append_len = min(self.capacity - len(self.buffer), len(batch))
             self.buffer.extend([None] * append_len)
@@ -265,6 +284,7 @@ class ReplayMemory:
             self.position = len(batch) - len(self.buffer) + self.position
 
     def sample(self, batch_size):
+        # Sample a batch randomly from maintained buffer
         if batch_size > len(self.buffer):
             batch_size = len(self.buffer)
         batch = random.sample(self.buffer, int(batch_size))
@@ -299,6 +319,39 @@ LOG_SIG_MIN = -20
 epsilon = 1e-6
 
 def weights_init_(m):
+    # Weight initialization function, Xavier
     if isinstance(m, nn.Linear):
         torch.nn.init.xavier_uniform_(m.weight, gain=1)
         torch.nn.init.constant_(m.bias, 0)
+
+
+'''
+Ensemble functions
+'''
+
+class Ensemble(nn.Module):
+    def __init__(self, actors, actions=2):
+        super(Ensemble, self).__init__()
+        self.actors = nn.ModuleList(actors).to(device)
+        self.actions = actions
+
+    def forward(self, state):
+        sums = torch.cat([act(state)[1].detach().view(state.shape[0],self.actions,1) for act in self.actors], dim=2)
+        sums = torch.mean(sums, dim=2)
+        return torch.argmax(sums, dim=1)
+
+    def sample(self, state, greedy=False):
+        if not greedy:
+            return random.choice([act.sample(state) for act in self.actors])
+        else:
+            return self.forward(state)
+    
+    
+def load_actors(prelabel, postlabel, seeds,
+               frames=15, actions=2, nrns=64):
+    # Loads list of actor networks
+    actors = [DiscretePolicy(frames*6, actions, nrns, dropout=0.0) for i in range(seeds)]
+    for i in range(seeds):
+        actor_path = f'{prelabel}_s{i}_{postlabel}'
+        actors[i].load_state_dict(torch.load(actor_path))
+    return actors
