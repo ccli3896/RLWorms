@@ -1,5 +1,5 @@
 '''
-Image processing functions as of 4.27.21.
+Base image processing functions as of 4.27.21.
 ~25 ms for full set of functions
 '''
 
@@ -10,11 +10,13 @@ import time
 from utils import *
 
 from skimage.morphology import skeletonize
+
 '''
 Initial functions: defining mask, background, 
 '''
 
 def make_mask(bg,size=50):
+    # Make a large circle mask to remove parts of image outside the plate
     center = tuple(map(int,np.flip(np.array(bg.shape)[:2])/2)) # Makes the center of the circle the center of the img
     radius = int(np.mean(center))-size
     img = np.zeros(bg.shape, dtype="uint8")
@@ -22,7 +24,7 @@ def make_mask(bg,size=50):
     return img
 
 def define_endpt_kernels():
-    # To save time in skeleton_endpoints().
+    # To save time in skeleton_endpoints(). Kernels to identify endpoints in a skeleton
     kernels = [np.array((
             [-1, -1, 0],
             [-1,  1, 0],
@@ -36,9 +38,12 @@ def define_endpt_kernels():
     return kernels, not_kerns
 
 def make_bg(cam,t):
+    # Make the background by averaging many collected images. This will be subtracted from tracking imgs.
     bg = grab_im(cam,None).astype('float64')
     start_time = time.monotonic()
     i=0
+
+    # For a given time, find average of imgs
     while time.monotonic()-start_time < t:
         bg -= 1/(i+1)*(cv2.subtract(bg,grab_im(cam,None).astype('float64')))
         i+=1
@@ -46,6 +51,7 @@ def make_bg(cam,t):
     return bg
 
 def load_templates():
+    # Load templates for head tracking. These are separately saved in templates folder and specific to each orientation.
     DEG_INCR = 30
     templates = []
     for i in np.arange(0,360,DEG_INCR):
@@ -57,8 +63,14 @@ Taking big picture and extracting worm
 '''
 
 def find_worm(img,mask,bg,threshold=8,buffer=1,imsz=64,pix_num=15):
+    '''Img right from camera. Returns cropped worm image (unthresholded) and location of center of contour.
+    Inputs:
+    threshold is brightness level to consider as part of worm
+    buffer is a small amount of padding to avoid endpoint errors
+    imsz is the rough area of a worm in pixels so things that are much too large can be eliminated
+    pix_num is the minimum window for a worm
+    '''
     # 2.5 ms
-    # Im right from camera. Returns worm image (unthresholded) and location of center of contour.
     worm_im = np.zeros((imsz,imsz),dtype='uint8')
     im = cv2.subtract(cv2.subtract(img,mask),bg)
     retval, th = cv2.threshold(im, thresh=threshold, maxval=255, type=cv2.THRESH_BINARY_INV)
@@ -73,17 +85,18 @@ def find_worm(img,mask,bg,threshold=8,buffer=1,imsz=64,pix_num=15):
         if area > mx_area and area < (imsz*4)**2: # imsz**2 is too big for a worm!
             mx = x,y,w,h
             mx_area = area
+
+    # Find centroid and width, height of image
     x,y,w,h = mx
     center = np.array([y+h/2,x+w/2],dtype=int)
+
+    # Check size is reasonable and get cropped worm image
     if mx_area > pix_num: # and ((w<imsz) & (h<imsz)):
         worm = img[y-buffer:y+buffer+h, x-buffer:x+buffer+w][:imsz,:imsz]
-        #percs = np.sort(worm.flatten())
-        #worm_im = cv2.add(worm_im,int(percs[pix_num]))
-        # worm_im[(imsz-h)//2-buffer:(imsz-h)//2+h+buffer,
-        #     (imsz-w)//2-buffer:(imsz-w)//2+w+buffer] = worm
         worm_im = worm
         return worm_im, center
     else:
+        # Error: worm not found
         return None, None
 
 def get_wormies(img,process=True):
@@ -139,6 +152,8 @@ Need skel for body angle. Need threshold, endpoints, templates for HT angles.
 '''
 
 def get_body_angle(skel,discretization=30):
+    '''From skeleton, find the best fit line and its angle.
+    '''
     vy,vx,y,x = cv2.fitLine(np.vstack(skel.nonzero()).T, cv2.DIST_L2,0,0.01,0.01)
     body_angle = np.round((np.arctan2(-vy,vx)*180/np.pi)/discretization)*discretization
     if body_angle==180: body_angle=-180
@@ -146,6 +161,7 @@ def get_body_angle(skel,discretization=30):
 
 
 def get_HT_ims(th,endpoints,padby=5):
+    # Gets a zoomed-in crop of head and tail for template-matching later.
     # 4 us
     # Assumes template size of 7x7
     def get_one_HT_im(th,endpt):
@@ -161,6 +177,7 @@ def get_HT_ims(th,endpoints,padby=5):
         return [get_one_HT_im(th_pad,endpts[0,:])]
 
 def get_HT_angles(HTs,templates):
+    # Match head and tail to templates and identify the angle they're pointing in.
     # 350 us
     DEG_INCR = 30
     angs = np.zeros(len(HTs))

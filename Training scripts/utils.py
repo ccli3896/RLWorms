@@ -7,6 +7,7 @@ import torch
 from torch.utils.data import Dataset
 
 def worm_bound(a):
+  # Makes sure angles stay between +/-180 degrees
     if hasattr(a,'__len__'):
         a = np.array(a)
         a = np.where(a<-180, a+360, a)

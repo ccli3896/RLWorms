@@ -330,17 +330,20 @@ Ensemble functions
 '''
 
 class Ensemble(nn.Module):
+    # Initialize list of actors
     def __init__(self, actors, actions=2):
         super(Ensemble, self).__init__()
         self.actors = nn.ModuleList(actors).to(device)
         self.actions = actions
 
     def forward(self, state):
+        # Return action by averaging over ensemble choices
         sums = torch.cat([act(state)[1].detach().view(state.shape[0],self.actions,1) for act in self.actors], dim=2)
         sums = torch.mean(sums, dim=2)
         return torch.argmax(sums, dim=1)
 
     def sample(self, state, greedy=False):
+        # Sample from ensemble: if not greedy, choose from one actor
         if not greedy:
             return random.choice([act.sample(state) for act in self.actors])
         else:

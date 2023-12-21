@@ -15,6 +15,7 @@ General quick functions
 '''
 
 def worm_bound(a):
+    # Make sure angles always stay within +/-180 degrees
     if hasattr(a,'__len__'):
         a = np.array(a)
         a = np.where(a<-180, a+360, a)
@@ -44,10 +45,13 @@ Image acquisition and processing
 '''
 
 def off(cam_id):
+    # Reset
     cam,task,cam_params = init_instruments(cam_id)
     exit_instruments(cam,task)
 
 def init_instruments(cam_id):
+    # Initializes instruments for the two different rigs. Different camera models and resolutions.
+    # These are the parameters that seem to work and allow me to use the same image processing settings, mostly
 
     if cam_id==1:
         cam_params = {
@@ -121,6 +125,7 @@ def grab_im(cam,bg,cam_params):
         return cv2.subtract(imdata,bg)
 
 def make_bg(cam, cam_params, bgtime=30):
+    # Make the background to be subtracted from images later, for worm-finding
     start = time.monotonic()
     bg = grab_im(cam,None,cam_params).astype('float64')
     i=1

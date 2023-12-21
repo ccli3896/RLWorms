@@ -23,10 +23,16 @@ class TranslateRotate(object):
     Also rotates the animal by a random amount.
     '''
     def __init__(self, bound, frames, target_size=3, best_reward=1.5, reward_scale=2):
+        # Sets bounds of rotation
         self.bound = bound
+
+        # Number of frames per observation
         self.frames = frames
+
         self.target_size = target_size
+        # Reward to give agent if animal is within a small radius of target
         self.best_reward = best_reward
+
         self.reward_scale = reward_scale
 
     def __call__(self, sample):
@@ -55,13 +61,14 @@ class TranslateRotate(object):
         x_shift, y_shift = shifts[:,0], shifts[:,1]
         x_shift, y_shift = (x_shift-.5)*2*self.bound, (y_shift-.5)*2*self.bound
 
+        # Reshaping and scaling by bounds
         state[:,-2*self.frames:-self.frames] = (state[:,-2*self.frames:-self.frames]+x_shift.reshape(-1,1))/self.bound
         next_state[:,-2*self.frames:-self.frames] = (next_state[:,-2*self.frames:-self.frames]+x_shift.reshape(-1,1))/self.bound
         state[:,-self.frames:] = (state[:,-self.frames:]+y_shift.reshape(-1,1))/self.bound
         next_state[:,-self.frames:] = (next_state[:,-self.frames:]+y_shift.reshape(-1,1))/self.bound
         
 
-        # Reward definitions
+        # Reward definitions. If animal is within target_size of target, then keep giving it the best reward. 
         next_dists = dist(next_state[:,-1],next_state[:,-self.frames-1])
         default_reward = -( next_dists - dist(state[:,-1],state[:,-self.frames-1])) 
         reward = np.where((next_dists*self.bound>self.target_size), default_reward, self.best_reward)
@@ -69,16 +76,19 @@ class TranslateRotate(object):
         return state, action, self.reward_scale*reward, next_state, done
     
     def get_body_head_angs(self, state):
+        # Get the animal angles back from the state
         st_body_angs = np.arctan2(state[:,:self.frames], state[:,self.frames:2*self.frames])
         st_head_angs = np.arctan2(state[:,2*self.frames:3*self.frames], state[:,3*self.frames:4*self.frames])
         return st_body_angs, st_head_angs
     
     def replace_angles(self, state, st_body, st_head):
+        # Get the angle variables for state from the head and body angles
         state[:,:self.frames], state[:,self.frames:2*self.frames] = np.sin(st_body), np.cos(st_body)
         state[:,2*self.frames:3*self.frames], state[:,3*self.frames:4*self.frames] = np.sin(st_head), np.cos(st_head)
         return state
     
     def rotate_coords(self, state, ang_shifts):
+        # Rotate variables in state
         x = state[:,-2*self.frames:-self.frames].copy()
         y = state[:,-self.frames:].copy()
         state[:,-2*self.frames:-self.frames] = np.cos(ang_shifts)*x - np.sin(ang_shifts)*y
@@ -91,7 +101,7 @@ def main():
 	# Runs one seed of the agent.
     seed = int(sys.argv[1])
     sample_frac = 1. # How much of the dataset (float) to randomly sample.
-    rseed = 0.
+    rseed = 0. # Unused now--used to be fraction of dataset to sample
     line_number = int(sys.argv[2])
     print(seed,sample_frac,rseed)
 
@@ -101,7 +111,7 @@ def main():
     nrns = 64
     epochs = 20
 
-    random.seed(rseed+73) 
+    random.seed(seed+73) 
 
     # First import the dataset
     with open(f'./Training data/L{line_number}.pkl','rb') as f:

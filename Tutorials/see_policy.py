@@ -56,10 +56,10 @@ def check_ens_xy(actor, loc, speed=0, frames=15, disc=36, shift_relative=True):
 
 
 def load_ens(line_path, agent_list, suffix):
+  # Load ensemble of actors
   frames = 15
   nrns = 64
 
-  polnet = sac.DiscretePolicy(frames*6, 2, 64, dropout=0.0)
   actors = [sac.DiscretePolicy(frames*6,2,64,dropout=0.0) for i in range(len(agent_list))]
 
   for i,i_agent in enumerate(agent_list):
@@ -69,6 +69,7 @@ def load_ens(line_path, agent_list, suffix):
 
 
 def main():
+  # Get arguments
   parser = argparse.ArgumentParser(description='Visualize agent policies.')
   parser.add_argument('line', type=int, help='Animal line')
   parser.add_argument('agent_id', type=str, help='Trained agent ID')
@@ -93,30 +94,71 @@ def main():
 
   # Set up image
   fig,ax = plt.subplots(9,9)
-  fig.set_size_inches((20,20))
+  fig.set_size_inches((20,15))
 
   # Get policy for each (x,y) location around the target. Roughly normalized to plate size
   pols_array = []
+
+  # For coordinates that cover plate
   for x_i,x in enumerate(np.linspace(-1,1,9)):
       for y_i,y in enumerate(np.linspace(-1,1,9)):
           print(x_i,x,y_i,y)
+
+          # Initialize policy list
           pols = []
+
+          # For each agent,
           for i in range(len(agent_list)):
 
+              # Get a policy from the ensemble at the (x,y) location
               pol = check_ens_xy(ens[i], (x,y))
               pol = pol[1].detach().numpy()
+              # Attach it to the policy list
               pols.append(pol[:,1])
 
           pols = np.array(pols)
 
+          # Make an array of policies that are shaped for the angle space; average over ensemble
           pols_array.append(np.mean(np.vstack(pols), axis=0).reshape(36,36))
+
+          # Plot image of policy at the given location
           im = ax[x_i,y_i].imshow(pols_array[-1], vmin=.45,vmax=.55,cmap='magma')
 
+          # Set labels on x and y axes
+          if x_i == 8:  # Bottommost row
+              ax[x_i, y_i].set_xticks([0, 31])
+              ax[x_i, y_i].set_xticklabels(['-180', '180'])
+          else:
+              ax[x_i, y_i].set_xticks([])  # Hide x ticks for other rows
+          
+          if y_i == 0:  # Leftmost column
+              ax[x_i, y_i].set_yticks([0, 31])
+              ax[x_i, y_i].set_yticklabels(['-180', '180'])
+          else:
+              ax[x_i, y_i].set_yticks([])  # Hide y ticks for other columns
+
+
+  # Set y-axis labels for the leftmost column
+  for i, y_label in enumerate(np.linspace(-2, 2, 9)):
+      ax[i, 0].set_ylabel(f'{y_label} cm')
+
+  # Set x-axis labels for the bottommost column
+  for i, x_label in enumerate(np.linspace(-2, 2, 9)):
+      ax[-1, i].set_xlabel(f'{x_label} cm')
+
+  # Add global axis labels
+  fig.text(0.5, 0.04, 'Body Angle Relative to Target (Deg)', ha='center', va='center', fontsize=14)
+  fig.text(0.06, 0.5, 'Relative Head Angle (Deg)', ha='center', va='center', rotation='vertical', fontsize=14)
+
+  # Set the title for the entire figure
+  fig.suptitle('Agent probability of light on, by location relative to target', fontsize=16)
+
+  # Figure adjustment and saving
   fig.subplots_adjust(right=0.85)
   cbar_ax = fig.add_axes([0.9, 0.15, 0.02, 0.7])
   fig.colorbar(im, cax=cbar_ax)
 
-  plt.savefig(f'./Tutorials/Policy_L{args.line}_{args.agent_id}.jpg')
+  plt.savefig(f'./Tutorials/Policy_L{args.line}_{args.agent_id}_{args.epoch}.svg')
   plt.show()
 
 if __name__=='__main__':

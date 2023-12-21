@@ -67,8 +67,10 @@ def main():
     # Plot track
     plt.scatter(x,-np.array(y),c=cm,marker='.')
     target = args.target.split(',')
+
     # Plot the target point
     plt.scatter(int(target[0]),-int(target[1]),c='r')
+    
     # Plot the starting point
     plt.scatter(x[0],-y[0])
 

@@ -19,36 +19,56 @@ import utils
 
 def main(minutes, cam_id, randomrate=.1, lightrate=3, fps=3):
 
+    # Make folder name to save all image data in, by timestamp
     nowtime = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     save_folder = f'./Data/{nowtime}/'
     os.makedirs(save_folder)
 
+    # Initialize hardware: camera and high-powered LED ('task' object)
     cam,task,cam_params = utils.init_instruments(cam_id)
 
+    # Number of frames to track animal for
     frames = int(minutes*60*args.fps)
+
+    # For cases where I just want the initial picture
     if minutes==0:
-        frames = 3 # For cases where I just want the initial picture
+        frames = 3 
+
     light = []
+
+    # Throw out first two images
     for i in range(2):
         img = utils.grab_im(cam,None,cam_params)
 
+    # For episode length, take picture and save it to folder
     for i in range(frames):
         img = utils.grab_im(cam,None,cam_params)
         cv2.imwrite(f'{save_folder}/{i}.jpg',img)
 
+        # If I want random light flashes:
         if task is not None:
+
+            # Every [lightrate] frames, choose to randomly turn light on with probability randomrate
             if i%args.lightrate==0:
+
+                # Turn light on if random number is less than randomrate
+                # Write light history to list
                 if np.random.rand() < randomrate:
                     task.write(cam_params['light_amp'], auto_start=True)
                     task.stop()
                     [light.append(1) for _ in range(lightrate)]
+
+                # If random number is not less than randomrate, turn off and write light off history to list
                 else:
                     task.write(0, auto_start=True)
                     task.stop()
                     [light.append(0) for _ in range(lightrate)]
+
+    # Save light data
     with open(f'{save_folder}/light.pkl','wb') as f:
         pickle.dump(light,f)
     
+    # Close hardware
     utils.exit_instruments(cam,task)
 
 
