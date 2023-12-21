@@ -1,5 +1,5 @@
 # RLWorms
-This repository contains code and data used to set up the nematode C elegans as an RL environment. To accompany paper [Discovering neural policies to drive behavior by integrating deep reinforcement learning agents with biological neural networks!(https://www.biorxiv.org/content/10.1101/2022.09.19.508590v2.article-metrics) by Li, Kreiman, and Ramanathan (2023). 
+This repository contains code and data used to set up the nematode C elegans as an RL environment. To accompany paper [Discovering neural policies to drive behavior by integrating deep reinforcement learning agents with biological neural networks](https://www.biorxiv.org/content/10.1101/2022.09.19.508590v2.article-metrics) by Li, Kreiman, and Ramanathan (2023). 
 
 # Contents
 1. Introduction
